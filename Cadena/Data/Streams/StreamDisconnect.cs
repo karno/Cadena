@@ -1,11 +1,10 @@
-﻿
-namespace Cadena.Data.Streams
+﻿namespace Cadena.Data.Streams
 {
     /// <summary>
     /// Disconnect notices
     /// </summary>
     /// <remarks>
-    /// This notification indicates: current stream is disconnected from twitter.
+    /// This message indicates: current stream is disconnected from twitter.
     /// 
     /// This element is supported by: (generic) streams, user streams, site streams.
     /// </remarks>

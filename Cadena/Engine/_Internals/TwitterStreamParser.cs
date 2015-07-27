@@ -4,7 +4,7 @@ using Cadena.Data;
 using Cadena.Data.Streams;
 using Cadena.Data.Streams.Events;
 using Cadena.Data.Streams.Warnings;
-using Cadena.Engine.Streams;
+using Cadena.Engine.StreamReceivers;
 using Cadena.Util;
 using Codeplex.Data;
 
@@ -70,7 +70,7 @@ namespace Cadena.Engine._Internals
                 {
                     if (graph.delete.status())
                     {
-                        handler.OnNotification(new StreamDelete(
+                        handler.OnMessage(new StreamDelete(
                             Int64.Parse(graph.delete.status.id_str),
                             Int64.Parse(graph.delete.status.user_id_str),
                             graph.delete.timestamp_ms));
@@ -78,7 +78,7 @@ namespace Cadena.Engine._Internals
                     }
                     if (graph.delete.direct_message())
                     {
-                        handler.OnNotification(new StreamDelete(
+                        handler.OnMessage(new StreamDelete(
                             Int64.Parse(graph.delete.status.id_str),
                             Int64.Parse(graph.delete.direct_message.user_id.ToString()),
                             graph.delete.timestamp_ms));
@@ -89,7 +89,7 @@ namespace Cadena.Engine._Internals
                 // scrub_geo
                 if (graph.scrub_geo())
                 {
-                    handler.OnNotification(new StreamScrubGeo(
+                    handler.OnMessage(new StreamScrubGeo(
                         Int64.Parse(graph.scrub_geo.user_id_str),
                         Int64.Parse(graph.scrub_geo.up_to_status_id_str),
                         graph.scrub_geo.timestamp_ms));
@@ -99,7 +99,7 @@ namespace Cadena.Engine._Internals
                 // limit
                 if (graph.limit())
                 {
-                    handler.OnNotification(new StreamLimit(
+                    handler.OnMessage(new StreamLimit(
                         (long)graph.limit.track,
                         graph.limit.timestamp_ms));
                     return;
@@ -108,7 +108,7 @@ namespace Cadena.Engine._Internals
                 // withheld
                 if (graph.status_withheld())
                 {
-                    handler.OnNotification(new StreamWithheld(
+                    handler.OnMessage(new StreamWithheld(
                         Int64.Parse(graph.status_withheld.user_id),
                         Int64.Parse(graph.status_withheld.id),
                         graph.status_withheld.withheld_in_countries,
@@ -117,7 +117,7 @@ namespace Cadena.Engine._Internals
                 }
                 if (graph.user_withheld())
                 {
-                    handler.OnNotification(new StreamWithheld(
+                    handler.OnMessage(new StreamWithheld(
                         Int64.Parse(graph.user_withheld.id),
                         graph.user_withheld.withheld_in_countries,
                         graph.user_withheld.timestamp_ms));
@@ -127,7 +127,7 @@ namespace Cadena.Engine._Internals
                 // disconnect
                 if (graph.disconnect())
                 {
-                    handler.OnNotification(new StreamDisconnect(
+                    handler.OnMessage(new StreamDisconnect(
                         (DisconnectCode)graph.disconnect.code,
                         graph.disconnect.stream_name, graph.disconnect.reason,
                         graph.disconnect.timestamp_ms));
@@ -139,7 +139,7 @@ namespace Cadena.Engine._Internals
                 {
                     if (graph.warning.code == "FALLING_BEHIND")
                     {
-                        handler.OnNotification(new StreamStallWarning(
+                        handler.OnMessage(new StreamStallWarning(
                             graph.warning.code,
                             graph.warning.message,
                             graph.warning.percent_full,
@@ -155,14 +155,14 @@ namespace Cadena.Engine._Internals
                     if (ev == "user_update")
                     {
                         // parse user_update only in generic streams.
-                        handler.OnNotification(new StreamUserEvent(
+                        handler.OnMessage(new StreamUserEvent(
                             new TwitterUser(graph.source),
                             new TwitterUser(graph.target), ev,
                             ((string)graph.created_at).ParseTwitterDateTime()));
                         return;
                     }
                     // unknown event...
-                    handler.OnNotification(new StreamUnknownMessage("event: " + ev, graph.ToString()));
+                    handler.OnMessage(new StreamUnknownMessage("event: " + ev, graph.ToString()));
                 }
 
                 if (graph.IsObject())
@@ -170,12 +170,12 @@ namespace Cadena.Engine._Internals
                     // unknown...
                     foreach (KeyValuePair<string, dynamic> item in graph)
                     {
-                        handler.OnNotification(new StreamUnknownMessage(item.Key, item.Value.ToString()));
+                        handler.OnMessage(new StreamUnknownMessage(item.Key, item.Value.ToString()));
                         return;
                     }
                 }
                 // unknown event-type...
-                handler.OnNotification(new StreamUnknownMessage(null, graph.Value.ToString()));
+                handler.OnMessage(new StreamUnknownMessage(null, graph.Value.ToString()));
 
             }
             catch (Exception ex)

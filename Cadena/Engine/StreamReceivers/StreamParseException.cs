@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Cadena.Engine.Streams
+namespace Cadena.Engine.StreamReceivers
 {
     [Serializable]
     public class StreamParseException : Exception
@@ -25,9 +25,7 @@ namespace Cadena.Engine.Streams
             _received = received;
         }
 
-        protected StreamParseException(
-            SerializationInfo info,
-            StreamingContext context)
+        protected StreamParseException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             _received = info.GetString("_received");

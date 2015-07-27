@@ -4,7 +4,7 @@ using Cadena.Data;
 using Cadena.Data.Streams;
 using Cadena.Data.Streams.Events;
 using Cadena.Data.Streams.Warnings;
-using Cadena.Engine.Streams;
+using Cadena.Engine.StreamReceivers;
 using Cadena.Util;
 using Codeplex.Data;
 
@@ -59,13 +59,13 @@ namespace Cadena.Engine._Internals
                 if (graph.friends())
                 {
                     // friends enumeration
-                    handler.OnNotification(new StreamEnumeration((long[])graph.friends));
+                    handler.OnMessage(new StreamEnumeration((long[])graph.friends));
                     return;
                 }
                 if (graph.friends_str())
                 {
                     // friends enumeration(stringified)
-                    handler.OnNotification(new StreamEnumeration(
+                    handler.OnMessage(new StreamEnumeration(
                         ((string[])graph.friends).Select(s => s.ParseLong()).ToArray()));
                     return;
                 }
@@ -82,7 +82,7 @@ namespace Cadena.Engine._Internals
                 {
                     if (graph.warning.code == "FOLLOWS_OVER_LIMIT")
                     {
-                        handler.OnNotification(new StreamTooManyFollowsWarning(
+                        handler.OnMessage(new StreamTooManyFollowsWarning(
                             graph.warning.code,
                             graph.warning.message,
                             graph.warning.user_id,
@@ -107,7 +107,7 @@ namespace Cadena.Engine._Internals
         /// <param name="ev">event name</param>
         /// <param name="graph">JSON object graph</param>
         /// <param name="handler">result handler</param>
-        internal static void ParseStreamEvent(string ev, dynamic graph, IStreamHandler handler)
+        private static void ParseStreamEvent(string ev, dynamic graph, IStreamHandler handler)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace Cadena.Engine._Internals
                     case "quoted_tweet":
                     case "favorited_retweet":
                     case "retweeted_retweet":
-                        handler.OnNotification(new StreamStatusEvent(source, target,
+                        handler.OnMessage(new StreamStatusEvent(source, target,
                             new TwitterStatus(graph.target_object), ev, timestamp));
                         break;
                     case "block":
@@ -131,7 +131,7 @@ namespace Cadena.Engine._Internals
                     case "user_update":
                     case "mute":
                     case "unmute":
-                        handler.OnNotification(new StreamUserEvent(source, target,
+                        handler.OnMessage(new StreamUserEvent(source, target,
                             ev, timestamp));
                         break;
                     case "list_created":
@@ -141,7 +141,7 @@ namespace Cadena.Engine._Internals
                     case "list_member_removed":
                     case "list_user_subscribed":
                     case "list_user_unsubscribed":
-                        handler.OnNotification(new StreamListEvent(source, target,
+                        handler.OnMessage(new StreamListEvent(source, target,
                             new TwitterList(graph.target_object), ev, timestamp));
                         break;
                     default:

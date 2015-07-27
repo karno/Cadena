@@ -4,14 +4,14 @@ using Cadena.Util;
 namespace Cadena.Data.Streams
 {
     /// <summary>
-    /// Base class of stream notification messages.
+    /// Base class of stream message messages.
     /// </summary>
     public abstract class StreamMessage
     {
         private static readonly DateTime SerialTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
-        /// Initialize stream notification.
+        /// Initialize stream message.
         /// </summary>
         /// <param name="timestampMs">serial timestamp (millisec, from 1970/01/01 00:00:00)</param>
         protected StreamMessage(string timestampMs)
@@ -20,7 +20,7 @@ namespace Cadena.Data.Streams
         }
 
         /// <summary>
-        /// Initialize stream notification.
+        /// Initialize stream message.
         /// </summary>
         /// <param name="timestampMs">serial timestamp (millisec, from 1970/01/01 00:00:00)</param>
         protected StreamMessage(long timestampMs)
@@ -29,7 +29,7 @@ namespace Cadena.Data.Streams
         }
 
         /// <summary>
-        /// Initialize stream notification.
+        /// Initialize stream message.
         /// </summary>
         /// <param name="timestamp">timestamp</param>
         protected StreamMessage(DateTime timestamp)

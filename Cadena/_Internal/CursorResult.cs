@@ -1,17 +1,29 @@
 ﻿using System;
 using Cadena.Data;
+using JetBrains.Annotations;
 
 namespace Cadena._Internal
 {
-    public static class CursorResult
+    /// <summary>
+    /// Create instance of ICursorResult object.
+    /// </summary>
+    internal static class CursorResult
     {
-        public static ICursorResult<T> Create<T>(T item, string prevCursor, string nextCursor)
+        public static ICursorResult<T> Create<T>([NotNull] T item,
+            [NotNull] string prevCursor, [NotNull] string nextCursor)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (prevCursor == null) throw new ArgumentNullException(nameof(prevCursor));
+            if (nextCursor == null) throw new ArgumentNullException(nameof(nextCursor));
+
             return Create(item, Int64.Parse(prevCursor), Int64.Parse(nextCursor));
         }
 
-        public static ICursorResult<T> Create<T>(T item, long prevCursor, long nextCursor)
+        public static ICursorResult<T> Create<T>([NotNull] T item,
+            long prevCursor, long nextCursor)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
             return new CursorResultImpl<T>(item, prevCursor, nextCursor);
         }
 
@@ -36,12 +48,12 @@ namespace Cadena._Internal
 
             public bool CanReadPrevious
             {
-                get { return this.PreviousCursor != 0; }
+                get { return PreviousCursor != 0; }
             }
 
             public bool CanReadNext
             {
-                get { return this.NextCursor != 0; }
+                get { return NextCursor != 0; }
             }
         }
     }

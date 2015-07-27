@@ -24,6 +24,8 @@ namespace Cadena.Data
     /// </summary>
     public struct RateLimitDescription
     {
+        public static readonly RateLimitDescription Empty = new RateLimitDescription();
+
         /// <summary>
         /// Initialize rate limit description
         /// </summary>

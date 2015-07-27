@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using Cadena.Data;
 using Cadena.Util;
+using JetBrains.Annotations;
 
 namespace Cadena._Internal
 {
@@ -25,8 +26,11 @@ namespace Cadena._Internal
         /// <param name="item">result item</param>
         /// <param name="message">HTTP response</param>
         /// <returns></returns>
-        public static IApiResult<T> Create<T>(T item, HttpResponseMessage message)
+        public static IApiResult<T> Create<T>([NotNull] T item, [NotNull] HttpResponseMessage message)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (message == null) throw new ArgumentNullException(nameof(message));
+
             var limit = GetFirstHeaderOrNull(message, HeaderRateLimitLimit).ParseLong();
             var remain = GetFirstHeaderOrNull(message, HeaderRateLimitRemaining).ParseLong();
             var reset = GetFirstHeaderOrNull(message, HeaderRateLimitReset).ParseLong();
@@ -40,13 +44,17 @@ namespace Cadena._Internal
         /// <param name="item">result item</param>
         /// <param name="description">rate limit description</param>
         /// <returns></returns>
-        public static IApiResult<T> Create<T>(T item, RateLimitDescription description)
+        public static IApiResult<T> Create<T>([NotNull] T item, RateLimitDescription description)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
             return new ApiResultImpl<T>(item, description.Limit, description.Remain, description.Reset);
         }
 
-        private static string GetFirstHeaderOrNull(HttpResponseMessage message, string key)
+        private static string GetFirstHeaderOrNull([NotNull] HttpResponseMessage message, [NotNull] string key)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (key == null) throw new ArgumentNullException(nameof(key));
+
             IEnumerable<string> values;
             return message.Headers.TryGetValues(key, out values) ? values.FirstOrDefault() : null;
         }
@@ -64,8 +72,8 @@ namespace Cadena._Internal
 
             public ApiResultImpl(T result, long limit, long remain, DateTime reset)
             {
-                this.RateLimit = new RateLimitDescription(limit, remain, reset);
-                this.Result = result;
+                RateLimit = new RateLimitDescription(limit, remain, reset);
+                Result = result;
             }
 
             public RateLimitDescription RateLimit { get; }

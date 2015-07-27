@@ -4,7 +4,7 @@
     /// Status deletion notices
     /// </summary>
     /// <remarks>
-    /// This notification indicates: specified tweet was deleted.
+    /// This message indicates: specified tweet was deleted.
     /// 
     /// This element is supported by: (generic) streams, user streams, site streams.
     /// </remarks>

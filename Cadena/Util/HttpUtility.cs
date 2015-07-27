@@ -83,9 +83,9 @@ namespace Cadena.Util
                 else
                 {
                     if (upper)
-                        result.Append('%' + String.Format("{0:X2}", (int)data[i]));
+                        result.Append('%' + $"{data[i]:X2}");
                     else
-                        result.Append('%' + String.Format("{0:x2}", (int)data[i]));
+                        result.Append('%' + $"{data[i]:x2}");
                 }
             }
             return result.ToString();

@@ -12,8 +12,7 @@ namespace Cadena.Api.Streams
 {
     public static class UserStreams
     {
-        public static async Task Connect(
-            [NotNull] this IApiAccess access,
+        public static async Task Connect([NotNull] IApiAccess access,
             [NotNull] Action<string> parser, TimeSpan readTimeout, CancellationToken cancellationToken,
             [CanBeNull] IEnumerable<string> tracksOrNull = null, bool repliesAll = false,
             bool followingsActivity = false)

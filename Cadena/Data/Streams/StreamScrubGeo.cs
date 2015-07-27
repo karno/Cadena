@@ -4,7 +4,7 @@
     /// Location deletion notices
     /// </summary>
     /// <remarks>
-    /// This notification indicates: delete location information from (range-)specified statuses.
+    /// This message indicates: delete location information from (range-)specified statuses.
     /// 
     /// This element is supported by: (generic) streams, user streams, site streams.
     /// </remarks>

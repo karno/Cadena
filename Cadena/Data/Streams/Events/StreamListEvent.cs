@@ -6,7 +6,7 @@ namespace Cadena.Data.Streams.Events
     /// List events
     /// </summary>
     /// <remarks>
-    /// This notification indicates: events about twitter lists
+    /// This message indicates: events about twitter lists
     /// 
     /// This element is supported by: user streams, site streams
     /// </remarks>

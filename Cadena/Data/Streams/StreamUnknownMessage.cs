@@ -6,7 +6,7 @@ namespace Cadena.Data.Streams
     /// Unknown events
     /// </summary>
     /// <remarks>
-    /// This notification indicates: Anomaly could not handle this event.
+    /// This message indicates: Anomaly could not handle this event.
     /// 
     /// This element is supported by: (generic) streams, user streams, site streams
     /// </remarks>

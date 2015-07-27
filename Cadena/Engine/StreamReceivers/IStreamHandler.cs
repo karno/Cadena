@@ -4,13 +4,13 @@ using Cadena.Data;
 using Cadena.Data.Streams;
 using JetBrains.Annotations;
 
-namespace Cadena.Engine.Streams
+namespace Cadena.Engine.StreamReceivers
 {
     public interface IStreamHandler
     {
         void OnStatus(TwitterStatus status);
 
-        void OnNotification(StreamMessage notification);
+        void OnMessage(StreamMessage notification);
 
         void OnException(StreamParseException exception);
     }
@@ -46,7 +46,7 @@ namespace Cadena.Engine.Streams
             _exceptionHandler(exception);
         }
 
-        public void OnNotification(StreamMessage notification)
+        public void OnMessage(StreamMessage notification)
         {
             Action<StreamMessage> value;
             var type = notification.GetType();

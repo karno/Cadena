@@ -6,7 +6,7 @@ namespace Cadena.Data.Streams.Events
     /// User events
     /// </summary>
     /// <remarks>
-    /// This notification indicates: events about twitter users
+    /// This message indicates: events about twitter users
     /// 
     /// This element is supported by: user streams, site streams
     /// (Except: user_update is also used in the (generic) streams)

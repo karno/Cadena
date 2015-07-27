@@ -68,7 +68,7 @@ namespace Cadena.Util
 
         public bool IsEntityAvailable
         {
-            get { return this.Entity != null; }
+            get { return Entity != null; }
         }
     }
 }

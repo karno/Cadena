@@ -6,7 +6,7 @@ namespace Cadena.Data.Streams
     /// Friends lists
     /// </summary>
     /// <remarks>
-    /// This notification indicates: friends list id.
+    /// This message indicates: friends list id.
     /// 
     /// This element is supported by: user streams
     /// </remarks>

@@ -5,7 +5,7 @@ namespace Cadena.Data.Streams.Warnings
     /// Too many follows
     /// </summary>
     /// <remarks>
-    /// This notification indicates: too many follows to delivering tweets.
+    /// This message indicates: too many follows to delivering tweets.
     /// Content indicates target user_id
     /// 
     /// This element is supported by: user streams, site streams

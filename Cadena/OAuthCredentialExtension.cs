@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using Cadena.Api;
 using AsyncOAuth;
+using Cadena.Api;
 
 namespace Cadena
 {
@@ -38,7 +38,7 @@ namespace Cadena
             var proxy =
                 access.ProxyConfiguration.UseSystemproxy
                     ? WebRequest.GetSystemWebProxy()
-                    : (access.ProxyConfiguration.ProxyProvider == null ? null : access.ProxyConfiguration.ProxyProvider());
+                    : access.ProxyConfiguration.ProxyProvider?.Invoke();
             return new TwitterApiExceptionHandler(
                 new HttpClientHandler
                 {
