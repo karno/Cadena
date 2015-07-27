@@ -111,9 +111,11 @@
     <Compile Include="Data\Streams\Warnings\StreamWarning.cs" />
     <Compile Include="Engine\CadenaEngine.cs" />
     <Compile Include="Engine\ReceiveManager.cs" />
-    <Compile Include="Engine\Receivers\ReceiverBase.cs" />
-    <Compile Include="Engine\Streams\IStreamHandler.cs" />
-    <Compile Include="Engine\Streams\StreamParseException.cs" />
+    <Compile Include="Engine\CyclicReceivers\CyclicReceiverBase.cs" />
+    <Compile Include="Engine\StreamReceivers\IStreamHandler.cs" />
+    <Compile Include="Engine\StreamReceivers\StreamParseException.cs" />
+    <Compile Include="Engine\StreamReceivers\StreamReceiverBase.cs" />
+    <Compile Include="Engine\StreamReceivers\UserStreamReceiver.cs" />
     <Compile Include="Engine\_Internals\TwitterStreamParser.cs" />
     <Compile Include="Engine\_Internals\UserStreamParser.cs" />
     <Compile Include="Util\CursorResultExtension.cs" />
