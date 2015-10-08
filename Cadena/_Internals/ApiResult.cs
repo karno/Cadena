@@ -6,7 +6,7 @@ using Cadena.Data;
 using Cadena.Util;
 using JetBrains.Annotations;
 
-namespace Cadena._Internal
+namespace Cadena._Internals
 {
     /// <summary>
     /// Create IApiResult object.

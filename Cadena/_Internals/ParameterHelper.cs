@@ -6,7 +6,7 @@ using System.Text;
 using Cadena.Api;
 using JetBrains.Annotations;
 
-namespace Cadena._Internal
+namespace Cadena._Internals
 {
     /// <summary>
     /// Helper methods for ParameterBase.
@@ -67,6 +67,14 @@ namespace Cadena._Internal
                 }
             }
             return result.ToString();
+        }
+
+        internal static string JoinString(
+            [NotNull] this IEnumerable<string> strings, [NotNull] string separator)
+        {
+            if (strings == null) throw new ArgumentNullException(nameof(strings));
+            if (separator == null) throw new ArgumentNullException(nameof(separator));
+            return String.Join(separator, strings);
         }
     }
 }

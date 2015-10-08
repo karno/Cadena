@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internal;
+using Cadena._Internals;
 using Cadena.Data;
 
 namespace Cadena.Util

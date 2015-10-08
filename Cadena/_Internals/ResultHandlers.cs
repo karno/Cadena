@@ -7,7 +7,7 @@ using Cadena.Data;
 using Codeplex.Data;
 using JetBrains.Annotations;
 
-namespace Cadena._Internal
+namespace Cadena._Internals
 {
     /// <summary>
     /// Methods for handling results

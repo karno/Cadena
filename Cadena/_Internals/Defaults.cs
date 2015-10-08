@@ -1,4 +1,4 @@
-﻿namespace Cadena._Internal
+﻿namespace Cadena._Internals
 {
     /// <summary>
     /// Default parameters for sending requests.

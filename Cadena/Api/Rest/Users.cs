@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internal;
+using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
 using JetBrains.Annotations;

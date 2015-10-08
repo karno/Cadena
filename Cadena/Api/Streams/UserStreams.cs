@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internal;
+using Cadena._Internals;
 using Cadena.Util;
 using JetBrains.Annotations;
 
@@ -12,6 +12,17 @@ namespace Cadena.Api.Streams
 {
     public static class UserStreams
     {
+        /// <summary>
+        /// Connect to user streams.
+        /// </summary>
+        /// <param name="access">API access preference</param>
+        /// <param name="parser">Line handler</param>
+        /// <param name="readTimeout">stream read timeout</param>
+        /// <param name="cancellationToken">cancellation token object</param>
+        /// <param name="tracksOrNull">tracks parameter(can be null)</param>
+        /// <param name="repliesAll">repliesAll parameter</param>
+        /// <param name="followingsActivity">include_followings_activity parameter</param>
+        /// <returns></returns>
         public static async Task Connect([NotNull] IApiAccess access,
             [NotNull] Action<string> parser, TimeSpan readTimeout, CancellationToken cancellationToken,
             [CanBeNull] IEnumerable<string> tracksOrNull = null, bool repliesAll = false,
@@ -20,10 +31,11 @@ namespace Cadena.Api.Streams
             if (access == null) throw new ArgumentNullException(nameof(access));
             if (parser == null) throw new ArgumentNullException(nameof(parser));
 
-            var filteredTracks =
-                tracksOrNull != null
-                    ? String.Join(",", tracksOrNull.Where(t => !String.IsNullOrEmpty(t.Trim())).Distinct())
-                    : null;
+            // remove empty string and remove duplicates, concat strings
+            var filteredTracks = tracksOrNull?.Select(t => t?.Trim())
+                                              .Where(t => !String.IsNullOrEmpty(t))
+                                              .Distinct()
+                                              .JoinString(",");
 
             // bulid parameter
             var param = new Dictionary<string, object>
@@ -44,6 +56,7 @@ namespace Cadena.Api.Streams
                 try
                 {
                     // prepare HttpClient
+                    // GZip makes delay of delivery tweets
                     client = access.CreateOAuthClient(useGZip: false);
                     // set parameters for receiving UserStreams.
                     client.Timeout = Timeout.InfiniteTimeSpan;
@@ -53,8 +66,8 @@ namespace Cadena.Api.Streams
                         cancellationToken).ConfigureAwait(false))
                     using (var stream = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     {
-                        // run user stream engine
-                        await StreamEngine.Run(stream, parser, readTimeout, cancellationToken);
+                        // winding data from user stream
+                        await StreamWinder.Run(stream, parser, readTimeout, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 finally

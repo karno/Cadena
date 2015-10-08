@@ -8,7 +8,7 @@ using Cadena.Engine.StreamReceivers;
 using Cadena.Util;
 using Codeplex.Data;
 
-namespace Cadena.Engine._Internals
+namespace Cadena.Engine._Internals.Parsers
 {
     internal static class UserStreamParser
     {

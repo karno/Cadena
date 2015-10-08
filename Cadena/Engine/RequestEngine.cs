@@ -1,6 +1,6 @@
 ﻿namespace Cadena.Engine
 {
-    public class CadenaEngine
+    public sealed class RequestEngine
     {
     }
 }

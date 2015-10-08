@@ -9,11 +9,11 @@ namespace Cadena.Api
 {
     public class TwitterApiException : Exception
     {
-        public TwitterApiException(HttpStatusCode statusCode, string message, int code)
+        public TwitterApiException(HttpStatusCode httpCode, string message, TwitterErrorCode twitterCode)
             : base(message)
         {
-            StatusCode = statusCode;
-            TwitterErrorCode = code;
+            StatusCode = httpCode;
+            TwitterErrorCode = twitterCode;
         }
 
         public TwitterApiException(HttpStatusCode statusCode, string message)
@@ -24,7 +24,7 @@ namespace Cadena.Api
 
         public HttpStatusCode StatusCode { get; }
 
-        public int? TwitterErrorCode { get; }
+        public TwitterErrorCode? TwitterErrorCode { get; }
 
         public override string ToString()
         {
@@ -44,10 +44,10 @@ namespace Cadena.Api
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var resp = await base.SendAsync(request, cancellationToken);
+            var resp = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
             if (!resp.IsSuccessStatusCode)
             {
-                var rstr = await resp.Content.ReadAsStringAsync();
+                var rstr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var json = DynamicJson.Parse(rstr);
                 var ex = new TwitterApiException(resp.StatusCode, rstr);
                 try
@@ -55,7 +55,7 @@ namespace Cadena.Api
                     if (json.errors() && json.errors[0].code() && json.errors[0].message())
                     {
                         ex = new TwitterApiException(resp.StatusCode,
-                            json.errors[0].message, (int)json.errors[0].code);
+                            json.errors[0].message, (TwitterErrorCode)((int)json.errors[0].code));
                     }
                 }
                 catch

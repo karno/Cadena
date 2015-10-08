@@ -2,15 +2,15 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internal;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Streams
 {
     /// <summary>
-    /// Receiver task for general streams.
+    /// Core of engine of receiving general streams.
     /// </summary>
-    internal static class StreamEngine
+    internal static class StreamWinder
     {
         public static async Task Run([NotNull] Stream stream, [NotNull] Action<string> parser,
             TimeSpan readTimeout, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ namespace Cadena.Api.Streams
                         if (String.IsNullOrWhiteSpace(line)) continue;
                         // call parser with read line
 #pragma warning disable  4014
-                        Task.Run(() => parser(line), cancellationToken).ConfigureAwait(false);
+                        Task.Run(() => parser(line), cancellationToken);
 #pragma warning restore  4014
                     }
                 }

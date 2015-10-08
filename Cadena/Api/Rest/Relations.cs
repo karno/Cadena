@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internal;
+using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
 using JetBrains.Annotations;
@@ -154,7 +154,7 @@ namespace Cadena.Api.Rest
             if (targetUser == null) throw new ArgumentNullException(nameof(targetUser));
             var endpoint = mute ? "mutes/users/create" : "mutes/users/destroy";
             return await access.PostAsync(endpoint, targetUser.ToDictionary(),
-                ResultHandlers.ReadAsUserAsync, cancellationToken);
+                ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion

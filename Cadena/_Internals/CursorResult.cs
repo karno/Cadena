@@ -2,7 +2,7 @@
 using Cadena.Data;
 using JetBrains.Annotations;
 
-namespace Cadena._Internal
+namespace Cadena._Internals
 {
     /// <summary>
     /// Create instance of ICursorResult object.

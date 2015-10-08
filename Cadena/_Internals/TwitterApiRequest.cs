@@ -7,7 +7,7 @@ using Cadena.Data;
 using Cadena.Util;
 using JetBrains.Annotations;
 
-namespace Cadena._Internal
+namespace Cadena._Internals
 {
     /// <summary>
     /// Request to Twitter with designated parameters.

@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cadena._Internal
+namespace Cadena._Internals
 {
     // see also: 
     // this source is referenced corclr/StreamReader.cs, (C)Microsoft.
