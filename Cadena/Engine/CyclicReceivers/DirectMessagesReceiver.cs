@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers
 {
-    public class HomeTimelineReceiver : CyclicReceiverBase
+    public class DirectMessagesReceiver : CyclicReceiverBase
     {
         private readonly IApiAccess _access;
         private readonly Action<TwitterStatus> _handler;
@@ -17,7 +17,7 @@ namespace Cadena.Engine.CyclicReceivers
 
         private long _lastSinceId = -1;
 
-        public HomeTimelineReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
+        public DirectMessagesReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
             [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100)
         {
             if (access == null) throw new ArgumentNullException(nameof(access));
@@ -33,7 +33,7 @@ namespace Cadena.Engine.CyclicReceivers
         {
             try
             {
-                var result = await _access.GetHomeTimelineAsync(_receiveCount,
+                var result = await _access.GetDirectMessagesAsync(_receiveCount,
                     _lastSinceId, null, token).ConfigureAwait(false);
                 result.Result?.ForEach(i => _handler(i));
                 return result.RateLimit;

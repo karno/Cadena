@@ -113,7 +113,12 @@
     <Compile Include="Data\Streams\Warnings\StreamStallWarning.cs" />
     <Compile Include="Data\Streams\Warnings\StreamTooManyFollowsWarning.cs" />
     <Compile Include="Data\Streams\Warnings\StreamWarning.cs" />
+    <Compile Include="Engine\CyclicReceivers\DirectMessagesReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\HomeTimelineReceiver.cs" />
+    <Compile Include="Engine\CyclicReceivers\OwnedListsReceiver.cs" />
+    <Compile Include="Engine\CyclicReceivers\ListReceiver.cs" />
+    <Compile Include="Engine\CyclicReceivers\MentionsReceiver.cs" />
+    <Compile Include="Engine\CyclicReceivers\SentDirectMessagesReceiver.cs" />
     <Compile Include="Engine\RequestEngine.cs" />
     <Compile Include="Engine\ReceiveEngine.cs" />
     <Compile Include="Engine\ReceiverOperationException.cs" />

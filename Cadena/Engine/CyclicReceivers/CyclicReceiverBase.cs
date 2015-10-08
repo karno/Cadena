@@ -13,6 +13,8 @@ namespace Cadena.Engine.CyclicReceivers
     /// </summary>
     public abstract class CyclicReceiverBase : IReceiver
     {
+        protected virtual long MinimumIntervalTicks => TimeSpan.FromSeconds(30).Ticks;
+
         protected virtual double ApiConsumptionLimitRatio => 0.8;
 
         /// <summary>
@@ -25,7 +27,7 @@ namespace Cadena.Engine.CyclicReceivers
         /// <summary>
         /// Get priority of this request
         /// </summary>
-        public abstract RequestPriority Priority { get; }
+        public virtual RequestPriority Priority => RequestPriority.Middle;
 
         public void Dispose()
         {
@@ -47,8 +49,8 @@ namespace Cadena.Engine.CyclicReceivers
                 }
 
                 // target interval(ticks per access)
-                var targIntv = remainTime.Ticks / rld.Remain;
-                return TimeSpan.FromTicks(targIntv);
+                var targIntv = remainTime.Ticks / (rld.Remain * ApiConsumptionLimitRatio);
+                return TimeSpan.FromTicks(Math.Max((long)targIntv, MinimumIntervalTicks));
             }
             catch (TwitterApiException tx)
             {

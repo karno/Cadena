@@ -27,13 +27,13 @@ namespace Cadena.Api.Rest
         #region lists/list
 
         public static async Task<IApiResult<IEnumerable<TwitterList>>> GetListsAsync(
-            [NotNull] this IApiAccess access,
-            [NotNull] ListParameter targetList, CancellationToken cancellationToken)
+            [NotNull] this IApiAccess access, [NotNull] UserParameter targetUser,
+            CancellationToken cancellationToken)
         {
             if (access == null) throw new ArgumentNullException(nameof(access));
-            if (targetList == null) throw new ArgumentNullException(nameof(targetList));
+            if (targetUser == null) throw new ArgumentNullException(nameof(targetUser));
 
-            return await access.GetAsync("lists/list.json", targetList.ToDictionary(),
+            return await access.GetAsync("lists/list.json", targetUser.ToDictionary(),
                 ResultHandlers.ReadAsListCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -60,7 +60,7 @@ namespace Cadena.Api.Rest
 
         #endregion
 
-        #region Memberships
+        #region lists/members
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<TwitterUser>>>> GetListMembersAsync(
             [NotNull] this IApiAccess access,
@@ -75,6 +75,24 @@ namespace Cadena.Api.Rest
             }.ApplyParameter(targetList);
             return await access.GetAsync("lists/members.json", param,
                 ResultHandlers.ReadAsCursoredUsersAsync, cancellationToken).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region lists/memberships
+
+        public static async Task<IApiResult<ICursorResult<IEnumerable<TwitterList>>>> GetListMembershipsAsync(
+            [NotNull] this IApiAccess access,
+            [NotNull] ListParameter targetList, long? cursor, CancellationToken cancellationToken)
+        {
+            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (targetList == null) throw new ArgumentNullException(nameof(targetList));
+            var param = new Dictionary<string, object>()
+            {
+                {"cursor", cursor},
+            }.ApplyParameter(targetList);
+            return await access.GetAsync("lists/memberships.json", param,
+                ResultHandlers.ReadAsCursoredListsAsync, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion

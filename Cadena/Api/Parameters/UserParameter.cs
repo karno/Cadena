@@ -2,6 +2,9 @@
 
 namespace Cadena.Api.Parameters
 {
+    /// <summary>
+    /// Describes parameter of twitter user 
+    /// </summary>
     public sealed class UserParameter : ParameterBase
     {
         public long? UserId { get; }
@@ -38,8 +41,8 @@ namespace Cadena.Api.Parameters
 
         public override void SetDictionary(IDictionary<string, object> target)
         {
-            target[UserIdKey] = UserId;
-            target[ScreenNameKey] = ScreenName;
+            if (UserId != null) target[UserIdKey] = UserId;
+            if (ScreenName != null) target[ScreenNameKey] = ScreenName;
         }
     }
 }

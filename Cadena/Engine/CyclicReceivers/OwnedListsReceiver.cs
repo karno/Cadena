@@ -2,23 +2,21 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Cadena.Api.Parameters;
 using Cadena.Api.Rest;
 using Cadena.Data;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers
 {
-    public class HomeTimelineReceiver : CyclicReceiverBase
+    public class OwnedListsReceiver : CyclicReceiverBase
     {
         private readonly IApiAccess _access;
-        private readonly Action<TwitterStatus> _handler;
+        private readonly Action<TwitterList> _handler;
         private readonly Action<Exception> _exceptionHandler;
-        private readonly int _receiveCount;
 
-        private long _lastSinceId = -1;
-
-        public HomeTimelineReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
-            [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100)
+        public OwnedListsReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterList> handler,
+            [NotNull] Action<Exception> exceptionHandler)
         {
             if (access == null) throw new ArgumentNullException(nameof(access));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
@@ -26,15 +24,14 @@ namespace Cadena.Engine.CyclicReceivers
             _access = access;
             _handler = handler;
             _exceptionHandler = exceptionHandler;
-            _receiveCount = receiveCount;
         }
 
-        protected override async Task<RateLimitDescription> Execute(CancellationToken token)
+        protected async override Task<RateLimitDescription> Execute(CancellationToken token)
         {
             try
             {
-                var result = await _access.GetHomeTimelineAsync(_receiveCount,
-                    _lastSinceId, null, token).ConfigureAwait(false);
+                var result = await _access.GetListsAsync(new UserParameter(_access.Credential.Id), token)
+                                          .ConfigureAwait(false);
                 result.Result?.ForEach(i => _handler(i));
                 return result.RateLimit;
             }

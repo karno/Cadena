@@ -149,6 +149,14 @@ namespace Cadena._Internals
             return ReadAsCursoredAsync(response, json => json.users, d => new TwitterUser(d));
         }
 
+        public static Task<ICursorResult<IEnumerable<TwitterList>>> ReadAsCursoredListsAsync(
+            [NotNull] HttpResponseMessage response)
+        {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
+            return ReadAsCursoredAsync(response, json => json.lists, d => new TwitterList(d));
+        }
+
         private static async Task<ICursorResult<IEnumerable<T>>> ReadAsCursoredAsync<T>(
             [NotNull] HttpResponseMessage response, [NotNull] Func<dynamic, dynamic> selector,
             [NotNull] Func<dynamic, T> instantiator)
