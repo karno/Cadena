@@ -75,7 +75,7 @@ namespace Cadena.Engine._Internals
             while (true)
             {
                 Func<CancellationToken, Task> item;
-                while ((item = DequeueOne()) != null)
+                while ((item = DequeueOne()) != null && !_token.IsCancellationRequested)
                 {
                     try
                     {
@@ -90,6 +90,11 @@ namespace Cadena.Engine._Internals
 
                 // decrement thread counter
                 var wtc = Interlocked.Decrement(ref _workingThreadCount);
+
+                if (_token.IsCancellationRequested)
+                {
+                    return;
+                }
 
                 // quit this task when
                 // * other tasks are still alive 

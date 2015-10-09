@@ -10,7 +10,7 @@ namespace Cadena.Engine
         /// Execute process and get timestamp for next invocation
         /// </summary>
         /// <param name="token">cancellation token</param>
-        /// <returns>call interval(if zero is specified, disable re-calling)</returns>
+        /// <returns>call interval(if TimeSpan.MaxValue is specified, callback is disabled.)</returns>
         Task<TimeSpan> ExecuteAsync(CancellationToken token);
     }
 }

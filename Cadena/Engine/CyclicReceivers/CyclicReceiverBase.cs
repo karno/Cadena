@@ -45,7 +45,7 @@ namespace Cadena.Engine.CyclicReceivers
                 if (remainTime < TimeSpan.Zero)
                 {
                     // reset time was already arrived.
-                    return TimeSpan.FromTicks(1);
+                    return TimeSpan.FromTicks(MinimumIntervalTicks);
                 }
 
                 // target interval(ticks per access)
