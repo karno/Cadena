@@ -18,36 +18,37 @@ namespace Cadena.Api.Streams
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (parser == null) throw new ArgumentNullException(nameof(parser));
 
+            // create timeout cancellation token source
+            using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             using (var reader = new CancellableStreamReader(stream))
             {
+                var localToken = tokenSource.Token;
                 while (true)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    localToken.ThrowIfCancellationRequested();
 
-                    /* 
-                     * NOTE: performance information
-                     * Creating CancellationTokenSource each time is faster than using Task.Delay.
-                     * Simpler way always defeats complex and confusing one.
-                     */
-                    // create timeout cancellation token source
-                    using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+                    // set read timeout(add epsilon time to timeout (100 msec))
+                    tokenSource.CancelAfter(readTimeout + TimeSpan.FromTicks(10000 * 100));
+
+                    // execute reading next line
+                    var line = (await reader.ReadLineAsync(localToken).ConfigureAwait(false));
+
+                    // disable timer
+                    tokenSource.CancelAfter(Timeout.InfiniteTimeSpan);
+
+                    if (line == null)
                     {
-                        tokenSource.CancelAfter(readTimeout);
-                        // execute reading next line
-                        var line = (await reader.ReadLineAsync(tokenSource.Token).ConfigureAwait(false));
-                        if (line == null)
-                        {
-                            System.Diagnostics.Debug.WriteLine("#USERSTREAM# CONNECTION CLOSED.");
-                            break;
-                        }
-
-                        // skip empty response
-                        if (String.IsNullOrWhiteSpace(line)) continue;
-                        // call parser with read line
-#pragma warning disable  4014
-                        Task.Run(() => parser(line), cancellationToken);
-#pragma warning restore  4014
+                        System.Diagnostics.Debug.WriteLine("#USERSTREAM# CONNECTION CLOSED.");
+                        break;
                     }
+
+                    // skip empty response
+                    if (String.IsNullOrWhiteSpace(line)) continue;
+
+                    // call parser with read line
+#pragma warning disable 4014
+                    Task.Run(() => parser(line), cancellationToken);
+#pragma warning restore  4014
                 }
             }
         }
