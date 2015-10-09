@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -8,6 +9,7 @@ using Cadena.Api;
 using Cadena.Api.Streams;
 using Cadena.Data.Streams.Internals;
 using Cadena.Engine._Internals.Parsers;
+using JetBrains.Annotations;
 
 namespace Cadena.Engine.StreamReceivers
 {
@@ -42,6 +44,26 @@ namespace Cadena.Engine.StreamReceivers
 
         private int _hardErrorCount = 0;
 
+        #region User Stream properties
+
+        /// <summary>
+        /// Track keywords
+        /// </summary>
+        [CanBeNull]
+        public IEnumerable<string> TrackKeywords { get; set; }
+
+        /// <summary>
+        /// replies=all flag
+        /// </summary>
+        public bool RepliesAll { get; set; }
+
+        /// <summary>
+        /// include_followings_activity flag
+        /// </summary>
+        public bool IncludeFollowingsActivities { get; set; }
+
+        #endregion
+
         UserStreamReceiver(IApiAccess access, IStreamHandler handler)
         {
             _access = access;
@@ -57,7 +79,8 @@ namespace Cadena.Engine.StreamReceivers
                 _handler.OnStateChanged(StreamState.Connecting);
                 try
                 {
-                    await UserStreams.Connect(_access, ParseLine, _userStreamTimeout, cancellationToken)
+                    await UserStreams.Connect(_access, ParseLine, _userStreamTimeout, cancellationToken,
+                        TrackKeywords, RepliesAll, IncludeFollowingsActivities)
                                      .ConfigureAwait(false);
                 }
                 catch (Exception ex)
