@@ -45,7 +45,7 @@ namespace Cadena.Api.Streams
                 {"include_followings_activity", followingsActivity ? "true" : null}
             }.ParametalizeForGet();
             var endpoint = HttpUtility.ConcatUrl(access.AccessConfiguration.Endpoint, "user.json");
-            if (String.IsNullOrEmpty(param))
+            if (!String.IsNullOrEmpty(param))
             {
                 endpoint += "?" + param;
             }

@@ -23,9 +23,7 @@ namespace Cadena.Engine.CyclicReceivers
         private readonly int _receiveCount;
         private readonly bool _includeRetweets;
 
-        private long _lastSinceId = -1;
-
-        private int _accessIndex = 0;
+        private int _accessIndex;
 
         private readonly List<ListParameter> _targetLists = new List<ListParameter>();
 
@@ -86,7 +84,7 @@ namespace Cadena.Engine.CyclicReceivers
             try
             {
                 var result = await _access.GetListTimelineAsync(target,
-                    _lastSinceId, null, _receiveCount, _includeRetweets, token).ConfigureAwait(false);
+                    null, null, _receiveCount, _includeRetweets, token).ConfigureAwait(false);
                 result.Result?.ForEach(i => _handler(i));
                 return result.RateLimit;
             }

@@ -9,28 +9,23 @@ using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers
 {
-    public class UserTimelineReceiver : CyclicReceiverBase
+    public class UserTimelineReceiver : CyclicTimelineReceiverBase
     {
         private readonly IApiAccess _access;
-        private readonly Action<TwitterStatus> _handler;
         private readonly Action<Exception> _exceptionHandler;
         private readonly UserParameter _target;
         private readonly int _receiveCount;
         private readonly bool _excludeReplies;
         private readonly bool _includeRetweets;
 
-        private long _lastSinceId = -1;
-
         public UserTimelineReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
             [NotNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target, int receiveCount = 100,
-            bool excludeReplies = false, bool includeRetweets = true)
+            bool excludeReplies = false, bool includeRetweets = true) : base(handler)
         {
             if (access == null) throw new ArgumentNullException(nameof(access));
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
             if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             if (target == null) throw new ArgumentNullException(nameof(target));
             _access = access;
-            _handler = handler;
             _exceptionHandler = exceptionHandler;
             _target = target;
             _receiveCount = receiveCount;
@@ -42,9 +37,9 @@ namespace Cadena.Engine.CyclicReceivers
         {
             try
             {
-                var result = await _access.GetUserTimelineAsync(_target, _receiveCount, _lastSinceId, null,
+                var result = await _access.GetUserTimelineAsync(_target, _receiveCount, LastSinceId, null,
                     _excludeReplies, _includeRetweets, token).ConfigureAwait(false);
-                result.Result?.ForEach(i => _handler(i));
+                result.Result?.ForEach(CallHandler);
                 return result.RateLimit;
             }
             catch (Exception ex)

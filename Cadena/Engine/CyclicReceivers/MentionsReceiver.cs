@@ -8,25 +8,19 @@ using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers
 {
-    public class MentionsReceiver : CyclicReceiverBase
+    public class MentionsReceiver : CyclicTimelineReceiverBase
     {
         private readonly IApiAccess _access;
-        private readonly Action<TwitterStatus> _handler;
         private readonly Action<Exception> _exceptionHandler;
         private readonly int _receiveCount;
         private readonly bool _includeRetweets;
 
-        private long _lastSinceId = -1;
-
-
         public MentionsReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
-            [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)
+            [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false) : base(handler)
         {
             if (access == null) throw new ArgumentNullException(nameof(access));
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
             if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             _access = access;
-            _handler = handler;
             _exceptionHandler = exceptionHandler;
             _receiveCount = receiveCount;
             _includeRetweets = includeRetweets;
@@ -37,8 +31,8 @@ namespace Cadena.Engine.CyclicReceivers
             try
             {
                 var result = await _access.GetMentionsAsync(_receiveCount,
-                    _lastSinceId, null, _includeRetweets, token).ConfigureAwait(false);
-                result.Result?.ForEach(i => _handler(i));
+                    LastSinceId, null, _includeRetweets, token).ConfigureAwait(false);
+                result.Result?.ForEach(CallHandler);
                 return result.RateLimit;
             }
             catch (Exception ex)
