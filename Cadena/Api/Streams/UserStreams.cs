@@ -57,7 +57,7 @@ namespace Cadena.Api.Streams
                 {
                     // prepare HttpClient
                     // GZip makes delay of delivery tweets
-                    client = access.CreateOAuthClient(useGZip: false);
+                    client = access.CreateOAuthClient(ignoreGZip: true);
                     // set parameters for receiving UserStreams.
                     client.Timeout = Timeout.InfiniteTimeSpan;
                     client.MaxResponseContentBufferSize = 1024 * 16;

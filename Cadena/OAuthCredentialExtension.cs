@@ -10,19 +10,18 @@ namespace Cadena
     {
         private const string UserAgentHeader = "User-Agent";
 
-
         public static HttpClient CreateOAuthClient(
             this IApiAccess access,
             IEnumerable<KeyValuePair<string, string>> optionalHeaders = null,
-            bool useGZip = true)
+            bool ignoreGZip = false)
         {
             var credential = access.Credential;
             return new HttpClient(
                 new OAuthMessageHandler(
-                    GetInnerHandler(access, useGZip),
+                    GetInnerHandler(access, !ignoreGZip && access.AccessConfiguration.UseGZip),
                     credential.OAuthConsumerKey, credential.OAuthConsumerSecret,
                     new AccessToken(credential.OAuthAccessToken, credential.OAuthAccessTokenSecret),
-                    optionalHeaders), true);
+                    optionalHeaders), true).SetUserAgent(access.AccessConfiguration.UserAgent);
         }
 
         public static HttpClient SetUserAgent(this HttpClient client, string userAgent)

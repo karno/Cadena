@@ -64,7 +64,7 @@ namespace Cadena.Engine.StreamReceivers
 
         #endregion
 
-        UserStreamReceiver(IApiAccess access, IStreamHandler handler)
+        public UserStreamReceiver(IApiAccess access, IStreamHandler handler)
         {
             _access = access;
             _handler = handler;
