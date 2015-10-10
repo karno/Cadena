@@ -49,8 +49,8 @@ namespace Cadena.Engine.CyclicReceivers
                 }
 
                 // target interval(ticks per access)
-                var targIntv = remainTime.Ticks / (rld.Remain * ApiConsumptionLimitRatio);
-                return TimeSpan.FromTicks(Math.Max((long)targIntv, MinimumIntervalTicks));
+                var targIntv = CalculateIntervalTicks(remainTime, rld);
+                return TimeSpan.FromTicks(Math.Max(targIntv, MinimumIntervalTicks));
             }
             catch (TwitterApiException tx)
             {
@@ -206,6 +206,11 @@ namespace Cadena.Engine.CyclicReceivers
                 throw new ReceiverOperationException(ProblemType.Unknown,
                     "(Exception handled by ExecuteAsync) unknown...", ex);
             }
+        }
+
+        protected virtual long CalculateIntervalTicks(TimeSpan remain, RateLimitDescription rld)
+        {
+            return (long)(remain.Ticks / (rld.Remain * ApiConsumptionLimitRatio));
         }
 
         ~CyclicReceiverBase()
