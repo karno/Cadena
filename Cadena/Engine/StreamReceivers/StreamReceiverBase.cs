@@ -58,8 +58,9 @@ namespace Cadena.Engine.StreamReceivers
                 {
                     await ExecuteInternalAsync(cts.Token).ConfigureAwait(false);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine(ex);
                     // ignored
                 }
             }, cts.Token);
@@ -79,11 +80,11 @@ namespace Cadena.Engine.StreamReceivers
         {
             try
             {
-                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource?.Cancel();
             }
             finally
             {
-                _cancellationTokenSource.Dispose();
+                _cancellationTokenSource?.Dispose();
             }
         }
     }

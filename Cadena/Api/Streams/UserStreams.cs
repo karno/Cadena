@@ -60,7 +60,6 @@ namespace Cadena.Api.Streams
                     client = access.CreateOAuthClient(ignoreGZip: true);
                     // set parameters for receiving UserStreams.
                     client.Timeout = Timeout.InfiniteTimeSpan;
-                    client.MaxResponseContentBufferSize = 1024 * 16;
                     // begin connection
                     using (var resp = await client.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead,
                         cancellationToken).ConfigureAwait(false))
