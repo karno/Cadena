@@ -62,7 +62,7 @@ namespace Cadena.Api.Streams
         }
 
         private static void StartParserWorker([NotNull] BlockingCollection<string> collection,
-            [NotNull] Action<string> parser, CancellationToken token)
+             [NotNull] Action<string> parser, CancellationToken token)
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             if (parser == null) throw new ArgumentNullException(nameof(parser));
@@ -71,20 +71,11 @@ namespace Cadena.Api.Streams
             {
                 try
                 {
-                    while (!collection.IsCompleted && !token.IsCancellationRequested)
+                    foreach (var item in collection.GetConsumingEnumerable(token))
                     {
-                        string item;
-                        try
-                        {
-                            item = collection.Take();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            // BlockingCollection is completed.
-                            break;
-                        }
                         parser(item);
                     }
+
                 }
                 finally
                 {
