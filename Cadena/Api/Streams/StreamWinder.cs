@@ -30,34 +30,43 @@ namespace Cadena.Api.Streams
                     // start parser worker thread
                     StartParserWorker(parseCollection, parser, localToken);
 
+                    string line = null;
                     while (true)
                     {
-                        localToken.ThrowIfCancellationRequested();
-
                         // set read timeout(add epsilon time to timeout (100 msec))
                         tokenSource.CancelAfter(readTimeout + TimeSpan.FromTicks(10000 * 100));
 
                         // execute reading next line
-                        var line = (await reader.ReadLineAsync(localToken).ConfigureAwait(false));
+                        var readLineTask = reader.ReadLineAsync(localToken);
+
+                        // send previous line to subsequent stage
+                        if (!String.IsNullOrWhiteSpace(line))
+                        {
+                            parseCollection.Add(line, localToken);
+                        }
+
+                        // await received line
+                        line = await readLineTask.ConfigureAwait(false);
+
+                        localToken.ThrowIfCancellationRequested();
 
                         // disable timer
                         tokenSource.CancelAfter(Timeout.InfiniteTimeSpan);
 
                         if (line == null)
                         {
-                            System.Diagnostics.Debug.WriteLine("#USERSTREAM# CONNECTION CLOSED.");
                             break;
                         }
-
-                        // skip empty response
-                        if (String.IsNullOrWhiteSpace(line)) continue;
-                        parseCollection.Add(line, localToken);
                     }
                 }
             }
             finally
             {
-                parseCollection.CompleteAdding();
+                try
+                {
+                    parseCollection.CompleteAdding();
+                }
+                catch (ObjectDisposedException) { }
             }
         }
 

@@ -107,8 +107,11 @@ namespace Cadena.Engine
                     if (_receivers.Count > 0)
                     {
                         var time = _receivers.Keys[0];
-                        var now = DateTime.Now;
-                        span = time <= now ? TimeSpan.Zero : _receivers.Keys[0] - now;
+                        if (time < DateTime.MaxValue)
+                        {
+                            var now = DateTime.Now;
+                            span = time <= now ? TimeSpan.Zero : _receivers.Keys[0] - now;
+                        }
                     }
                 }
                 // stage 2: wait
