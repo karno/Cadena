@@ -35,6 +35,8 @@ namespace Cadena._Internals
 
         private bool _hasDisposed;
 
+        private StringBuilder _recycledStringBuilder;
+
         public CancellableStreamReader(Stream stream)
             : this(stream, Encoding.UTF8)
         {
@@ -58,7 +60,7 @@ namespace Cadena._Internals
             }
             // if _bufferedLength == 0, hit to end of stream in previous read.
             if (_bufferedLength == 0) return null;
-            StringBuilder builder = null;
+            var builder = _recycledStringBuilder;
             do
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -83,8 +85,9 @@ namespace Cadena._Internals
                     if (_buffer[i] != '\r' && _buffer[i] != '\n') continue;
 
                     // build return string, not contains line-feed char.
-                    var rets = builder?.Append(_buffer, _bufferCursor, i - _bufferCursor).ToString() ??
-                               new String(_buffer, _bufferCursor, i - _bufferCursor);
+                    var retstr = builder == null || builder.Length == 0
+                        ? new String(_buffer, _bufferCursor, i - _bufferCursor)
+                        : GetStringAndRecycle(builder.Append(_buffer, _bufferCursor, i - _bufferCursor));
 
                     // point next char
                     _bufferCursor = i + 1;
@@ -99,7 +102,7 @@ namespace Cadena._Internals
                             _bufferCursor++;
                         }
                     }
-                    return rets;
+                    return retstr;
                 }
 
                 // buffer not contains '\r' or '\n'.
@@ -111,7 +114,29 @@ namespace Cadena._Internals
                 // buffer cursor hit to end
                 _bufferCursor = _bufferedLength;
             } while (_bufferedLength != 0); // _bufferedLength = 0 => End of Stream, break.
-            return builder.ToString();
+
+            // build result
+            return GetStringAndRecycle(builder);
+        }
+
+        private string GetStringAndRecycle(StringBuilder builder)
+        {
+            var result = builder.ToString();
+            // decide recycling builder or not
+            if (_recycledStringBuilder == builder &&
+                result.Length > BufferLength &&
+                builder.Capacity > result.Length * 4) // TODO: use more better method
+            {
+                // builder is too large? => not to recycle
+                _recycledStringBuilder = null;
+            }
+            else
+            {
+                // prepare for recycling StringBuilder
+                builder.Clear();
+                _recycledStringBuilder = builder;
+            }
+            return result;
         }
 
         private async Task ReceiveToBufferAsync(CancellationToken cancellationToken)
