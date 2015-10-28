@@ -25,8 +25,9 @@ namespace Cadena.Api.Streams
         /// <returns></returns>
         public static async Task Connect([NotNull] IApiAccess access,
             [NotNull] Action<string> parser, TimeSpan readTimeout, CancellationToken cancellationToken,
-            [CanBeNull] IEnumerable<string> tracksOrNull = null, bool repliesAll = false,
-            bool followingsActivity = false)
+            [CanBeNull] IEnumerable<string> tracksOrNull = null, bool stallWarnings = false,
+            StreamFilterLevel filterLevel = StreamFilterLevel.None,
+            bool repliesAll = false, bool followingsActivity = false)
         {
             if (access == null) throw new ArgumentNullException(nameof(access));
             if (parser == null) throw new ArgumentNullException(nameof(parser));
@@ -36,11 +37,12 @@ namespace Cadena.Api.Streams
                                               .Where(t => !String.IsNullOrEmpty(t))
                                               .Distinct()
                                               .JoinString(",");
-
             // bulid parameter
             var param = new Dictionary<string, object>
             {
                 {"track", String.IsNullOrEmpty(filteredTracks) ? null : filteredTracks},
+                {"stall_warnings", stallWarnings ? "true" : null },
+                {"filter_level", filterLevel == StreamFilterLevel.None ? null : filterLevel.ToParamString()},
                 {"replies", repliesAll ? "all" : null},
                 {"include_followings_activity", followingsActivity ? "true" : null}
             }.ParametalizeForGet();

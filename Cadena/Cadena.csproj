@@ -90,6 +90,7 @@
     <Compile Include="Api\Rest\Timelines.cs" />
     <Compile Include="Api\Rest\Tweets.cs" />
     <Compile Include="Api\Rest\Users.cs" />
+    <Compile Include="Api\Streams\StreamFilterLevel.cs" />
     <Compile Include="Api\Streams\StreamWinder.cs" />
     <Compile Include="Api\Streams\UserStreams.cs" />
     <Compile Include="Api\TwitterApiException.cs" />

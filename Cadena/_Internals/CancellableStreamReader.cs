@@ -68,7 +68,6 @@ namespace Cadena._Internals
                     // hit to End of Stream and internal buffer is empty.
                     if (_bufferedLength == 0 && builder == null) return null;
                 }
-                cancellationToken.ThrowIfCancellationRequested();
 
                 // check next char is '\n' if before trailing char of line is '\r'.
                 if (_skipNextLineFeed && _bufferCursor < _bufferedLength && _buffer[_bufferCursor] == '\n')

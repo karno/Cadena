@@ -62,6 +62,16 @@ namespace Cadena.Engine.StreamReceivers
         /// </summary>
         public bool IncludeFollowingsActivities { get; set; }
 
+        /// <summary>
+        /// stall_warnings flag
+        /// </summary>
+        public bool StallWarnings { get; set; }
+
+        /// <summary>
+        /// filter_level parameter
+        /// </summary>
+        public StreamFilterLevel StreamFilterLevel { get; set; }
+
         #endregion
 
         public UserStreamReceiver(IApiAccess access, IStreamHandler handler)
@@ -69,6 +79,9 @@ namespace Cadena.Engine.StreamReceivers
             _access = access;
             _handler = handler;
             ChangeState(StreamState.Disconnected);
+            // set parameter default value
+            StallWarnings = true;
+            StreamFilterLevel = StreamFilterLevel.None;
         }
 
         protected override async Task ExecuteInternalAsync(CancellationToken cancellationToken)
@@ -80,7 +93,8 @@ namespace Cadena.Engine.StreamReceivers
                 try
                 {
                     await UserStreams.Connect(_access, ParseLine, _userStreamTimeout, cancellationToken,
-                        TrackKeywords, RepliesAll, IncludeFollowingsActivities)
+                        TrackKeywords, StallWarnings, StreamFilterLevel,
+                        RepliesAll, IncludeFollowingsActivities)
                                      .ConfigureAwait(false);
                 }
                 catch (Exception ex)

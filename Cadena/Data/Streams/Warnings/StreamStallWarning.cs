@@ -12,8 +12,8 @@ namespace Cadena.Data.Streams.Warnings
     /// </remarks>
     public sealed class StreamStallWarning : StreamWarning<int>
     {
-        public StreamStallWarning(string code, string message, int content, string timestampMs)
-            : base(code, message, content, timestampMs)
+        public StreamStallWarning(string code, string message, int percentFull, string timestampMs)
+            : base(code, message, percentFull, timestampMs)
         { }
     }
 }
