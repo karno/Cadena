@@ -118,8 +118,9 @@ namespace Cadena.Engine.StreamReceivers
 
         private void ParseLine(string json)
         {
-            // reset counts
+            // reset error count and backoff flag
             _hardErrorCount = 0;
+            _backoffMode = BackoffMode.None;
             ChangeState(StreamState.Connected);
             UserStreamParser.ParseStreamLine(json, _handler);
         }
