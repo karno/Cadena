@@ -37,6 +37,8 @@ namespace Cadena._Internals
 
         private StringBuilder _recycledStringBuilder;
 
+        private double _recycleThreshold = BufferLength * 2;
+
         public CancellableStreamReader(Stream stream)
             : this(stream, Encoding.UTF8)
         {
@@ -122,10 +124,16 @@ namespace Cadena._Internals
         private string GetStringAndRecycle(StringBuilder builder)
         {
             var result = builder.ToString();
+            // update recycle threshold
+            if (result.Length > _buffer.Length)
+            {
+                _recycleThreshold = _recycleThreshold > result.Length
+                    ? _recycleThreshold * 0.9 + result.Length * 0.1
+                    : _recycleThreshold * 0.5 + result.Length * 0.5;
+            }
             // decide recycling builder or not
             if (_recycledStringBuilder == builder &&
-                result.Length > BufferLength &&
-                builder.Capacity > result.Length * 4) // TODO: use more better method
+                builder.Capacity > _recycleThreshold * 4)
             {
                 // builder is too large? => not to recycle
                 _recycledStringBuilder = null;
@@ -136,6 +144,8 @@ namespace Cadena._Internals
                 builder.Clear();
                 _recycledStringBuilder = builder;
             }
+            _recycledStringBuilder = builder;
+            _recycledStringBuilder.Clear();
             return result;
         }
 
