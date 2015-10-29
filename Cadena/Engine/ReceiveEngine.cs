@@ -133,6 +133,7 @@ namespace Cadena.Engine
                             _receivers.RemoveAt(0);
                         }
                     }
+                    _re.Reset();
                 }
                 // stage 4: execute receive task
                 if (list != null)
