@@ -34,10 +34,9 @@ namespace Cadena
 
         private static HttpMessageHandler GetInnerHandler(IApiAccess access, bool useGZip)
         {
-            var proxy =
-                access.ProxyConfiguration.UseSystemproxy
-                    ? WebRequest.GetSystemWebProxy()
-                    : access.ProxyConfiguration.ProxyProvider?.Invoke();
+            var proxy = access.ProxyConfiguration.UseSystemproxy
+                ? WebRequest.GetSystemWebProxy()
+                : access.ProxyConfiguration.ProxyProvider?.Invoke();
             return new TwitterApiExceptionHandler(
                 new HttpClientHandler
                 {

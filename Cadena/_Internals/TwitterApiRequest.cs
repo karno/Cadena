@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -87,8 +88,9 @@ namespace Cadena._Internals
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
-            return client.GetAsync(FormatUrl(properties.Endpoint, path, parameter.ParametalizeForGet()),
-                cancellationToken);
+            var url = FormatUrl(properties.Endpoint, path, parameter.ParametalizeForGet());
+            Debug.WriteLine("[GET] " + url);
+            return client.GetAsync(url, cancellationToken);
         }
 
         private static Task<HttpResponseMessage> PostAsync([NotNull] this HttpClient client,
@@ -113,10 +115,10 @@ namespace Cadena._Internals
             if (properties == null) throw new ArgumentNullException(nameof(properties));
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (content == null) throw new ArgumentNullException(nameof(content));
-            return client.PostAsync(FormatUrl(properties.Endpoint, path),
-                content, cancellationToken);
+            var url = FormatUrl(properties.Endpoint, path);
+            Debug.WriteLine("[POST] " + url);
+            return client.PostAsync(url, content, cancellationToken);
         }
-
 
         private static string FormatUrl([NotNull] string endpoint, [NotNull] string path)
         {

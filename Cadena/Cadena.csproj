@@ -129,6 +129,7 @@
     <Compile Include="Engine\CyclicReceivers\UserInfoReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\UserRelationInfoReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\UserTimelineReceiver.cs" />
+    <Compile Include="ProblemType.cs" />
     <Compile Include="Engine\RequestEngine.cs" />
     <Compile Include="Engine\ReceiveEngine.cs" />
     <Compile Include="Engine\ReceiverOperationException.cs" />
