@@ -25,7 +25,7 @@ namespace Cadena.Engine.CyclicReceivers
             _exceptionHandler = exceptionHandler;
         }
 
-        protected async override Task<RateLimitDescription> Execute(CancellationToken token)
+        protected override async Task<RateLimitDescription> Execute(CancellationToken token)
         {
             var up = new UserParameter(_access.Credential.Id);
             var r = await ReceiveSingle((a, i) => a.GetFriendsIdsAsync(up, i, null, token), token).ConfigureAwait(false);
@@ -37,13 +37,13 @@ namespace Cadena.Engine.CyclicReceivers
             CancellationToken token)
         {
             var resultList = new List<long>();
-            CursorResultExtension.RestReader<IApiResult<IEnumerable<long>>> restReader;
-            restReader = () => _access.ReadCursorApi(func, token);
-            while (restReader != null)
+            CursorResultExtension.ApiContinuationReader<IEnumerable<long>> reader =
+                () => _access.ReadCursorApi(func, token);
+            while (reader != null)
             {
-                var result = await restReader().ConfigureAwait(false);
+                var result = await reader().ConfigureAwait(false);
                 resultList.AddRange(result.Item1.Result);
-                restReader = result.Item2;
+                reader = result.Item2;
             }
             return resultList;
         }
