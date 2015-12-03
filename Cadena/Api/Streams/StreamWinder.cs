@@ -62,11 +62,8 @@ namespace Cadena.Api.Streams
             }
             finally
             {
-                try
-                {
-                    parseCollection.CompleteAdding();
-                }
-                catch (ObjectDisposedException) { }
+                // mark collection as completed and shutdown parser worker after consuming all items.
+                parseCollection.CompleteAdding();
             }
         }
 
@@ -78,18 +75,12 @@ namespace Cadena.Api.Streams
             const TaskCreationOptions option = TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning;
             Task.Factory.StartNew(() =>
             {
-                try
+                foreach (var item in collection.GetConsumingEnumerable(token))
                 {
-                    foreach (var item in collection.GetConsumingEnumerable(token))
-                    {
-                        parser(item);
-                    }
-
+                    parser(item);
                 }
-                finally
-                {
-                    collection.Dispose();
-                }
+                // all registered items have been consumed.
+                collection.Dispose();
             }, token, option, TaskScheduler.Default);
         }
     }

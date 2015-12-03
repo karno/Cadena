@@ -12,6 +12,11 @@ namespace Cadena.Engine.CyclicReceivers
 {
     public class ListReceiver : CyclicReceiverBase
     {
+        #region Receive Moderation among ListReceivers
+
+
+        #endregion
+
         /// <summary>
         /// Access interval (per list)
         /// </summary>
@@ -28,7 +33,7 @@ namespace Cadena.Engine.CyclicReceivers
         private readonly List<ListParameter> _targetLists = new List<ListParameter>();
 
         // normally allows 180 access / 15 min => 5sec intv.
-        protected override long MinimumIntervalTicks => TimeSpan.FromSeconds(3).Ticks;
+        protected override long MinimumIntervalTicks => TimeSpan.FromSeconds(5).Ticks;
 
         public ListReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
             [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)

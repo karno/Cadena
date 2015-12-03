@@ -92,7 +92,7 @@ namespace Cadena.Engine.StreamReceivers
                 _handler.OnStateChanged(StreamState.Connecting);
                 try
                 {
-                    await UserStreams.Connect(_access, ParseLine, _userStreamTimeout, cancellationToken,
+                    await UserStreams.ConnectAsync(_access, ParseLine, _userStreamTimeout, cancellationToken,
                         TrackKeywords, StallWarnings, StreamFilterLevel,
                         RepliesAll, IncludeFollowingsActivities)
                                      .ConfigureAwait(false);

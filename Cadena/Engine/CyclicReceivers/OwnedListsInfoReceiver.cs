@@ -9,13 +9,13 @@ using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers
 {
-    public class OwnedListsReceiver : CyclicReceiverBase
+    public class OwnedListsInfoReceiver : CyclicReceiverBase
     {
         private readonly IApiAccess _access;
         private readonly Action<TwitterList> _handler;
         private readonly Action<Exception> _exceptionHandler;
 
-        public OwnedListsReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterList> handler,
+        public OwnedListsInfoReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterList> handler,
             [NotNull] Action<Exception> exceptionHandler)
         {
             if (access == null) throw new ArgumentNullException(nameof(access));

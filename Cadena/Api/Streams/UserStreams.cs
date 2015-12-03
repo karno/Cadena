@@ -20,10 +20,12 @@ namespace Cadena.Api.Streams
         /// <param name="readTimeout">stream read timeout</param>
         /// <param name="cancellationToken">cancellation token object</param>
         /// <param name="tracksOrNull">tracks parameter(can be null)</param>
+        /// <param name="stallWarnings">request stall warnings</param>
+        /// <param name="filterLevel">stream filtering level</param>
         /// <param name="repliesAll">repliesAll parameter</param>
         /// <param name="followingsActivity">include_followings_activity parameter</param>
         /// <returns></returns>
-        public static async Task Connect([NotNull] IApiAccess access,
+        public static async Task ConnectAsync([NotNull] IApiAccess access,
             [NotNull] Action<string> parser, TimeSpan readTimeout, CancellationToken cancellationToken,
             [CanBeNull] IEnumerable<string> tracksOrNull = null, bool stallWarnings = false,
             StreamFilterLevel filterLevel = StreamFilterLevel.None,
@@ -41,12 +43,14 @@ namespace Cadena.Api.Streams
             var param = new Dictionary<string, object>
             {
                 {"track", String.IsNullOrEmpty(filteredTracks) ? null : filteredTracks},
-                {"stall_warnings", stallWarnings ? "true" : null },
+                {"stall_warnings", stallWarnings ? "true" : null},
                 {"filter_level", filterLevel == StreamFilterLevel.None ? null : filterLevel.ToParamString()},
                 {"replies", repliesAll ? "all" : null},
                 {"include_followings_activity", followingsActivity ? "true" : null}
             }.ParametalizeForGet();
             var endpoint = HttpUtility.ConcatUrl(access.AccessConfiguration.Endpoint, "user.json");
+
+            // join parameters to endpoint URL
             if (!String.IsNullOrEmpty(param))
             {
                 endpoint += "?" + param;
