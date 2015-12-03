@@ -129,13 +129,13 @@
     <Compile Include="Engine\CyclicReceivers\UserInfoReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\UserRelationInfoReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\UserTimelineReceiver.cs" />
+    <Compile Include="Engine\_Internals\TaskFactoryDistrict.cs" />
     <Compile Include="ProblemType.cs" />
     <Compile Include="Engine\RequestEngine.cs" />
     <Compile Include="Engine\ReceiveEngine.cs" />
     <Compile Include="Engine\ReceiverOperationException.cs" />
     <Compile Include="Engine\Requests\IRequest.cs" />
     <Compile Include="Engine\Requests\SequentialRequestBatch.cs" />
-    <Compile Include="Engine\_Internals\EngineTaskManager.cs" />
     <Compile Include="Engine\CyclicReceivers\CyclicReceiverBase.cs" />
     <Compile Include="Engine\RequestPriority.cs" />
     <Compile Include="Engine\StreamReceivers\IStreamHandler.cs" />

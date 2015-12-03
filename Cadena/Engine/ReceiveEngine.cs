@@ -10,9 +10,11 @@ namespace Cadena.Engine
 {
     public sealed class ReceiveEngine : IDisposable
     {
+        private const int MaximumConcurrency = 4;
+
         private readonly CancellationTokenSource _tokenSource;
 
-        private readonly EngineTaskManager _manager;
+        private readonly TaskFactoryDistrict _factories;
 
         private readonly SortedList<DateTime, List<Tuple<IReceiver, RequestPriority>>> _receivers;
 
@@ -21,7 +23,7 @@ namespace Cadena.Engine
         public ReceiveEngine()
         {
             _tokenSource = new CancellationTokenSource();
-            _manager = new EngineTaskManager(4, _tokenSource.Token);
+            _factories = new TaskFactoryDistrict(MaximumConcurrency);
             _receivers = new SortedList<DateTime, List<Tuple<IReceiver, RequestPriority>>>();
             _re = new ManualResetEvent(false);
         }
@@ -53,11 +55,19 @@ namespace Cadena.Engine
             }
         }
 
-        public bool UnregisterReceiver([NotNull] IReceiver receiver)
+        public bool UnregisterReceiver([NotNull] IReceiver receiver, bool dispose = true)
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
             RequestPriority _;
-            return UnregisterReceiver(receiver, out _);
+            if (UnregisterReceiver(receiver, out _))
+            {
+                if (dispose)
+                {
+                    receiver.Dispose();
+                }
+                return true;
+            }
+            return false;
         }
 
         private bool UnregisterReceiver([NotNull] IReceiver receiver, out RequestPriority priority)
@@ -92,7 +102,8 @@ namespace Cadena.Engine
 
         public void Begin()
         {
-            Task.Factory.StartNew(EngineCore, TaskCreationOptions.LongRunning);
+            const TaskCreationOptions option = TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning;
+            Task.Factory.StartNew(EngineCore, _tokenSource.Token, option, TaskScheduler.Default);
         }
 
         private void EngineCore()
@@ -175,8 +186,9 @@ namespace Cadena.Engine
         private void Receive([NotNull] IReceiver receiver, RequestPriority priority)
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
-            var func = new Func<CancellationToken, Task>(async token =>
+            _factories.Run(async () =>
             {
+                var token = _tokenSource.Token;
                 var span = await receiver.ExecuteAsync(token).ConfigureAwait(false);
                 var now = DateTime.Now;
                 if (token.IsCancellationRequested) return;
@@ -189,8 +201,7 @@ namespace Cadena.Engine
                 {
                     RegisterReceiver(now + span, receiver, priority);
                 }
-            });
-            _manager.Request(func, priority);
+            }, (int)priority, _tokenSource.Token);
         }
 
         public void Dispose()
