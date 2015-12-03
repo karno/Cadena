@@ -31,7 +31,7 @@ namespace Cadena.Engine.StreamReceivers
         /// </summary>
         /// <param name="token">cancellation token</param>
         /// <returns>DateTime.MaxValue</returns>
-        public Task<TimeSpan> ExecuteAsync(CancellationToken token)
+        public async Task<TimeSpan> ExecuteAsync(CancellationToken token)
         {
             // create new token and swap for old one.
             var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -52,21 +52,18 @@ namespace Cadena.Engine.StreamReceivers
             }
 
             // call ExecuteInternalAsync asynchronously with created token
-            Task.Run(async () =>
+            try
             {
-                try
-                {
-                    await ExecuteInternalAsync(cts.Token).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex);
-                    // ignored
-                }
-            }, cts.Token);
+                await ExecuteInternalAsync(cts.Token).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                // ignored
+            }
 
             // do not call this method periodically.
-            return Task.FromResult(TimeSpan.MaxValue);
+            return TimeSpan.MaxValue;
         }
 
         protected abstract Task ExecuteInternalAsync(CancellationToken cancellationToken);

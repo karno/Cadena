@@ -56,35 +56,33 @@ namespace Cadena.Api.Streams
                 endpoint += "?" + param;
             }
 
-            await Task.Run(async () =>
+            // begin connection
+            HttpClient client = null;
+            try
             {
-                HttpClient client = null;
-                try
+                // prepare HttpClient
+                // GZip makes delay of delivery tweets
+                client = access.CreateOAuthClient(ignoreGZip: true);
+                // set parameters for receiving UserStreams.
+                client.Timeout = Timeout.InfiniteTimeSpan;
+                // begin connection
+                using (var resp = await client.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead,
+                    cancellationToken).ConfigureAwait(false))
+                using (var stream = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
-                    // prepare HttpClient
-                    // GZip makes delay of delivery tweets
-                    client = access.CreateOAuthClient(ignoreGZip: true);
-                    // set parameters for receiving UserStreams.
-                    client.Timeout = Timeout.InfiniteTimeSpan;
-                    // begin connection
-                    using (var resp = await client.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead,
-                        cancellationToken).ConfigureAwait(false))
-                    using (var stream = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                    {
-                        // winding data from user stream
-                        await StreamWinder.Run(stream, parser, readTimeout, cancellationToken).ConfigureAwait(false);
-                    }
+                    // winding data from user stream
+                    await StreamWinder.Run(stream, parser, readTimeout, cancellationToken).ConfigureAwait(false);
                 }
-                finally
+            }
+            finally
+            {
+                if (client != null)
                 {
-                    if (client != null)
-                    {
-                        // cancel pending requests
-                        client.CancelPendingRequests();
-                        client.Dispose();
-                    }
+                    // cancel pending requests
+                    client.CancelPendingRequests();
+                    client.Dispose();
                 }
-            }, cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }

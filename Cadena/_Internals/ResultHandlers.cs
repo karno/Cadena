@@ -110,16 +110,13 @@ namespace Cadena._Internals
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            return await Task.Run(async () =>
+            var json = await response.ReadAsStringAsync().ConfigureAwait(false);
+            var parsed = DynamicJson.Parse(json);
+            if (parsed.statuses())
             {
-                var json = await response.ReadAsStringAsync().ConfigureAwait(false);
-                var parsed = DynamicJson.Parse(json);
-                if (parsed.statuses())
-                {
-                    parsed = parsed.statuses;
-                }
-                return ((dynamic[])parsed).Select(status => new TwitterStatus(status));
-            }).ConfigureAwait(false);
+                parsed = parsed.statuses;
+            }
+            return ((dynamic[])parsed).Select(status => new TwitterStatus(status));
         }
 
         private static async Task<IEnumerable<T>> ReadAsCollectionAsync<T>(
@@ -129,8 +126,7 @@ namespace Cadena._Internals
             if (factory == null) throw new ArgumentNullException(nameof(factory));
 
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
-            return await Task.Run(() => (((dynamic[])DynamicJson.Parse(json))
-                .Select(list => (T)factory(list)))).ConfigureAwait(false);
+            return ((dynamic[])DynamicJson.Parse(json)).Select(collection => (T)factory(collection));
         }
 
         public static Task<ICursorResult<IEnumerable<long>>> ReadAsCursoredIdsAsync(
@@ -165,14 +161,10 @@ namespace Cadena._Internals
             if (selector == null) throw new ArgumentNullException(nameof(selector));
             if (instantiator == null) throw new ArgumentNullException(nameof(instantiator));
 
-            return await Task.Run(async () =>
-            {
-                var json = await response.ReadAsStringAsync().ConfigureAwait(false);
-                var parsed = DynamicJson.Parse(json);
-                var converteds = ((dynamic[])selector(parsed)).Select(d => (T)instantiator(d));
-                return CursorResult.Create(converteds,
-                    parsed.previous_cursor_str, parsed.next_cursor_str);
-            }).ConfigureAwait(false);
+            var json = await response.ReadAsStringAsync().ConfigureAwait(false);
+            var parsed = DynamicJson.Parse(json);
+            var converteds = ((dynamic[])selector(parsed)).Select(d => (T)instantiator(d));
+            return CursorResult.Create(converteds, parsed.previous_cursor_str, parsed.next_cursor_str);
         }
     }
 }
