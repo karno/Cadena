@@ -11,23 +11,20 @@ namespace Cadena.Engine.Requests
     {
         private bool _executionCompleted;
 
-        private readonly Queue<IBatchedTask> _requestQueue;
+        private readonly Queue<IBatchedRequest> _requestQueue;
 
         public SequentialRequestBatch()
         {
-            _requestQueue = new Queue<IRequest>();
+            _requestQueue = new Queue<IBatchedRequest>();
         }
 
-        public SequentialRequestBatch(IEnumerable<IRequest> requests)
-        {
-            _requestQueue = new Queue<IRequest>(requests);
-        }
-
-        public SequentialRequestBatch(params IRequest[] requests)
-            : this((IEnumerable<IRequest>)requests)
-        {
-        }
-
+        /// <summary>
+        /// Enqueue new task.
+        /// If this batch was completed its execution already, will throws exception.
+        /// </summary>
+        /// <param name="request">queued request</param>
+        /// <exception cref="InvalidOperationException">execution of this batch was already completed.</exception>
+        /// <returns>Task that will complete after request will be executed.</returns>
         [NotNull]
         public Task Enqueue(IRequest request)
         {
@@ -39,21 +36,33 @@ namespace Cadena.Engine.Requests
             return task;
         }
 
+        /// <summary>
+        /// Enqueue new task.
+        /// </summary>
+        /// <param name="request">queued request</param>
+        /// <returns>Task that will complete after request will be executed.</returns>
         [CanBeNull]
         public Task TryEnqueue(IRequest request)
         {
-            BatchedTask bt;
+            BatchedRequest bt;
             lock (_requestQueue)
             {
                 if (_executionCompleted)
                 {
                     return null;
                 }
-                _requestQueue.Enqueue(bt = new BatchedTask(request));
+                _requestQueue.Enqueue(bt = new BatchedRequest(request));
             }
             return bt.ResultTask;
         }
 
+        /// <summary>
+        /// Enqueue new *typed* task.
+        /// If this batch was completed its execution already, will throws exception.
+        /// </summary>
+        /// <param name="request">queued request</param>
+        /// <exception cref="InvalidOperationException">execution of this batch was already completed.</exception>
+        /// <returns>Task that will complete after request will be executed.</returns>
         [NotNull]
         public Task<T> Enqueue<T>(IRequest<T> request)
         {
@@ -65,17 +74,22 @@ namespace Cadena.Engine.Requests
             return task;
         }
 
+        /// <summary>
+        /// Enqueue new *typed* task.
+        /// </summary>
+        /// <param name="request">queued request</param>
+        /// <returns>Task that will complete after request will be executed.</returns>
         [CanBeNull]
         public Task<T> TryEnqueue<T>(IRequest<T> request)
         {
-            BatchedTask<T> bt;
+            BatchedRequest<T> bt;
             lock (_requestQueue)
             {
                 if (_executionCompleted)
                 {
                     return null;
                 }
-                _requestQueue.Enqueue(bt = new BatchedTask<T>(request));
+                _requestQueue.Enqueue(bt = new BatchedRequest<T>(request));
             }
             return bt.ResultTask;
         }
@@ -93,11 +107,17 @@ namespace Cadena.Engine.Requests
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Execute all tasks.
+        /// </summary>
+        /// <param name="token">token for cancelling exceution.</param>
+        /// <returns></returns>
         public async Task Send(CancellationToken token)
         {
             while (true)
             {
-                IBatchedTask request;
+                token.ThrowIfCancellationRequested();
+                IBatchedRequest request;
                 lock (_requestQueue)
                 {
                     if (_requestQueue.Count == 0)
@@ -111,18 +131,30 @@ namespace Cadena.Engine.Requests
             }
         }
 
-        private interface IBatchedTask
+        /// <summary>
+        /// Batched request.
+        /// </summary>
+        /// <remarks>
+        /// This interface is equal to IRequest, but we should not merge them
+        /// so not as to raise confusing.
+        /// (We can distinguish pure request task and batched request task easily 
+        ///  if the type tree is completely separated.)
+        /// </remarks>
+        private interface IBatchedRequest
         {
             [NotNull]
             Task Send(CancellationToken token);
         }
 
-        private sealed class BatchedTask : IBatchedTask
+        /// <summary>
+        /// The batched request.
+        /// </summary>
+        private sealed class BatchedRequest : IBatchedRequest
         {
             private readonly IRequest _request;
             private readonly TaskCompletionSource<object> _completionSource;
 
-            public BatchedTask(IRequest request)
+            public BatchedRequest(IRequest request)
             {
                 _request = request;
                 _completionSource = new TaskCompletionSource<object>();
@@ -149,12 +181,16 @@ namespace Cadena.Engine.Requests
             }
         }
 
-        private sealed class BatchedTask<T> : IBatchedTask
+        /// <summary>
+        /// The batched request which supports typed result.
+        /// </summary>
+        /// <typeparam name="T">result type</typeparam>
+        private sealed class BatchedRequest<T> : IBatchedRequest
         {
             private readonly IRequest<T> _request;
             private readonly TaskCompletionSource<T> _completionSource;
 
-            public BatchedTask(IRequest<T> request)
+            public BatchedRequest(IRequest<T> request)
             {
                 _request = request;
                 _completionSource = new TaskCompletionSource<T>();
