@@ -8,13 +8,13 @@ namespace Cadena.Engine
 {
     public sealed class RequestEngine
     {
-        private readonly int _maxThreadCount;
-
         private static TaskFactory _taskFactory;
+
+        public int MaxThreadCount { get; }
 
         public RequestEngine(int maxThreadCount = Int32.MaxValue)
         {
-            _maxThreadCount = maxThreadCount;
+            MaxThreadCount = maxThreadCount;
             // use TaskFactoryDistrict as simple limited-queue task scheduler.
             _taskFactory = new TaskFactoryDistrict(maxThreadCount).GetOrCreateFactory(0);
         }
