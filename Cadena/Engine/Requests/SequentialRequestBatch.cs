@@ -213,7 +213,7 @@ namespace Cadena.Engine.Requests
                     }
                     request = _requestQueue.Dequeue();
                 }
-                await request.Send(token);
+                await request.Send(token).ConfigureAwait(false);
             }
         }
 
@@ -270,7 +270,7 @@ namespace Cadena.Engine.Requests
                 var localToken = localTokenSource.Token;
                 try
                 {
-                    await _request.Send(localToken);
+                    await _request.Send(localToken).ConfigureAwait(false);
                     _completionSource.SetResult(null);
                 }
                 catch (Exception ex)
@@ -319,7 +319,7 @@ namespace Cadena.Engine.Requests
                 var localToken = localTokenSource.Token;
                 try
                 {
-                    var result = await _request.Send(localToken);
+                    var result = await _request.Send(localToken).ConfigureAwait(false);
                     _completionSource.SetResult(result);
                 }
                 catch (Exception ex)

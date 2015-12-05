@@ -52,7 +52,7 @@ namespace Cadena.Engine
             {
                 using (var ts = new CancellationTokenSource(timeout))
                 {
-                    await SendRequest(request, ts.Token);
+                    await SendRequest(request, ts.Token).ConfigureAwait(false);
                 }
             });
         }
@@ -69,7 +69,7 @@ namespace Cadena.Engine
             {
                 using (var ts = new CancellationTokenSource(timeout))
                 {
-                    return await SendRequest(request, ts.Token);
+                    return await SendRequest(request, ts.Token).ConfigureAwait(false);
                 }
             }).Unwrap();
         }

@@ -17,9 +17,9 @@ namespace Cadena.Engine.Requests
             _parameter = parameter;
         }
 
-        public override async Task<IApiResult<TwitterStatus>> Send(CancellationToken token)
+        public override Task<IApiResult<TwitterStatus>> Send(CancellationToken token)
         {
-            return await _access.UpdateAsync(_parameter, token);
+            return _access.UpdateAsync(_parameter, token);
         }
     }
 }

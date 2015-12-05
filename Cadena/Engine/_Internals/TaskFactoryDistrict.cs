@@ -94,7 +94,7 @@ namespace Cadena.Engine._Internals
                     var wrappedTask = executor() as Task<Task>;
                     if (wrappedTask != null)
                     {
-                        await wrappedTask.Unwrap(); //.ConfigureAwait(false);
+                        await wrappedTask.Unwrap().ConfigureAwait(false);
                     }
                 }
             }, null);
