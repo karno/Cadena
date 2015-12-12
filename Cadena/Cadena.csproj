@@ -118,6 +118,7 @@
     <Compile Include="Data\Streams\Warnings\StreamStallWarning.cs" />
     <Compile Include="Data\Streams\Warnings\StreamTooManyFollowsWarning.cs" />
     <Compile Include="Data\Streams\Warnings\StreamWarning.cs" />
+    <Compile Include="Data\TwitterUploadedMedia.cs" />
     <Compile Include="Engine\CyclicReceivers\CyclicTimelineReceiverBase.cs" />
     <Compile Include="Engine\CyclicReceivers\DirectMessagesReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\HomeTimelineReceiver.cs" />
@@ -130,8 +131,10 @@
     <Compile Include="Engine\CyclicReceivers\UserRelationInfoReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\UserTimelineReceiver.cs" />
     <Compile Include="Engine\IRequest.cs" />
+    <Compile Include="Engine\Requests\FavoriteRequest.cs" />
     <Compile Include="Engine\Requests\RequestBase.cs" />
-    <Compile Include="Engine\Requests\TweetPostRequest.cs" />
+    <Compile Include="Engine\Requests\TweetRequest.cs" />
+    <Compile Include="Engine\Requests\UploadMediaRequest.cs" />
     <Compile Include="Engine\_Internals\TaskFactoryDistrict.cs" />
     <Compile Include="ProblemType.cs" />
     <Compile Include="Engine\RequestEngine.cs" />
@@ -165,6 +168,7 @@
     <Compile Include="OAuthCredentialExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\HttpUtility.cs" />
+    <Compile Include="Util\MediaFileUtility.cs" />
     <Compile Include="Util\ParsingExtension.cs" />
     <Compile Include="Util\TextEntityResolver.cs" />
     <Compile Include="Util\TextSurrogateHelper.cs" />

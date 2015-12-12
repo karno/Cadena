@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -102,21 +103,146 @@ namespace Cadena.Api.Rest
 
         #region media/upload
 
-        public static async Task<IApiResult<dynamic>> UploadMediaAsync(
+        public static Task<IApiResult<TwitterUploadedMedia>> UploadMediaAsync(
             [NotNull] this IApiAccess access, [NotNull] byte[] image,
+            CancellationToken cancellationToken)
+        {
+            return access.UploadMediaAsync(image, null, cancellationToken);
+        }
+
+        public static Task<IApiResult<TwitterUploadedMedia>> UploadMediaAsync(
+            [NotNull] this IApiAccess access, [NotNull] byte[] image, [CanBeNull] long[] additionalOwners,
             CancellationToken cancellationToken)
         {
             if (access == null) throw new ArgumentNullException(nameof(access));
             if (image == null) throw new ArgumentNullException(nameof(image));
+            // maximum image size is 5MB.
+            if (image.Length > 5 * 1024 * 1024)
+            {
+                throw new ArgumentOutOfRangeException(nameof(image), "image file must be smaller than 5MB.");
+            }
             var content = new MultipartFormDataContent
             {
                 {new ByteArrayContent(image), "media", System.IO.Path.GetRandomFileName() + ".png"}
             };
+            if (additionalOwners != null)
+            {
+                content.Add(new StringContent(additionalOwners.Select(id => id.ToString()).JoinString(",")),
+                    "additional_owners");
+            }
 
+            return access.UploadMediaCoreAsync(content, cancellationToken);
+        }
+
+        public static Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
+            [NotNull] this IApiAccess access, [NotNull] byte[] media, [NotNull] string mimeType,
+            CancellationToken cancellationToken)
+        {
+            return access.UploadLargeMediaAsync(media, mimeType, null, null, null, cancellationToken);
+        }
+
+        public static Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
+            [NotNull] this IApiAccess access, [NotNull] byte[] media, [NotNull] string mimeType,
+            int? chunkSize, [CanBeNull] IProgress<int> sentBytesNotification, CancellationToken cancellationToken)
+        {
+            return access.UploadLargeMediaAsync(media, mimeType, null, chunkSize, sentBytesNotification, cancellationToken);
+        }
+
+        public static Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
+            [NotNull] this IApiAccess access, [NotNull] byte[] media, [NotNull] string mimeType,
+            [CanBeNull] long[] additionalOwners, CancellationToken cancellationToken)
+        {
+            return access.UploadLargeMediaAsync(media, mimeType, additionalOwners, null, null, cancellationToken);
+        }
+
+        public static async Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
+            [NotNull] this IApiAccess access, [NotNull] byte[] media, [NotNull] string mimeType,
+            [CanBeNull] long[] additionalOwners, int? chunkSize, [CanBeNull] IProgress<int> sentBytesCallback,
+            CancellationToken cancellationToken)
+        {
+            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (media == null) throw new ArgumentNullException(nameof(media));
+            if (mimeType == null) throw new ArgumentNullException(nameof(mimeType));
+
+            // maximum video size is 15MB (maximum image is 5MB)
+            if (media.Length > 15 * 1024 * 1024)
+            {
+                throw new ArgumentOutOfRangeException(nameof(media), "media file must be smaller than 5MB.");
+            }
+
+            // check chunkability
+            var csize = chunkSize ?? 5 * 1024 * 1024;
+            if (media.Length <= csize)
+            {
+                // this item is not needed to chunking
+                return await access.UploadMediaAsync(media, cancellationToken);
+            }
+            if (csize < 1 || media.Length / csize > 999)
+            {
+                throw new ArgumentOutOfRangeException(nameof(chunkSize), "chunk size is not appropriate.");
+            }
+
+            // chunking media
+            var chunked = media.Select((b, i) => new { Data = b, Index = i / csize })
+                               .GroupBy(b => b.Index)
+                               .Select(g => g.Select(b => b.Data).ToArray())
+                               .ToArray();
+
+            // send INIT request
+            var initialContent = new MultipartFormDataContent
+            {
+                {new StringContent("INIT"), "command"},
+                {new StringContent(media.Length.ToString()), "total_bytes"},
+                {new StringContent(mimeType), "media_type"},
+            };
+            if (additionalOwners != null)
+            {
+                initialContent.Add(new StringContent(additionalOwners.Select(id => id.ToString()).JoinString(",")),
+                    "additional_owners");
+            }
+            var initialResult = await access.UploadMediaCoreAsync(initialContent, cancellationToken);
+
+            // read initial result and prepare sending content
+            var mediaId = initialResult.Result.MediaId;
+            var fileName = System.IO.Path.GetRandomFileName();
+
+            var index = 0;
+            var sentSize = 0;
+
+            // send APPEND request for uploading contents
+            foreach (var part in chunked)
+            {
+                var content = new MultipartFormDataContent
+                {
+                    {new StringContent("APPEND"), "command"},
+                    {new StringContent(mediaId.ToString()), "media_id"},
+                    {new ByteArrayContent(part), "media", fileName},
+                    {new StringContent(index.ToString()), "segment_index"},
+                };
+                await UploadMediaCoreAsync(access, content, cancellationToken);
+                sentSize += part.Length;
+                sentBytesCallback?.Report(sentSize);
+                index++;
+            }
+
+            // send FINALIZE
+            var finalContent = new MultipartFormDataContent
+            {
+                {new StringContent("FINALIZE"), "command"},
+                {new StringContent(mediaId.ToString()), "media_id"},
+            };
+            return await UploadMediaCoreAsync(access, finalContent, cancellationToken);
+        }
+
+        private static async Task<IApiResult<TwitterUploadedMedia>> UploadMediaCoreAsync(
+            [NotNull] this IApiAccess access, [NotNull] HttpContent content,
+            CancellationToken cancellationToken)
+        {
+            if (content == null) throw new ArgumentNullException(nameof(content));
             return await access.PostAsync("media/upload.json", content, async resp =>
             {
                 var json = await resp.ReadAsStringAsync().ConfigureAwait(false);
-                return long.Parse(DynamicJson.Parse(json).media_id_string);
+                return new TwitterUploadedMedia(DynamicJson.Parse(json));
             }, cancellationToken).ConfigureAwait(false);
         }
 

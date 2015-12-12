@@ -107,57 +107,57 @@ namespace Cadena.Data
         public string Text { get; }
 
         /// <summary>
-        /// Created timestamp of tweet/message.
+        /// Created timestamp of the status.
         /// </summary>
         public DateTime CreatedAt { get; }
 
         #region Properties for statuses
 
         /// <summary>
-        /// Source of tweet. (a.k.a. via, from, ...)
+        /// Source of the status. (a.k.a. via, from, ...)
         /// </summary>
         [CanBeNull]
         public string Source { get; }
 
         /// <summary>
-        /// Status ID that is replied from tweet.
+        /// Status ID that is replied from this status.
         /// </summary>
         public long? InReplyToStatusId { get; }
 
         /// <summary>
-        /// User ID that is replied from tweet.
+        /// User ID that is replied from this status.
         /// </summary>
         public long? InReplyToUserId { get; }
 
         /// <summary>
-        /// User screen name that is replied from tweet.
+        /// User screen name that is replied from this status.
         /// </summary>
         [CanBeNull]
         public string InReplyToScreenName { get; }
 
         /// <summary>
-        /// Latitude of geographic point that is associated with status.
+        /// Latitude of geographic point that is associated with this status.
         /// </summary>
         public double? Latitude { get; }
 
         /// <summary>
-        /// Longitude of geographic point that is associated with status.
+        /// Longitude of geographic point that is associated with this status.
         /// </summary>
         public double? Longitude { get; }
 
         /// <summary>
-        /// The id of the status that is retweeted by status
+        /// The id of the status that is retweeted by this status
         /// </summary>
         public long? RetweetedStatusId { get; }
 
         /// <summary>
-        /// The status that is retweeted by status
+        /// The status that is retweeted by this status
         /// </summary>
         [CanBeNull]
         public TwitterStatus RetweetedStatus { get; }
 
         /// <summary>
-        /// The id of the status that is quoted by status
+        /// The id of the status that is quoted by this status
         /// </summary>
         public long? QuotedStatusId { get; }
 
@@ -179,7 +179,7 @@ namespace Cadena.Data
         #endregion
 
         /// <summary>
-        /// Entity objects of tweet
+        /// Entity objects of the status 
         /// </summary>
         [CanBeNull]
         public TwitterEntity[] Entities { get; }
