@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle("Cadena")]
-[assembly: AssemblyDescription("the alchemical library for Twitter")]
+[assembly: AssemblyDescription("the alchemic library for Twitter")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("troidworks")]
 [assembly: AssemblyProduct("Cadena, part of the project Krile Asterisk")]
