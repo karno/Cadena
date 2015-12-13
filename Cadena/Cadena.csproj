@@ -132,9 +132,17 @@
     <Compile Include="Engine\CyclicReceivers\UserRelationInfoReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\UserTimelineReceiver.cs" />
     <Compile Include="Engine\IRequest.cs" />
+    <Compile Include="Engine\Requests\DeleteStatusRequest.cs" />
+    <Compile Include="Engine\Requests\DestroySearchQueryRequest.cs" />
     <Compile Include="Engine\Requests\FavoriteRequest.cs" />
     <Compile Include="Engine\Requests\RequestBase.cs" />
+    <Compile Include="Engine\Requests\RetweetRequest.cs" />
+    <Compile Include="Engine\Requests\SaveSearchQueryRequest.cs" />
+    <Compile Include="Engine\Requests\SendMessageRequest.cs" />
     <Compile Include="Engine\Requests\TweetRequest.cs" />
+    <Compile Include="Engine\Requests\UpdateFriendshipRequest.cs" />
+    <Compile Include="Engine\Requests\UpdateMuteRequest.cs" />
+    <Compile Include="Engine\Requests\UpdateRelationRequest.cs" />
     <Compile Include="Engine\Requests\UploadMediaRequest.cs" />
     <Compile Include="Engine\_Internals\TaskFactoryDistrict.cs" />
     <Compile Include="ProblemType.cs" />

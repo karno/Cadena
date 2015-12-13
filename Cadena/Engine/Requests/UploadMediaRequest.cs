@@ -24,16 +24,20 @@ namespace Cadena.Engine.Requests
         [CanBeNull]
         public IProgress<double> SentPercentageCallback { get; }
 
-        public UploadMediaRequest(IApiAccess access, IEnumerable<byte> media,
-            IEnumerable<IApiAccess> additionalOwners = null, IProgress<double> sentPercentageCallback = null)
+        public UploadMediaRequest([NotNull] IApiAccess access, [NotNull] IEnumerable<byte> media,
+            [CanBeNull] IEnumerable<IApiAccess> additionalOwners = null,
+            [CanBeNull] IProgress<double> sentPercentageCallback = null)
             : this(access, media, additionalOwners?.Select(a => a.Credential.Id), sentPercentageCallback)
         {
         }
 
 
-        public UploadMediaRequest(IApiAccess access, IEnumerable<byte> media,
-            IEnumerable<long> additionalOwnerIds = null, IProgress<double> sentPercentageCallback = null)
+        public UploadMediaRequest([NotNull] IApiAccess access, [NotNull] IEnumerable<byte> media,
+            [CanBeNull] IEnumerable<long> additionalOwnerIds = null,
+            [CanBeNull] IProgress<double> sentPercentageCallback = null)
         {
+            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (media == null) throw new ArgumentNullException(nameof(media));
             AdditionalOwnerIds = additionalOwnerIds?.ToArray();
             Access = access;
             SentPercentageCallback = sentPercentageCallback;
