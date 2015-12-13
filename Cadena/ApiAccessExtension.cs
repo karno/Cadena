@@ -6,7 +6,7 @@ using Cadena.Api;
 
 namespace Cadena
 {
-    public static class OAuthCredentialExtension
+    public static class ApiAccessExtension
     {
         private const string UserAgentHeader = "User-Agent";
 

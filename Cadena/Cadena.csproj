@@ -174,7 +174,7 @@
     <Compile Include="IApiAccessConfiguration.cs" />
     <Compile Include="IOAuthCredential.cs" />
     <Compile Include="IProxyConfiguration.cs" />
-    <Compile Include="OAuthCredentialExtension.cs" />
+    <Compile Include="ApiAccessExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\HttpUtility.cs" />
     <Compile Include="Util\MediaFileUtility.cs" />
