@@ -86,7 +86,7 @@ namespace Cadena.Engine._Internals.Parsers
                             graph.warning.code,
                             graph.warning.message,
                             graph.warning.user_id,
-                            graph.warning.timestamp_ms));
+                            TwitterStreamParser.GetTimestamp(graph.warning)));
                         return;
                     }
                 }
@@ -128,9 +128,11 @@ namespace Cadena.Engine._Internals.Parsers
                     case "unblock":
                     case "follow":
                     case "unfollow":
-                    case "user_update":
                     case "mute":
                     case "unmute":
+                    case "user_update":
+                    case "user_delete":
+                    case "user_suspend":
                         handler.OnMessage(new StreamUserEvent(source, target,
                             ev, timestamp));
                         break;
@@ -143,6 +145,11 @@ namespace Cadena.Engine._Internals.Parsers
                     case "list_user_unsubscribed":
                         handler.OnMessage(new StreamListEvent(source, target,
                             new TwitterList(graph.target_object), ev, timestamp));
+                        break;
+                    case "access_revoked":
+                    case "access_unrevoked":
+                        handler.OnMessage(new StreamAccessInformationEvent(source, target,
+                            new AccessInformation(graph.target_object), ev, timestamp));
                         break;
                     default:
                         break;

@@ -68,12 +68,13 @@ namespace Cadena.Engine._Internals.Parsers
                 // delete
                 if (graph.delete())
                 {
+                    var timestamp = GetTimestamp(graph.delete);
                     if (graph.delete.status())
                     {
                         handler.OnMessage(new StreamDelete(
                             Int64.Parse(graph.delete.status.id_str),
                             Int64.Parse(graph.delete.status.user_id_str),
-                            graph.delete.timestamp_ms));
+                            timestamp));
                         return;
                     }
                     if (graph.delete.direct_message())
@@ -81,7 +82,7 @@ namespace Cadena.Engine._Internals.Parsers
                         handler.OnMessage(new StreamDelete(
                             Int64.Parse(graph.delete.status.id_str),
                             Int64.Parse(graph.delete.direct_message.user_id.ToString()),
-                            graph.delete.timestamp_ms));
+                            timestamp));
                         return;
                     }
                 }
@@ -92,7 +93,7 @@ namespace Cadena.Engine._Internals.Parsers
                     handler.OnMessage(new StreamScrubGeo(
                         Int64.Parse(graph.scrub_geo.user_id_str),
                         Int64.Parse(graph.scrub_geo.up_to_status_id_str),
-                        graph.scrub_geo.timestamp_ms));
+                        GetTimestamp(graph.scrub_geo)));
                     return;
                 }
 
@@ -101,7 +102,7 @@ namespace Cadena.Engine._Internals.Parsers
                 {
                     handler.OnMessage(new StreamLimit(
                         (long)graph.limit.track,
-                        graph.limit.timestamp_ms));
+                        GetTimestamp(graph.limit)));
                     return;
                 }
 
@@ -112,7 +113,7 @@ namespace Cadena.Engine._Internals.Parsers
                         Int64.Parse(graph.status_withheld.user_id),
                         Int64.Parse(graph.status_withheld.id),
                         graph.status_withheld.withheld_in_countries,
-                        graph.status_withheld.timestamp_ms));
+                        GetTimestamp(graph.status_withheld)));
                     return;
                 }
                 if (graph.user_withheld())
@@ -120,7 +121,7 @@ namespace Cadena.Engine._Internals.Parsers
                     handler.OnMessage(new StreamWithheld(
                         Int64.Parse(graph.user_withheld.id),
                         graph.user_withheld.withheld_in_countries,
-                        graph.user_withheld.timestamp_ms));
+                        GetTimestamp(graph.user_withheld)));
                     return;
                 }
 
@@ -130,20 +131,21 @@ namespace Cadena.Engine._Internals.Parsers
                     handler.OnMessage(new StreamDisconnect(
                         (DisconnectCode)graph.disconnect.code,
                         graph.disconnect.stream_name, graph.disconnect.reason,
-                        graph.disconnect.timestamp_ms));
+                        GetTimestamp(graph.disconnect)));
                     return;
                 }
 
                 // stall warning
                 if (graph.warning())
                 {
+                    var timestamp = GetTimestamp(graph.warning);
                     if (graph.warning.code == "FALLING_BEHIND")
                     {
                         handler.OnMessage(new StreamStallWarning(
                             graph.warning.code,
                             graph.warning.message,
                             graph.warning.percent_full,
-                            graph.warning.timestamp_ms));
+                            timestamp));
                         return;
                     }
                 }
@@ -185,5 +187,17 @@ namespace Cadena.Engine._Internals.Parsers
             }
         }
 
+        /// <summary>
+        /// Get timestamp_ms field or pseudo timestamp string.
+        /// </summary>
+        /// <param name="graph">json object graph</param>
+        /// <returns>timestamp code(millisec)</returns>
+        internal static string GetTimestamp(dynamic graph)
+        {
+            return graph.timestamp_ms()
+                ? graph.timestamp_ms
+                : ((long)(DateTime.Now.ToUniversalTime() - StreamMessage.SerialTime)
+                    .TotalMilliseconds).ToString();
+        }
     }
 }

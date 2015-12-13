@@ -99,6 +99,7 @@
     <Compile Include="Api\Streams\UserStreams.cs" />
     <Compile Include="Api\TwitterApiException.cs" />
     <Compile Include="Api\TwitterErrorCode.cs" />
+    <Compile Include="Data\Streams\Events\StreamAccessInformationEvent.cs" />
     <Compile Include="Data\Streams\Events\StreamEvent.cs" />
     <Compile Include="Data\Streams\Events\StreamListEvent.cs" />
     <Compile Include="Data\Streams\Events\StreamStatusEvent.cs" />

@@ -32,6 +32,10 @@ namespace Cadena.Data.Streams.Events
                     return UserEvents.Unfollow;
                 case "user_update":
                     return UserEvents.UserUpdate;
+                case "user_delete":
+                    return UserEvents.UserDelete;
+                case "user_suspend":
+                    return UserEvents.UserSuspend;
                 case "mute":
                     return UserEvents.Mute;
                 case "unmute":
@@ -50,8 +54,10 @@ namespace Cadena.Data.Streams.Events
         Unfollow,
         Block,
         Unblock,
-        UserUpdate,
         Mute,
-        UnMute
+        UnMute,
+        UserUpdate,
+        UserDelete,
+        UserSuspend,
     }
 }
