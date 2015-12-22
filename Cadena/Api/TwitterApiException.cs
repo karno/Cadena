@@ -255,7 +255,7 @@ namespace Cadena.Api
                     if (json.errors() && json.errors[0].code() && json.errors[0].message())
                     {
                         ex = new TwitterApiException(resp.StatusCode,
-                            json.errors[0].message, (TwitterErrorCode)((int)json.errors[0].code));
+                            json.errors[0].message, (TwitterErrorCode)(int)json.errors[0].code);
                     }
                 }
                 catch

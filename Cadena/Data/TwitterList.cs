@@ -24,27 +24,27 @@ namespace Cadena.Data
             SubscriberCount = (long)json.subscriber_count;
             CreatedAt = ((string)json.created_at).ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
             // check null 
-            if (User != null)
+            if (User == null)
             {
                 throw new ArgumentException("json.user could not be null.");
             }
-            if (Name != null)
+            if (Name == null)
             {
                 throw new ArgumentException("json.name could not be null.");
             }
-            if (FullName != null)
+            if (FullName == null)
             {
                 throw new ArgumentException("json.full_name could not be null.");
             }
-            if (Uri != null)
+            if (Uri == null)
             {
                 throw new ArgumentException("json.uri could not be null.");
             }
-            if (Slug != null)
+            if (Slug == null)
             {
                 throw new ArgumentException("json.slug could not be null.");
             }
-            if (Description != null)
+            if (Description == null)
             {
                 throw new ArgumentException("json.description could not be null.");
             }

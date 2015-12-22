@@ -79,7 +79,7 @@ namespace Cadena.Engine.StreamReceivers
             _accessor = accessor;
             _handler = handler;
             ChangeState(StreamState.Disconnected);
-            // set parameter default value
+            // set default values to parameters
             StallWarnings = true;
             StreamFilterLevel = StreamFilterLevel.None;
         }

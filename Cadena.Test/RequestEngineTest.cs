@@ -57,7 +57,7 @@ namespace Cadena.Test
 
     public class TestRequest : RequestBase
     {
-        private static Random rand = new Random();
+        private static readonly Random Rand = new Random();
 
         private readonly string _id;
         private readonly RequestEngineTest _parent;
@@ -70,7 +70,7 @@ namespace Cadena.Test
 
         public override async Task Send(CancellationToken token)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(rand.Next(300)), token);
+            await Task.Delay(TimeSpan.FromMilliseconds(Rand.Next(300)), token);
             _parent.ResultList.Add(_id);
         }
     }

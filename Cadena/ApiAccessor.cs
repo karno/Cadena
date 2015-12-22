@@ -17,24 +17,38 @@ namespace Cadena
 {
     public sealed class ApiAccessor
     {
+        /// <summary>
+        /// System proxy, equals to WebRequest.GetSystemWebProxy
+        /// </summary>
+        /// <returns>System web proxy</returns>
+        public static IWebProxy GetSystemWebProxy()
+        {
+            return WebRequest.GetSystemWebProxy();
+        }
+
+        /// <summary>
+        /// Credential information of this accessor.
+        /// </summary>
         public IOAuthCredential Credential { get; }
 
-        public IRequestConfiguration RequestConfiguration { get; }
+        public string Endpoint { get; }
 
-        public IProxyConfiguration ProxyConfiguration { get; }
+        public string UserAgent { get; }
+
+        private readonly IWebProxy _proxy;
 
         private readonly TwitterApiHttpClient _client;
 
-        public ApiAccessor([NotNull] IOAuthCredential credential, [NotNull] IRequestConfiguration reqconf,
-            [NotNull] IProxyConfiguration prxconf)
+        public ApiAccessor([NotNull] IOAuthCredential credential, [NotNull] string endpoint,
+            [CanBeNull] IWebProxy proxy, string userAgent = null, bool useGzip = true)
         {
             if (credential == null) throw new ArgumentNullException(nameof(credential));
-            if (reqconf == null) throw new ArgumentNullException(nameof(reqconf));
-            if (prxconf == null) throw new ArgumentNullException(nameof(prxconf));
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             Credential = credential;
-            RequestConfiguration = reqconf;
-            ProxyConfiguration = prxconf;
-            _client = new TwitterApiHttpClient(credential, reqconf, prxconf);
+            Endpoint = endpoint;
+            _proxy = proxy;
+            UserAgent = userAgent;
+            _client = new TwitterApiHttpClient(credential, proxy, userAgent, useGzip);
         }
 
         public async Task<IApiResult<T>> PostAsync<T>([NotNull] string path, [NotNull] HttpContent content,
@@ -85,7 +99,7 @@ namespace Cadena
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
-            var url = FormatUrl(RequestConfiguration.Endpoint, path, parameter.ParametalizeForGet());
+            var url = FormatUrl(Endpoint, path, parameter.ParametalizeForGet());
             Debug.WriteLine("[GET] " + url);
             return _client.GetAsync(url, cancellationToken);
         }
@@ -104,7 +118,7 @@ namespace Cadena
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (content == null) throw new ArgumentNullException(nameof(content));
-            var url = FormatUrl(RequestConfiguration.Endpoint, path);
+            var url = FormatUrl(Endpoint, path);
             Debug.WriteLine("[POST] " + url);
             return _client.PostAsync(url, content, cancellationToken);
         }
@@ -115,7 +129,8 @@ namespace Cadena
         /// <returns>spawned HttpClient</returns>
         internal HttpClient GetClientForStreaming()
         {
-            return new TwitterApiHttpClient(Credential, new CompressionDisabledRequestConfiguration(RequestConfiguration), ProxyConfiguration);
+            // we should not use GZip for preventing delay of delivering elements.
+            return new TwitterApiHttpClient(Credential, _proxy, UserAgent, false);
         }
 
         private string FormatUrl([NotNull] string endpoint, [NotNull] string path)
@@ -138,30 +153,28 @@ namespace Cadena
         /// <summary>
         /// HttpClient for accessing twitter.
         /// </summary>
-        internal sealed class TwitterApiHttpClient : HttpClient
+        private sealed class TwitterApiHttpClient : HttpClient
         {
             private const string UserAgentHeader = "User-Agent";
 
-            public TwitterApiHttpClient(IOAuthCredential credential, IRequestConfiguration accessConfiguration,
-                IProxyConfiguration proxyConfiguration)
-                : base(GetInnerHandler(credential, accessConfiguration, proxyConfiguration))
+            public TwitterApiHttpClient([NotNull] IOAuthCredential credential,
+                [CanBeNull] IWebProxy proxy, [CanBeNull] string userAgent, bool useGZip)
+                : base(GetInnerHandler(credential, proxy, useGZip))
             {
-                DefaultRequestHeaders.Remove(UserAgentHeader);
-                DefaultRequestHeaders.Add(UserAgentHeader, accessConfiguration.UserAgent);
+                if (!String.IsNullOrEmpty(userAgent))
+                {
+                    DefaultRequestHeaders.Remove(UserAgentHeader);
+                    DefaultRequestHeaders.Add(UserAgentHeader, userAgent);
+                }
             }
 
-            private static HttpMessageHandler GetInnerHandler(IOAuthCredential credential,
-                IRequestConfiguration reqconf,
-                IProxyConfiguration prxconf)
+            private static HttpMessageHandler GetInnerHandler([NotNull] IOAuthCredential credential,
+                [CanBeNull] IWebProxy proxy, bool useGZip)
             {
-                var proxy = prxconf.UseSystemproxy
-                    ? WebRequest.GetSystemWebProxy()
-                    : prxconf.ProxyProvider?.Invoke();
-
                 var exceptionHandler = new TwitterApiExceptionHandler(
                     new HttpClientHandler
                     {
-                        AutomaticDecompression = reqconf.UseGZip
+                        AutomaticDecompression = useGZip
                             ? DecompressionMethods.GZip | DecompressionMethods.Deflate
                             : DecompressionMethods.None,
                         Proxy = proxy,
@@ -172,23 +185,6 @@ namespace Cadena
                     credential.OAuthConsumerKey, credential.OAuthConsumerSecret,
                     new AccessToken(credential.OAuthAccessToken, credential.OAuthAccessTokenSecret));
             }
-        }
-
-        /// <summary>
-        /// RequestConfiguration wrapper for disabling GZip
-        /// </summary>
-        private sealed class CompressionDisabledRequestConfiguration : IRequestConfiguration
-        {
-            private readonly IRequestConfiguration _baseConfiguration;
-
-            public CompressionDisabledRequestConfiguration(IRequestConfiguration configuration)
-            {
-                _baseConfiguration = configuration;
-            }
-
-            public string Endpoint { get { return _baseConfiguration.Endpoint; } }
-            public string UserAgent { get { return _baseConfiguration.UserAgent; } }
-            public bool UseGZip { get { return false; } }
         }
     }
 }

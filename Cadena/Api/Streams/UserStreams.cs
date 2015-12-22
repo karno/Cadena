@@ -48,7 +48,7 @@ namespace Cadena.Api.Streams
                 {"replies", repliesAll ? "all" : null},
                 {"include_followings_activity", followingsActivity ? "true" : null}
             }.ParametalizeForGet();
-            var endpoint = HttpUtility.ConcatUrl(accessor.RequestConfiguration.Endpoint, "user.json");
+            var endpoint = HttpUtility.ConcatUrl(accessor.Endpoint, "user.json");
 
             // join parameters to endpoint URL
             if (!String.IsNullOrEmpty(param))

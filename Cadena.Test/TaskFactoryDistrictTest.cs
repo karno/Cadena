@@ -23,7 +23,7 @@ namespace Cadena.Test
             _district = new TaskFactoryDistrict(3);
         }
 
-        private TestContext testContextInstance;
+        private TestContext _testContextInstance;
 
         /// <summary>
         ///現在のテストの実行についての情報および機能を
@@ -33,11 +33,11 @@ namespace Cadena.Test
         {
             get
             {
-                return testContextInstance;
+                return _testContextInstance;
             }
             set
             {
-                testContextInstance = value;
+                _testContextInstance = value;
             }
         }
 
@@ -67,7 +67,7 @@ namespace Cadena.Test
         public async Task TestTaskFactoryDistrict()
         {
             var tasks = new[]{
-                _district.Run(() => System.Diagnostics.Debug.WriteLine("DummyStick"), 0),
+                _district.Run(() => Debug.WriteLine("DummyStick"), 0),
                 _district.Run(() => WaitAndEnqueue(10, "0"), 0),
                 _district.Run(() => WaitAndEnqueue(15, "1"), 0),
                 _district.Run(() => WaitAndEnqueue(20, "2"), 0),
@@ -96,9 +96,9 @@ namespace Cadena.Test
 
         public async Task WaitAndEnqueue(int wait, string msg)
         {
-            System.Diagnostics.Debug.WriteLine("* executing " + msg);
+            Debug.WriteLine("* executing " + msg);
             await Task.Delay(wait * 10);
-            System.Diagnostics.Debug.WriteLine("* completed " + msg);
+            Debug.WriteLine("* completed " + msg);
             lock (_resultList)
             {
                 _resultList.Add(msg);

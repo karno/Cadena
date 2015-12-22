@@ -26,7 +26,7 @@ namespace Cadena.Engine.CyclicReceivers
             _exceptionHandler = exceptionHandler;
         }
 
-        protected async override Task<RateLimitDescription> Execute(CancellationToken token)
+        protected override async Task<RateLimitDescription> Execute(CancellationToken token)
         {
             try
             {

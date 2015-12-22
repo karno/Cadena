@@ -22,7 +22,7 @@ namespace Cadena.Data
             IsBlocking = src.blocking;
             IsMuting = src.muting;
             // if source is not following target, twitter always returns false.
-            IsWantRetweets = IsSourceFollowingTarget ? ((bool?)src.want_retweets) : null;
+            IsWantRetweets = IsSourceFollowingTarget ? (bool?)src.want_retweets : null;
             if (SourceScreenName == null)
             {
                 throw new ArgumentException("source.screen_name could not be null.");

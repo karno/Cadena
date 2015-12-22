@@ -32,7 +32,7 @@ namespace Cadena.Api.Rest
                 {
                     var json = await resp.ReadAsStringAsync().ConfigureAwait(false);
                     var graph = DynamicJson.Parse(json);
-                    return ((bool)graph.current_user_retweet()) ? Int64.Parse(graph.current_user_retweet.id_str) : null;
+                    return (bool)graph.current_user_retweet() ? Int64.Parse(graph.current_user_retweet.id_str) : null;
                 }), cancellationToken).ConfigureAwait(false);
         }
 
@@ -175,7 +175,7 @@ namespace Cadena.Api.Rest
             if (media.Length <= csize)
             {
                 // this item is not needed to chunking
-                return await accessor.UploadMediaAsync(media, cancellationToken);
+                return await accessor.UploadMediaAsync(media, cancellationToken).ConfigureAwait(false);
             }
             if (csize < 1 || media.Length / csize > 999)
             {
@@ -200,7 +200,7 @@ namespace Cadena.Api.Rest
                 initialContent.Add(new StringContent(additionalOwners.Select(id => id.ToString()).JoinString(",")),
                     "additional_owners");
             }
-            var initialResult = await accessor.UploadMediaCoreAsync(initialContent, cancellationToken);
+            var initialResult = await accessor.UploadMediaCoreAsync(initialContent, cancellationToken).ConfigureAwait(false);
 
             // read initial result and prepare sending content
             var mediaId = initialResult.Result.MediaId;
@@ -219,7 +219,7 @@ namespace Cadena.Api.Rest
                     {new ByteArrayContent(part), "media", fileName},
                     {new StringContent(index.ToString()), "segment_index"},
                 };
-                await UploadMediaCoreAsync(accessor, content, cancellationToken);
+                await UploadMediaCoreAsync(accessor, content, cancellationToken).ConfigureAwait(false);
                 sentSize += part.Length;
                 sentBytesCallback?.Report(sentSize);
                 index++;
@@ -231,7 +231,7 @@ namespace Cadena.Api.Rest
                 {new StringContent("FINALIZE"), "command"},
                 {new StringContent(mediaId.ToString()), "media_id"},
             };
-            return await UploadMediaCoreAsync(accessor, finalContent, cancellationToken);
+            return await UploadMediaCoreAsync(accessor, finalContent, cancellationToken).ConfigureAwait(false);
         }
 
         private static async Task<IApiResult<TwitterUploadedMedia>> UploadMediaCoreAsync(

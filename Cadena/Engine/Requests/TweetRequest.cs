@@ -28,7 +28,7 @@ namespace Cadena.Engine.Requests
 
         public bool? DisplayCoordinates { get; }
 
-        public TweetRequest([NotNull] ApiAccessor accessor, [NotNull] string text,
+        protected TweetRequest([NotNull] ApiAccessor accessor, [NotNull] string text,
             long? inReplyToStatusId = null, [CanBeNull] Tuple<double, double> geoLatLong = null,
             [CanBeNull] string placeId = null, bool? displayCoordinates = null)
         {
