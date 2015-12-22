@@ -10,17 +10,17 @@ namespace Cadena.Engine.CyclicReceivers
 {
     public class SentDirectMessagesReceiver : CyclicTimelineReceiverBase
     {
-        private readonly IApiAccess _access;
+        private readonly ApiAccessor _accessor;
         private readonly Action<Exception> _exceptionHandler;
         private readonly int _receiveCount;
 
-        public SentDirectMessagesReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
+        public SentDirectMessagesReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
             [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100) : base(handler)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
             if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
-            _access = access;
+            _accessor = accessor;
             _exceptionHandler = exceptionHandler;
             _receiveCount = receiveCount;
         }
@@ -29,7 +29,7 @@ namespace Cadena.Engine.CyclicReceivers
         {
             try
             {
-                var result = await _access.GetSentDirectMessagesAsync(_receiveCount,
+                var result = await _accessor.GetSentDirectMessagesAsync(_receiveCount,
                     LastSinceId, null, null, token).ConfigureAwait(false);
                 result.Result?.ForEach(CallHandler);
                 return result.RateLimit;

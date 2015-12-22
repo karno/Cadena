@@ -14,11 +14,11 @@ namespace Cadena.Api.Rest
         #region blocks/ids
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetBlockingsIdsAsync(
-            [NotNull] this IApiAccess access, long cursor, CancellationToken cancellationToken)
+            [NotNull] this ApiAccessor accessor, long cursor, CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object> { { "cursor", cursor } };
-            return await access.GetAsync("blocks/ids.json", param,
+            return await accessor.GetAsync("blocks/ids.json", param,
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -27,12 +27,12 @@ namespace Cadena.Api.Rest
         #region blocks/create
 
         public static async Task<IApiResult<TwitterUser>> CreateBlockAsync(
-            [NotNull] this IApiAccess access, [NotNull] UserParameter targetUser,
+            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter targetUser,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (targetUser == null) throw new ArgumentNullException(nameof(targetUser));
-            return await access.PostAsync("blocks/create.json", targetUser.ToDictionary(),
+            return await accessor.PostAsync("blocks/create.json", targetUser.ToDictionary(),
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -41,12 +41,12 @@ namespace Cadena.Api.Rest
         #region blocks/destroy
 
         public static async Task<IApiResult<TwitterUser>> DestroyBlockAsync(
-            [NotNull] this IApiAccess access, [NotNull] UserParameter targetUser,
+            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter targetUser,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (targetUser == null) throw new ArgumentNullException(nameof(targetUser));
-            return await access.PostAsync("blocks/destroy.json", targetUser.ToDictionary(),
+            return await accessor.PostAsync("blocks/destroy.json", targetUser.ToDictionary(),
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -55,12 +55,12 @@ namespace Cadena.Api.Rest
         #region users/report_spam
 
         public static async Task<IApiResult<TwitterUser>> ReportSpamAsync(
-            [NotNull] this IApiAccess access, [NotNull] UserParameter targetUser,
+            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter targetUser,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (targetUser == null) throw new ArgumentNullException(nameof(targetUser));
-            return await access.PostAsync("users/report_spam.json", targetUser.ToDictionary(),
+            return await accessor.PostAsync("users/report_spam.json", targetUser.ToDictionary(),
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 

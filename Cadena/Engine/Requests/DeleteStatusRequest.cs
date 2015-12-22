@@ -10,16 +10,16 @@ namespace Cadena.Engine.Requests
     public class DeleteStatusRequest : RequestBase<IApiResult<TwitterStatus>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         public long Id { get; }
 
         public StatusType Type { get; }
 
-        public DeleteStatusRequest([NotNull] IApiAccess access, long id, StatusType type)
+        public DeleteStatusRequest([NotNull] ApiAccessor accessor, long id, StatusType type)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
-            Access = access;
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
+            Accessor = accessor;
             Id = id;
             Type = type;
         }
@@ -27,8 +27,8 @@ namespace Cadena.Engine.Requests
         public override Task<IApiResult<TwitterStatus>> Send(CancellationToken token)
         {
             return Type == StatusType.Tweet
-                ? Access.DestroyAsync(Id, token)
-                : Access.DestroyDirectMessageAsync(Id, token);
+                ? Accessor.DestroyAsync(Id, token)
+                : Accessor.DestroyDirectMessageAsync(Id, token);
         }
     }
 }

@@ -11,34 +11,34 @@ namespace Cadena.Engine.CyclicReceivers
 {
     public class UserRelationInfoReceiver : CyclicReceiverBase
     {
-        private readonly IApiAccess _access;
+        private readonly ApiAccessor _accessor;
         private readonly Action<RelationInfoResult> _handler;
         private readonly Action<Exception> _exceptionHandler;
 
         protected override long MinimumIntervalTicks => TimeSpan.FromHours(6).Ticks;
 
-        public UserRelationInfoReceiver(IApiAccess access, Action<RelationInfoResult> handler,
+        public UserRelationInfoReceiver(ApiAccessor accessor, Action<RelationInfoResult> handler,
             Action<Exception> exceptionHandler)
         {
-            _access = access;
+            _accessor = accessor;
             _handler = handler;
             _exceptionHandler = exceptionHandler;
         }
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)
         {
-            var up = new UserParameter(_access.Credential.Id);
+            var up = new UserParameter(_accessor.Credential.Id);
             var r = await ReceiveSingle((a, i) => a.GetFriendsIdsAsync(up, i, null, token), token).ConfigureAwait(false);
             // TODO: receive Friends, Followers,Blockings, NoRetweetIds, MuteIds
             return RateLimitDescription.Empty;
         }
 
-        private async Task<IEnumerable<long>> ReceiveSingle(Func<IApiAccess, long, Task<IApiResult<ICursorResult<IEnumerable<long>>>>> func,
+        private async Task<IEnumerable<long>> ReceiveSingle(Func<ApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<long>>>>> func,
             CancellationToken token)
         {
             var resultList = new List<long>();
             CursorResultExtension.ApiContinuationReader<IEnumerable<long>> reader =
-                () => _access.ReadCursorApi(func, token);
+                () => _accessor.ReadCursorApi(func, token);
             while (reader != null)
             {
                 var result = await reader().ConfigureAwait(false);

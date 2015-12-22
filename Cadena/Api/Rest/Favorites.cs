@@ -14,18 +14,18 @@ namespace Cadena.Api.Rest
         #region favorites/list
 
         public static async Task<IApiResult<IEnumerable<TwitterStatus>>> GetFavoritesAsync(
-            [NotNull] this IApiAccess access, [CanBeNull] UserParameter targetUser,
+            [NotNull] this ApiAccessor accessor, [CanBeNull] UserParameter targetUser,
             int? count, long? sinceId, long? maxId,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
                 {"count", count},
                 {"since_id", sinceId},
                 {"max_id", maxId},
             }.ApplyParameter(targetUser);
-            return await access.GetAsync("favorites/list.json", param,
+            return await accessor.GetAsync("favorites/list.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -34,15 +34,15 @@ namespace Cadena.Api.Rest
         #region favorites/create
 
         public static async Task<IApiResult<TwitterStatus>> CreateFavoriteAsync(
-            [NotNull] this IApiAccess access, long id,
+            [NotNull] this ApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
                 {"id", id}
             };
-            return await access.PostAsync("favorites/create.json", param,
+            return await accessor.PostAsync("favorites/create.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -51,15 +51,15 @@ namespace Cadena.Api.Rest
         #region favorites/destroy
 
         public static async Task<IApiResult<TwitterStatus>> DestroyFavoriteAsync(
-            [NotNull] this IApiAccess access, long id,
+            [NotNull] this ApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
                 {"id", id}
             };
-            return await access.PostAsync("favorites/destroy.json", param,
+            return await accessor.PostAsync("favorites/destroy.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 

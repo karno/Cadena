@@ -22,7 +22,7 @@ namespace Cadena.Engine.CyclicReceivers
         /// </summary>
         private const int BaseAccessIntervalSec = 30;
 
-        private readonly IApiAccess _access;
+        private readonly ApiAccessor _accessor;
         private readonly Action<TwitterStatus> _handler;
         private readonly Action<Exception> _exceptionHandler;
         private readonly int _receiveCount;
@@ -35,13 +35,13 @@ namespace Cadena.Engine.CyclicReceivers
         // normally allows 180 access / 15 min => 5sec intv.
         protected override long MinimumIntervalTicks => TimeSpan.FromSeconds(5).Ticks;
 
-        public ListReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
+        public ListReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
             [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
             if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
-            _access = access;
+            _accessor = accessor;
             _handler = handler;
             _exceptionHandler = exceptionHandler;
             _receiveCount = receiveCount;
@@ -88,7 +88,7 @@ namespace Cadena.Engine.CyclicReceivers
             }
             try
             {
-                var result = await _access.GetListTimelineAsync(target,
+                var result = await _accessor.GetListTimelineAsync(target,
                     null, null, _receiveCount, _includeRetweets, token).ConfigureAwait(false);
                 result.Result?.ForEach(i => _handler(i));
                 return result.RateLimit;

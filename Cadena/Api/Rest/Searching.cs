@@ -14,13 +14,13 @@ namespace Cadena.Api.Rest
         #region search/tweets
 
         public static async Task<IApiResult<IEnumerable<TwitterStatus>>> SearchAsync(
-            [NotNull] this IApiAccess access, [NotNull] SearchParameter query,
+            [NotNull] this ApiAccessor accessor, [NotNull] SearchParameter query,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (query == null) throw new ArgumentNullException(nameof(query));
 
-            return await access.GetAsync("search/tweets.json", query.ToDictionary(),
+            return await accessor.GetAsync("search/tweets.json", query.ToDictionary(),
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -29,10 +29,10 @@ namespace Cadena.Api.Rest
         #region saved_searches/list
 
         public static async Task<IApiResult<IEnumerable<TwitterSavedSearch>>> GetSavedSearchesAsync(
-            [NotNull] this IApiAccess access, CancellationToken cancellationToken)
+            [NotNull] this ApiAccessor accessor, CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
-            return await access.GetAsync("saved_searches/list.json", new Dictionary<string, object>(),
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
+            return await accessor.GetAsync("saved_searches/list.json", new Dictionary<string, object>(),
                 ResultHandlers.ReadAsSavedSearchCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -41,16 +41,16 @@ namespace Cadena.Api.Rest
         #region saved_searches/create
 
         public static async Task<IApiResult<TwitterSavedSearch>> SaveSearchAsync(
-            [NotNull] this IApiAccess access, [NotNull] string query,
+            [NotNull] this ApiAccessor accessor, [NotNull] string query,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (query == null) throw new ArgumentNullException(nameof(query));
             var param = new Dictionary<string, object>
             {
                 {"query", query}
             };
-            return await access.PostAsync("saved_searches/create.json", param,
+            return await accessor.PostAsync("saved_searches/create.json", param,
                 ResultHandlers.ReadAsSavedSearchAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -59,11 +59,11 @@ namespace Cadena.Api.Rest
         #region saved_searches/destroy
 
         public static async Task<IApiResult<TwitterSavedSearch>> DestroySavedSearchAsync(
-            [NotNull] this IApiAccess access, long id,
+            [NotNull] this ApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
-            return await access.PostAsync("saved_searches/destroy/" + id + ".json",
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
+            return await accessor.PostAsync("saved_searches/destroy/" + id + ".json",
                 new Dictionary<string, object>(), ResultHandlers.ReadAsSavedSearchAsync, cancellationToken)
                                    .ConfigureAwait(false);
         }

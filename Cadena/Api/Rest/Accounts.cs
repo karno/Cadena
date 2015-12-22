@@ -14,16 +14,16 @@ namespace Cadena.Api.Rest
         #region account/verify_accesss
 
         public static async Task<IApiResult<TwitterUser>> VerifyCredentialAsync(
-            [NotNull] this IApiAccess access,
+            [NotNull] this ApiAccessor accessor,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
                 {"skip_status", true}
             };
 
-            return await access.GetAsync("account/verify_accesss.json",
+            return await accessor.GetAsync("account/verify_accesss.json",
                 param, ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -32,11 +32,11 @@ namespace Cadena.Api.Rest
         #region account/update_profile
 
         public static async Task<IApiResult<TwitterUser>> UpdateProfileAsync(
-            [NotNull] this IApiAccess access, [CanBeNull] string name, [CanBeNull] string url,
+            [NotNull] this ApiAccessor accessor, [CanBeNull] string name, [CanBeNull] string url,
             [CanBeNull] string location, [CanBeNull] string description,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
                 {"name", name},
@@ -45,7 +45,7 @@ namespace Cadena.Api.Rest
                 {"description", description},
                 {"skip_status", true},
             };
-            return await access.PostAsync("account/update_profile.json",
+            return await accessor.PostAsync("account/update_profile.json",
                 param, ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -54,17 +54,17 @@ namespace Cadena.Api.Rest
         #region account/update_profile_image
 
         public static async Task<IApiResult<TwitterUser>> UpdateProfileImageAsync(
-            [NotNull] this IApiAccess access,
+            [NotNull] this ApiAccessor accessor,
             [NotNull] byte[] image, CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (image == null) throw new ArgumentNullException(nameof(image));
             var content = new MultipartFormDataContent
             {
                 {new StringContent("true"), "skip_status"},
                 {new ByteArrayContent(image), "image", "image.png"}
             };
-            return await access.PostAsync("account/update_profile_image.json",
+            return await accessor.PostAsync("account/update_profile_image.json",
                 content, ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 

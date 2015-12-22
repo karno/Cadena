@@ -11,19 +11,19 @@ namespace Cadena.Engine.Requests
     public class UpdateRelationRequest : RequestBase<IApiResult<TwitterUser>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         [NotNull]
         public UserParameter Target { get; }
 
         public Relations Relation { get; }
 
-        public UpdateRelationRequest([NotNull] IApiAccess access,
+        public UpdateRelationRequest([NotNull] ApiAccessor accessor,
             [NotNull] UserParameter target, Relations relation)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (target == null) throw new ArgumentNullException(nameof(target));
-            Access = access;
+            Accessor = accessor;
             Target = target;
             Relation = relation;
         }
@@ -33,15 +33,15 @@ namespace Cadena.Engine.Requests
             switch (Relation)
             {
                 case Relations.Follow:
-                    return Access.CreateFriendshipAsync(Target, token);
+                    return Accessor.CreateFriendshipAsync(Target, token);
                 case Relations.Unfollow:
-                    return Access.DestroyFriendshipAsync(Target, token);
+                    return Accessor.DestroyFriendshipAsync(Target, token);
                 case Relations.Block:
-                    return Access.CreateBlockAsync(Target, token);
+                    return Accessor.CreateBlockAsync(Target, token);
                 case Relations.ReportAsSpam:
-                    return Access.ReportSpamAsync(Target, token);
+                    return Accessor.ReportSpamAsync(Target, token);
                 case Relations.Unblock:
-                    return Access.DestroyBlockAsync(Target, token);
+                    return Accessor.DestroyBlockAsync(Target, token);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

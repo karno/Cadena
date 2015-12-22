@@ -14,6 +14,15 @@ namespace Cadena._Internals
     /// </summary>
     internal static class ResultHandlers
     {
+        internal static async Task<IApiResult<T>> ToApiResult<T>([NotNull] this Task<T> result,
+            [NotNull] HttpResponseMessage msg)
+        {
+            if (result == null) throw new ArgumentNullException(nameof(result));
+            if (msg == null) throw new ArgumentNullException(nameof(msg));
+
+            return ApiResult.Create(await result.ConfigureAwait(false), msg);
+        }
+
         public static async Task<string> ReadAsStringAsync([NotNull] this HttpResponseMessage response)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));

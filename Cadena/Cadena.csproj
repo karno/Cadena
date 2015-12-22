@@ -160,11 +160,10 @@
     <Compile Include="Data\TwitterStatus.cs" />
     <Compile Include="Data\TwitterUser.cs" />
     <Compile Include="DynamicJson.cs" />
-    <Compile Include="IApiAccess.cs" />
-    <Compile Include="IApiAccessConfiguration.cs" />
+    <Compile Include="ApiAccessor.cs" />
+    <Compile Include="IRequestConfiguration.cs" />
     <Compile Include="IOAuthCredential.cs" />
     <Compile Include="IProxyConfiguration.cs" />
-    <Compile Include="ApiAccessExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\HttpUtility.cs" />
     <Compile Include="Util\MediaFileUtility.cs" />
@@ -178,7 +177,6 @@
     <Compile Include="_Internals\Defaults.cs" />
     <Compile Include="_Internals\ParameterHelper.cs" />
     <Compile Include="_Internals\ResultHandlers.cs" />
-    <Compile Include="_Internals\TwitterApiRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

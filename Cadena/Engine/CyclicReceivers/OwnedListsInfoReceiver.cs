@@ -11,17 +11,17 @@ namespace Cadena.Engine.CyclicReceivers
 {
     public class OwnedListsInfoReceiver : CyclicReceiverBase
     {
-        private readonly IApiAccess _access;
+        private readonly ApiAccessor _accessor;
         private readonly Action<TwitterList> _handler;
         private readonly Action<Exception> _exceptionHandler;
 
-        public OwnedListsInfoReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterList> handler,
+        public OwnedListsInfoReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterList> handler,
             [NotNull] Action<Exception> exceptionHandler)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
             if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
-            _access = access;
+            _accessor = accessor;
             _handler = handler;
             _exceptionHandler = exceptionHandler;
         }
@@ -30,7 +30,7 @@ namespace Cadena.Engine.CyclicReceivers
         {
             try
             {
-                var result = await _access.GetListsAsync(new UserParameter(_access.Credential.Id), token)
+                var result = await _accessor.GetListsAsync(new UserParameter(_accessor.Credential.Id), token)
                                           .ConfigureAwait(false);
                 result.Result?.ForEach(i => _handler(i));
                 return result.RateLimit;

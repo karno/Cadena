@@ -11,25 +11,25 @@ namespace Cadena.Engine.Requests
     public class UpdateMuteRequest : RequestBase<IApiResult<TwitterUser>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         [NotNull]
         public UserParameter Target { get; }
 
         public bool Mute { get; }
 
-        public UpdateMuteRequest([NotNull] IApiAccess access, [NotNull] UserParameter target, bool mute)
+        public UpdateMuteRequest([NotNull] ApiAccessor accessor, [NotNull] UserParameter target, bool mute)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (target == null) throw new ArgumentNullException(nameof(target));
-            Access = access;
+            Accessor = accessor;
             Mute = mute;
             Target = target;
         }
 
         public override Task<IApiResult<TwitterUser>> Send(CancellationToken token)
         {
-            return Access.UpdateMuteAsync(Target, Mute, token);
+            return Accessor.UpdateMuteAsync(Target, Mute, token);
         }
     }
 }

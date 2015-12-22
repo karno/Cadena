@@ -13,7 +13,7 @@ namespace Cadena.Engine.Requests
     public class UploadMediaRequest : RequestBase<IApiResult<TwitterUploadedMedia>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         [NotNull]
         public byte[] Media { get; }
@@ -24,22 +24,22 @@ namespace Cadena.Engine.Requests
         [CanBeNull]
         public IProgress<double> SentPercentageCallback { get; }
 
-        public UploadMediaRequest([NotNull] IApiAccess access, [NotNull] IEnumerable<byte> media,
-            [CanBeNull] IEnumerable<IApiAccess> additionalOwners = null,
+        public UploadMediaRequest([NotNull] ApiAccessor accessor, [NotNull] IEnumerable<byte> media,
+            [CanBeNull] IEnumerable<ApiAccessor> additionalOwners = null,
             [CanBeNull] IProgress<double> sentPercentageCallback = null)
-            : this(access, media, additionalOwners?.Select(a => a.Credential.Id), sentPercentageCallback)
+            : this(accessor, media, additionalOwners?.Select(a => a.Credential.Id), sentPercentageCallback)
         {
         }
 
 
-        public UploadMediaRequest([NotNull] IApiAccess access, [NotNull] IEnumerable<byte> media,
+        public UploadMediaRequest([NotNull] ApiAccessor accessor, [NotNull] IEnumerable<byte> media,
             [CanBeNull] IEnumerable<long> additionalOwnerIds = null,
             [CanBeNull] IProgress<double> sentPercentageCallback = null)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (media == null) throw new ArgumentNullException(nameof(media));
             AdditionalOwnerIds = additionalOwnerIds?.ToArray();
-            Access = access;
+            Accessor = accessor;
             SentPercentageCallback = sentPercentageCallback;
             Media = media.ToArray();
         }
@@ -56,7 +56,7 @@ namespace Cadena.Engine.Requests
             var totalBytes = Media.Length;
             var callback = new Progress<int>(i => SentPercentageCallback?.Report((double)i / totalBytes));
             var mime = MediaFileUtility.GetMime(filetype);
-            return Access.UploadLargeMediaAsync(Media, mime, AdditionalOwnerIds, chunkSize, callback, token);
+            return Accessor.UploadLargeMediaAsync(Media, mime, AdditionalOwnerIds, chunkSize, callback, token);
         }
     }
 }

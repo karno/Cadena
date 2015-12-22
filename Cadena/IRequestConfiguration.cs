@@ -4,7 +4,7 @@ namespace Cadena
     /// <summary>
     /// Describe basic Configuration for accessing API.
     /// </summary>
-    public interface IApiAccessConfiguration
+    public interface IRequestConfiguration
     {
         string Endpoint { get; }
 

@@ -10,16 +10,16 @@ namespace Cadena.Engine.Requests
     public class FavoriteRequest : RequestBase<IApiResult<TwitterStatus>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         public long TargetTweetId { get; }
 
         public bool CreateFavorite { get; }
 
-        public FavoriteRequest([NotNull] IApiAccess access, long targetTweetId, bool createFavorite)
+        public FavoriteRequest([NotNull] ApiAccessor accessor, long targetTweetId, bool createFavorite)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
-            Access = access;
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
+            Accessor = accessor;
             TargetTweetId = targetTweetId;
             CreateFavorite = createFavorite;
         }
@@ -27,8 +27,8 @@ namespace Cadena.Engine.Requests
         public override Task<IApiResult<TwitterStatus>> Send(CancellationToken token)
         {
             return CreateFavorite
-                ? Access.CreateFavoriteAsync(TargetTweetId, token)
-                : Access.DestroyFavoriteAsync(TargetTweetId, token);
+                ? Accessor.CreateFavoriteAsync(TargetTweetId, token)
+                : Accessor.DestroyFavoriteAsync(TargetTweetId, token);
         }
     }
 }

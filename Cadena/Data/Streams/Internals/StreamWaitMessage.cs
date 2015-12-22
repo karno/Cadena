@@ -2,13 +2,13 @@
 {
     public sealed class StreamWaitMessage : InternalMessage
     {
-        public IApiAccess Access { get; set; }
+        public ApiAccessor Accessor { get; set; }
 
         public long WaitSec { get; set; }
 
-        public StreamWaitMessage(IApiAccess access, long waitSec)
+        public StreamWaitMessage(ApiAccessor accessor, long waitSec)
         {
-            Access = access;
+            Accessor = accessor;
             WaitSec = waitSec;
         }
     }

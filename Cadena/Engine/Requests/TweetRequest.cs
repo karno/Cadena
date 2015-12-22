@@ -13,7 +13,7 @@ namespace Cadena.Engine.Requests
     public class TweetRequest : RequestBase<IApiResult<TwitterStatus>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         [NotNull]
         public string Text { get; }
@@ -28,13 +28,13 @@ namespace Cadena.Engine.Requests
 
         public bool? DisplayCoordinates { get; }
 
-        public TweetRequest([NotNull] IApiAccess access, [NotNull] string text,
+        public TweetRequest([NotNull] ApiAccessor accessor, [NotNull] string text,
             long? inReplyToStatusId = null, [CanBeNull] Tuple<double, double> geoLatLong = null,
             [CanBeNull] string placeId = null, bool? displayCoordinates = null)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (text == null) throw new ArgumentNullException(nameof(text));
-            Access = access;
+            Accessor = accessor;
             Text = text;
             InReplyToStatusId = inReplyToStatusId;
             GeoLatLong = geoLatLong;
@@ -45,7 +45,7 @@ namespace Cadena.Engine.Requests
         public override Task<IApiResult<TwitterStatus>> Send(CancellationToken token)
         {
             var param = new StatusParameter(Text, InReplyToStatusId, null, GeoLatLong, PlaceId, DisplayCoordinates);
-            return Access.UpdateAsync(param, token);
+            return Accessor.UpdateAsync(param, token);
         }
     }
 
@@ -56,13 +56,13 @@ namespace Cadena.Engine.Requests
 
         public bool PossiblySensitive { get; }
 
-        public TweetWithMediaRequest([NotNull] IApiAccess access, [NotNull] string text,
+        public TweetWithMediaRequest([NotNull] ApiAccessor accessor, [NotNull] string text,
             IEnumerable<long> mediaIds, bool possiblySensitive, long? inReplyToStatusId = null,
             [CanBeNull] Tuple<double, double> geoLatLong = null, [CanBeNull] string placeId = null,
             bool? displayCoordinates = null)
-            : base(access, text, inReplyToStatusId, geoLatLong, placeId, displayCoordinates)
+            : base(accessor, text, inReplyToStatusId, geoLatLong, placeId, displayCoordinates)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             MediaIds = mediaIds.ToArray();
             PossiblySensitive = possiblySensitive;
         }
@@ -71,7 +71,7 @@ namespace Cadena.Engine.Requests
         {
             var param = new StatusParameter(Text, InReplyToStatusId, PossiblySensitive,
                 GeoLatLong, PlaceId, DisplayCoordinates, MediaIds);
-            return Access.UpdateAsync(param, token);
+            return Accessor.UpdateAsync(param, token);
         }
     }
 }

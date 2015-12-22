@@ -10,26 +10,26 @@ namespace Cadena.Engine.Requests
     public class SaveSearchQueryRequest : RequestBase<IApiResult<TwitterSavedSearch>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         [NotNull]
         public string Query { get; }
 
-        public SaveSearchQueryRequest([NotNull] IApiAccess access, [NotNull] string query)
+        public SaveSearchQueryRequest([NotNull] ApiAccessor accessor, [NotNull] string query)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (query == null) throw new ArgumentNullException(nameof(query));
             if (String.IsNullOrWhiteSpace(query))
             {
                 throw new ArgumentException("Search query must not be empty or whitespace only.");
             }
-            Access = access;
+            Accessor = accessor;
             Query = query;
         }
 
         public override Task<IApiResult<TwitterSavedSearch>> Send(CancellationToken token)
         {
-            return Access.SaveSearchAsync(Query, token);
+            return Accessor.SaveSearchAsync(Query, token);
         }
     }
 }

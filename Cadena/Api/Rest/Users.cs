@@ -16,28 +16,28 @@ namespace Cadena.Api.Rest
         #region users/lookup
 
         public static Task<IApiResult<IEnumerable<TwitterUser>>> LookupUserAsync(
-            [NotNull] this IApiAccess access, [NotNull] IEnumerable<long> userIds,
+            [NotNull] this ApiAccessor accessor, [NotNull] IEnumerable<long> userIds,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (userIds == null) throw new ArgumentNullException(nameof(userIds));
-            return LookupUserCoreAsync(access, userIds, null, cancellationToken);
+            return LookupUserCoreAsync(accessor, userIds, null, cancellationToken);
         }
 
         public static Task<IApiResult<IEnumerable<TwitterUser>>> LookupUserAsync(
-            [NotNull] this IApiAccess access, [NotNull] IEnumerable<string> screenNames,
+            [NotNull] this ApiAccessor accessor, [NotNull] IEnumerable<string> screenNames,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (screenNames == null) throw new ArgumentNullException(nameof(screenNames));
-            return LookupUserCoreAsync(access, null, screenNames, cancellationToken);
+            return LookupUserCoreAsync(accessor, null, screenNames, cancellationToken);
         }
 
         private static async Task<IApiResult<IEnumerable<TwitterUser>>> LookupUserCoreAsync(
-            [NotNull] IApiAccess access, IEnumerable<long> userIds, IEnumerable<string> screenNames,
+            [NotNull] ApiAccessor accessor, IEnumerable<long> userIds, IEnumerable<string> screenNames,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var userIdsString = userIds == null
                 ? null
                 : String.Join(",", userIds.Select(s => s.ToString(CultureInfo.InvariantCulture)));
@@ -46,7 +46,7 @@ namespace Cadena.Api.Rest
                 {"user_id", userIdsString},
                 {"screen_name", screenNames == null ? null : String.Join(",", screenNames)}
             };
-            return await access.GetAsync("users/lookup.json", param,
+            return await accessor.GetAsync("users/lookup.json", param,
                 ResultHandlers.ReadAsUserCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -55,10 +55,10 @@ namespace Cadena.Api.Rest
         #region users/search
 
         public static async Task<IApiResult<IEnumerable<TwitterUser>>> SearchUserAsync(
-            [NotNull] this IApiAccess access, [NotNull] string query, int? page, int? count,
+            [NotNull] this ApiAccessor accessor, [NotNull] string query, int? page, int? count,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (query == null) throw new ArgumentNullException(nameof(query));
             var param = new Dictionary<string, object>
             {
@@ -66,7 +66,7 @@ namespace Cadena.Api.Rest
                 {"page", page},
                 {"count", count},
             };
-            return await access.GetAsync("users/search.json", param,
+            return await accessor.GetAsync("users/search.json", param,
                 ResultHandlers.ReadAsUserCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -75,13 +75,13 @@ namespace Cadena.Api.Rest
         #region users/show
 
         public static async Task<IApiResult<TwitterUser>> ShowUserAsync(
-            [NotNull] this IApiAccess access, [NotNull] UserParameter parameter,
+            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter parameter,
             CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             var param = parameter.ToDictionary();
-            return await access.GetAsync("users/show.json", param,
+            return await accessor.GetAsync("users/show.json", param,
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 

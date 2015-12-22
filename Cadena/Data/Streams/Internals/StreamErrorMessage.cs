@@ -5,15 +5,15 @@ namespace Cadena.Data.Streams.Internals
 {
     public sealed class StreamErrorMessage : InternalMessage
     {
-        public IApiAccess Access { get; set; }
+        public ApiAccessor Accessor { get; set; }
 
         public HttpStatusCode Code { get; }
 
         public TwitterErrorCode? TwitterErrorCode { get; set; }
 
-        public StreamErrorMessage(IApiAccess access, HttpStatusCode hcode, TwitterErrorCode? tcode)
+        public StreamErrorMessage(ApiAccessor accessor, HttpStatusCode hcode, TwitterErrorCode? tcode)
         {
-            Access = access;
+            Accessor = accessor;
             Code = hcode;
             TwitterErrorCode = tcode;
         }

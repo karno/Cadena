@@ -13,14 +13,14 @@ namespace Cadena.Api.Rest
         /// <summary>
         /// Get current configuration of Twitter.
         /// </summary>
-        /// <param name="access">current configuration of Twitter</param>
+        /// <param name="accessor">current configuration of Twitter</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>object represents current configration state of twitter.</returns>
         public static async Task<IApiResult<TwitterConfiguration>> GetConfigurationAsync(
-            [NotNull] this IApiAccess access, CancellationToken cancellationToken)
+            [NotNull] this ApiAccessor accessor, CancellationToken cancellationToken)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
-            return await access.GetAsync("help/configuration.json",
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
+            return await accessor.GetAsync("help/configuration.json",
                 new Dictionary<string, object>(), ResultHandlers.ReadAsConfigurationAsync,
                 cancellationToken).ConfigureAwait(false);
         }

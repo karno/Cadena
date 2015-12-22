@@ -10,20 +10,20 @@ namespace Cadena.Engine.Requests
     public class RetweetRequest : RequestBase<IApiResult<TwitterStatus>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         public long TargetId { get; }
 
-        public RetweetRequest([NotNull] IApiAccess access, long targetId)
+        public RetweetRequest([NotNull] ApiAccessor accessor, long targetId)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
-            Access = access;
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
+            Accessor = accessor;
             TargetId = targetId;
         }
 
         public override Task<IApiResult<TwitterStatus>> Send(CancellationToken token)
         {
-            return Access.RetweetAsync(TargetId, token);
+            return Accessor.RetweetAsync(TargetId, token);
         }
     }
 }

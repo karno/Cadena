@@ -11,7 +11,7 @@ namespace Cadena.Engine.Requests
     public class UpdateFriendshipRequest : RequestBase<IApiResult<TwitterFriendship>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         [NotNull]
         public UserParameter TargetUser { get; }
@@ -20,16 +20,16 @@ namespace Cadena.Engine.Requests
 
         public bool? ShowRetweets { get; }
 
-        public UpdateFriendshipRequest([NotNull] IApiAccess access, [NotNull] UserParameter param,
+        public UpdateFriendshipRequest([NotNull] ApiAccessor accessor, [NotNull] UserParameter param,
             bool? deviceNotifications, bool? showRetweets)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (param == null) throw new ArgumentNullException(nameof(param));
             if (deviceNotifications == null && showRetweets == null)
             {
                 throw new ArgumentException("deviceNotifications or showRetweets must be specified.");
             }
-            Access = access;
+            Accessor = accessor;
             TargetUser = param;
             DeviceNotifications = deviceNotifications;
             ShowRetweets = showRetweets;
@@ -37,7 +37,7 @@ namespace Cadena.Engine.Requests
 
         public override Task<IApiResult<TwitterFriendship>> Send(CancellationToken token)
         {
-            return Access.UpdateFriendshipAsync(TargetUser, DeviceNotifications, ShowRetweets, token);
+            return Accessor.UpdateFriendshipAsync(TargetUser, DeviceNotifications, ShowRetweets, token);
         }
     }
 }

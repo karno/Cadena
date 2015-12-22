@@ -10,17 +10,17 @@ namespace Cadena.Engine.CyclicReceivers
 {
     public class MentionsReceiver : CyclicTimelineReceiverBase
     {
-        private readonly IApiAccess _access;
+        private readonly ApiAccessor _accessor;
         private readonly Action<Exception> _exceptionHandler;
         private readonly int _receiveCount;
         private readonly bool _includeRetweets;
 
-        public MentionsReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
+        public MentionsReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
             [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false) : base(handler)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
-            _access = access;
+            _accessor = accessor;
             _exceptionHandler = exceptionHandler;
             _receiveCount = receiveCount;
             _includeRetweets = includeRetweets;
@@ -30,7 +30,7 @@ namespace Cadena.Engine.CyclicReceivers
         {
             try
             {
-                var result = await _access.GetMentionsAsync(_receiveCount,
+                var result = await _accessor.GetMentionsAsync(_receiveCount,
                     LastSinceId, null, _includeRetweets, token).ConfigureAwait(false);
                 result.Result?.ForEach(CallHandler);
                 return result.RateLimit;

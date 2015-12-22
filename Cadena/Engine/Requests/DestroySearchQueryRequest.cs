@@ -10,20 +10,20 @@ namespace Cadena.Engine.Requests
     public class DestroySearchQueryRequest : RequestBase<IApiResult<TwitterSavedSearch>>
     {
         [NotNull]
-        public IApiAccess Access { get; }
+        public ApiAccessor Accessor { get; }
 
         public long Id { get; }
 
-        public DestroySearchQueryRequest([NotNull] IApiAccess access, long id)
+        public DestroySearchQueryRequest([NotNull] ApiAccessor accessor, long id)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
-            Access = access;
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
+            Accessor = accessor;
             Id = id;
         }
 
         public override Task<IApiResult<TwitterSavedSearch>> Send(CancellationToken token)
         {
-            return Access.DestroySavedSearchAsync(Id, token);
+            return Accessor.DestroySavedSearchAsync(Id, token);
         }
     }
 }

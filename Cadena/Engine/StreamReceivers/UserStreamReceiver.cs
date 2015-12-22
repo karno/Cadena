@@ -31,7 +31,7 @@ namespace Cadena.Engine.StreamReceivers
 
         #endregion
 
-        private readonly IApiAccess _access;
+        private readonly ApiAccessor _accessor;
         private readonly IStreamHandler _handler;
 
         private bool _disposed;
@@ -74,9 +74,9 @@ namespace Cadena.Engine.StreamReceivers
 
         #endregion
 
-        public UserStreamReceiver(IApiAccess access, IStreamHandler handler)
+        public UserStreamReceiver(ApiAccessor accessor, IStreamHandler handler)
         {
-            _access = access;
+            _accessor = accessor;
             _handler = handler;
             ChangeState(StreamState.Disconnected);
             // set parameter default value
@@ -92,7 +92,7 @@ namespace Cadena.Engine.StreamReceivers
                 _handler.OnStateChanged(StreamState.Connecting);
                 try
                 {
-                    await UserStreams.ConnectAsync(_access, ParseLine, _userStreamTimeout, cancellationToken,
+                    await UserStreams.ConnectAsync(_accessor, ParseLine, _userStreamTimeout, cancellationToken,
                         TrackKeywords, StallWarnings, StreamFilterLevel,
                         RepliesAll, IncludeFollowingsActivities)
                                      .ConfigureAwait(false);
@@ -133,7 +133,7 @@ namespace Cadena.Engine.StreamReceivers
             {
                 // protocol error
                 Log($"Twitter API Exception: [status-code: {tx.StatusCode} twitter-code: {tx.TwitterErrorCode}]");
-                _handler.OnMessage(new StreamErrorMessage(_access, tx.StatusCode, tx.TwitterErrorCode));
+                _handler.OnMessage(new StreamErrorMessage(_accessor, tx.StatusCode, tx.TwitterErrorCode));
                 switch (tx.StatusCode)
                 {
                     case HttpStatusCode.Unauthorized:
@@ -199,7 +199,7 @@ namespace Cadena.Engine.StreamReceivers
                 }
             }
             Log($"Waiting reconnection... [{_backoffWait} ms]");
-            _handler.OnMessage(new StreamWaitMessage(_access, _backoffWait));
+            _handler.OnMessage(new StreamWaitMessage(_accessor, _backoffWait));
             await Task.Delay(TimeSpan.FromMilliseconds(_backoffWait)).ConfigureAwait(false);
             return true;
         }

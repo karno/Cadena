@@ -11,21 +11,21 @@ namespace Cadena.Engine.CyclicReceivers
 {
     public class UserTimelineReceiver : CyclicTimelineReceiverBase
     {
-        private readonly IApiAccess _access;
+        private readonly ApiAccessor _accessor;
         private readonly Action<Exception> _exceptionHandler;
         private readonly UserParameter _target;
         private readonly int _receiveCount;
         private readonly bool _excludeReplies;
         private readonly bool _includeRetweets;
 
-        public UserTimelineReceiver([NotNull] IApiAccess access, [NotNull] Action<TwitterStatus> handler,
+        public UserTimelineReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
             [NotNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target, int receiveCount = 100,
             bool excludeReplies = false, bool includeRetweets = true) : base(handler)
         {
-            if (access == null) throw new ArgumentNullException(nameof(access));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             if (target == null) throw new ArgumentNullException(nameof(target));
-            _access = access;
+            _accessor = accessor;
             _exceptionHandler = exceptionHandler;
             _target = target;
             _receiveCount = receiveCount;
@@ -37,7 +37,7 @@ namespace Cadena.Engine.CyclicReceivers
         {
             try
             {
-                var result = await _access.GetUserTimelineAsync(_target, _receiveCount, LastSinceId, null,
+                var result = await _accessor.GetUserTimelineAsync(_target, _receiveCount, LastSinceId, null,
                     _excludeReplies, _includeRetweets, token).ConfigureAwait(false);
                 result.Result?.ForEach(CallHandler);
                 return result.RateLimit;
