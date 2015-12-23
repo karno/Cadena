@@ -51,6 +51,8 @@ namespace Cadena
 
         private readonly Lazy<HttpClient> _client;
 
+        private bool _disposed;
+
         public ApiAccessor([NotNull] IOAuthCredential credential, [NotNull] string endpoint,
             [CanBeNull] IWebProxy proxy, string userAgent = null, bool useGzip = true)
         {
@@ -202,23 +204,14 @@ namespace Cadena
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~ApiAccessor()
-        {
-            Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing && _client.IsValueCreated)
+            if (_disposed) return;
+            if (_client.IsValueCreated)
             {
                 var client = _client.Value;
                 client.CancelPendingRequests();
                 client.Dispose();
             }
+            _disposed = true;
         }
     }
 }

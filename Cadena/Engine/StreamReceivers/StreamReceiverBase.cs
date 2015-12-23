@@ -7,23 +7,16 @@ namespace Cadena.Engine.StreamReceivers
     /// <summary>
     /// Base class for receiving streams.
     /// </summary>
-    public abstract class StreamReceiverBase : IReceiver
+    public abstract class StreamReceiverBase : IReceiver, IDisposable
     {
+        private bool _disposed;
+
         private CancellationTokenSource _cancellationTokenSource;
 
         protected StreamReceiverBase()
         {
             // initialize as null
             _cancellationTokenSource = null;
-        }
-
-        /// <summary>
-        /// Kill this connection and release all resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -68,6 +61,15 @@ namespace Cadena.Engine.StreamReceivers
 
         protected abstract Task ExecuteInternalAsync(CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Kill this connection and release all resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         ~StreamReceiverBase()
         {
             Dispose(false);
@@ -75,14 +77,19 @@ namespace Cadena.Engine.StreamReceivers
 
         protected virtual void Dispose(bool disposing)
         {
+            if (_disposed) return;
             try
             {
-                _cancellationTokenSource?.Cancel();
+                if (disposing)
+                {
+                    _cancellationTokenSource?.Cancel();
+                }
             }
             finally
             {
                 _cancellationTokenSource?.Dispose();
             }
+            _disposed = true;
         }
     }
 }

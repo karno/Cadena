@@ -34,8 +34,6 @@ namespace Cadena.Engine.StreamReceivers
         private readonly ApiAccessor _accessor;
         private readonly IStreamHandler _handler;
 
-        private bool _disposed;
-
         private StreamState _currentState;
 
         private BackoffMode _backoffMode;
@@ -226,14 +224,6 @@ namespace Cadena.Engine.StreamReceivers
             {
                 _currentState = state;
                 _handler.OnStateChanged(state);
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
             }
         }
     }

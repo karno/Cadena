@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Cadena.Engine
 {
-    public interface IReceiver : IDisposable
+    public interface IReceiver
     {
         /// <summary>
         /// Execute process and get timestamp for next invocation

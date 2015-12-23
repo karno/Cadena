@@ -20,6 +20,8 @@ namespace Cadena.Engine
 
         private readonly ManualResetEvent _re;
 
+        private bool _disposed;
+
         public ReceiveEngine()
         {
             _tokenSource = new CancellationTokenSource();
@@ -31,6 +33,7 @@ namespace Cadena.Engine
         public void RegisterReceiver([NotNull] IReceiver receiver, RequestPriority priority = RequestPriority.Middle)
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
+            AssertNotDisposed();
             RegisterReceiver(DateTime.Now, receiver, priority);
         }
 
@@ -55,16 +58,13 @@ namespace Cadena.Engine
             }
         }
 
-        public bool UnregisterReceiver([NotNull] IReceiver receiver, bool dispose = true)
+        public bool UnregisterReceiver([NotNull] IReceiver receiver)
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
+            AssertNotDisposed();
             RequestPriority _;
             if (UnregisterReceiver(receiver, out _))
             {
-                if (dispose)
-                {
-                    receiver.Dispose();
-                }
                 return true;
             }
             return false;
@@ -102,6 +102,7 @@ namespace Cadena.Engine
 
         public void Begin()
         {
+            AssertNotDisposed();
             const TaskCreationOptions option = TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning;
             Task.Factory.StartNew(EngineCore, _tokenSource.Token, option, TaskScheduler.Default);
         }
@@ -160,6 +161,7 @@ namespace Cadena.Engine
         public void Receive([NotNull] IReceiver receiver)
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
+            AssertNotDisposed();
             RequestPriority priority;
             if (!UnregisterReceiver(receiver, out priority))
             {
@@ -171,6 +173,7 @@ namespace Cadena.Engine
 
         public void ReceiveAll()
         {
+            AssertNotDisposed();
             List<Tuple<IReceiver, RequestPriority>>[] items;
             lock (_receivers)
             {
@@ -204,26 +207,22 @@ namespace Cadena.Engine
             }, (int)priority, _tokenSource.Token);
         }
 
+        private void AssertNotDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(ReceiveEngine));
+            }
+        }
+
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~ReceiveEngine()
-        {
-            Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _tokenSource.Cancel();
-                _tokenSource.Dispose();
-                _re.Set();
-                _re.Dispose();
-            }
+            if (_disposed) return;
+            _tokenSource.Cancel();
+            _tokenSource.Dispose();
+            _re.Set();
+            _re.Dispose();
+            _disposed = true;
         }
     }
 }

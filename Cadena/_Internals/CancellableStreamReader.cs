@@ -167,24 +167,11 @@ namespace Cadena._Internals
 
         public void Dispose()
         {
+            // we do not have any unmanaged resources...
+            // and any children because I am a sealed class.
             if (_disposed) return;
+            _stream.Dispose();
             _disposed = true;
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
-
-        ~CancellableStreamReader()
-        {
-            Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _stream.Dispose();
-            }
-        }
-
     }
 }

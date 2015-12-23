@@ -16,7 +16,12 @@ namespace Cadena.Engine.CyclicReceivers
     {
         private readonly Action<Exception> _exceptionHandler;
 
-        // ***** call interval management *****
+        /// <summary>
+        /// Get priority of this request
+        /// </summary>
+        public virtual RequestPriority Priority => RequestPriority.Middle;
+
+        #region call interval management
 
         protected virtual long MinimumIntervalTicks => TimeSpan.FromSeconds(30).Ticks;
 
@@ -26,7 +31,9 @@ namespace Cadena.Engine.CyclicReceivers
 
         private double _averageApiConsumption;
 
-        // ***** backoff management *****
+        #endregion
+
+        #region backoff management
 
         private bool? _isExponentialBackoff;
 
@@ -40,6 +47,8 @@ namespace Cadena.Engine.CyclicReceivers
 
         protected virtual TimeSpan ExponentialBackoffMaxWait => TimeSpan.FromMilliseconds(320000);
 
+        #endregion
+
         protected CyclicReceiverBase([CanBeNull] Action<Exception> exceptionHandler)
         {
             _exceptionHandler = exceptionHandler;
@@ -49,28 +58,10 @@ namespace Cadena.Engine.CyclicReceivers
             _currentBackoffWaitTick = 0;
         }
 
-        /// <summary>
-        /// Execute request
-        /// </summary>
-        /// <param name="token">cancellation token</param>
-        /// <returns>task object for awaiting completion</returns>
-        protected abstract Task<RateLimitDescription> Execute(CancellationToken token);
-
-        /// <summary>
-        /// Get priority of this request
-        /// </summary>
-        public virtual RequestPriority Priority => RequestPriority.Middle;
-
         protected void CallExceptionHandler(Exception exception)
         {
             System.Diagnostics.Debug.WriteLine(exception);
             _exceptionHandler?.Invoke(exception);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public async Task<TimeSpan> ExecuteAsync(CancellationToken token)
@@ -136,6 +127,13 @@ namespace Cadena.Engine.CyclicReceivers
             return TimeSpan.FromTicks(_currentBackoffWaitTick);
         }
 
+        /// <summary>
+        /// Execute request
+        /// </summary>
+        /// <param name="token">cancellation token</param>
+        /// <returns>task object for awaiting completion</returns>
+        protected abstract Task<RateLimitDescription> Execute(CancellationToken token);
+
         private void SetLinearBackoff()
         {
             if (_isExponentialBackoff == false)
@@ -192,15 +190,6 @@ namespace Cadena.Engine.CyclicReceivers
             var resetTick = (rld.Reset - DateTime.Now).Ticks;
             // if calculated wait tick is after the reset tick, we should use reset tick.
             return Math.Min(tick, resetTick);
-        }
-
-        ~CyclicReceiverBase()
-        {
-            Dispose(false);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
         }
     }
 }
