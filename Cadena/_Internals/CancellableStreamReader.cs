@@ -33,7 +33,7 @@ namespace Cadena._Internals
 
         private bool _skipNextLineFeed;
 
-        private bool _hasDisposed;
+        private bool _disposed;
 
         private StringBuilder _recycledStringBuilder;
 
@@ -56,9 +56,9 @@ namespace Cadena._Internals
 
         public async Task<string> ReadLineAsync(CancellationToken cancellationToken)
         {
-            if (_hasDisposed)
+            if (_disposed)
             {
-                throw new ObjectDisposedException("CancellableStreamReader");
+                throw new ObjectDisposedException(nameof(CancellableStreamReader));
             }
             // if _bufferedLength == 0, hit to end of stream in previous read.
             if (_bufferedLength == 0) return null;
@@ -167,6 +167,8 @@ namespace Cadena._Internals
 
         public void Dispose()
         {
+            if (_disposed) return;
+            _disposed = true;
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -181,7 +183,6 @@ namespace Cadena._Internals
             if (disposing)
             {
                 _stream.Dispose();
-                _hasDisposed = true;
             }
         }
 
