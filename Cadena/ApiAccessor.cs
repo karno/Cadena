@@ -49,7 +49,7 @@ namespace Cadena
 
         private readonly IWebProxy _proxy;
 
-        private readonly TwitterApiHttpClient _client;
+        private readonly Lazy<HttpClient> _client;
 
         public ApiAccessor([NotNull] IOAuthCredential credential, [NotNull] string endpoint,
             [CanBeNull] IWebProxy proxy, string userAgent = null, bool useGzip = true)
@@ -60,7 +60,8 @@ namespace Cadena
             Endpoint = endpoint;
             _proxy = proxy;
             UserAgent = userAgent;
-            _client = new TwitterApiHttpClient(credential, proxy, userAgent, useGzip);
+            _client = new Lazy<HttpClient>(() => new TwitterApiHttpClient(credential, proxy, userAgent, useGzip),
+                LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
         public async Task<IApiResult<T>> PostAsync<T>([NotNull] string path, [NotNull] HttpContent content,
@@ -113,7 +114,7 @@ namespace Cadena
 
             var url = FormatUrl(Endpoint, path, parameter.ParametalizeForGet());
             Debug.WriteLine("[GET] " + url);
-            return _client.GetAsync(url, cancellationToken);
+            return _client.Value.GetAsync(url, cancellationToken);
         }
 
         private Task<HttpResponseMessage> PostAsync([NotNull] string path,
@@ -132,7 +133,7 @@ namespace Cadena
             if (content == null) throw new ArgumentNullException(nameof(content));
             var url = FormatUrl(Endpoint, path);
             Debug.WriteLine("[POST] " + url);
-            return _client.PostAsync(url, content, cancellationToken);
+            return _client.Value.PostAsync(url, content, cancellationToken);
         }
 
         /// <summary>
@@ -212,10 +213,11 @@ namespace Cadena
 
         private void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && _client.IsValueCreated)
             {
-                _client.CancelPendingRequests();
-                _client.Dispose();
+                var client = _client.Value;
+                client.CancelPendingRequests();
+                client.Dispose();
             }
         }
     }
