@@ -110,6 +110,8 @@
     <Compile Include="Data\Streams\Warnings\StreamTooManyFollowsWarning.cs" />
     <Compile Include="Data\Streams\Warnings\StreamWarning.cs" />
     <Compile Include="Data\TwitterUploadedMedia.cs" />
+    <Compile Include="Engine\CyclicReceivers\Infrastructures\HelpReceiver.cs" />
+    <Compile Include="Engine\CyclicReceivers\Infrastructures\SavedSearchesReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\Relations\BlocksReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\Relations\CyclicRelationInfoReceiverBase.cs" />
     <Compile Include="Engine\CyclicReceivers\Relations\FollowersReceiver.cs" />
@@ -177,16 +179,13 @@
     <Compile Include="_Internals\ApiResult.cs" />
     <Compile Include="_Internals\CancellableStreamReader.cs" />
     <Compile Include="_Internals\CursorResult.cs" />
-    <Compile Include="_Internals\Defaults.cs" />
     <Compile Include="_Internals\ParameterHelper.cs" />
     <Compile Include="_Internals\ResultHandlers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Engine\CyclicReceivers\Infrastructures\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

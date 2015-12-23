@@ -5,7 +5,7 @@ namespace Cadena.Engine
     [Serializable]
     public sealed class ReceiverOperationException : Exception
     {
-        private ProblemType ProblemType { get; }
+        public ProblemType ProblemType { get; }
 
         public ReceiverOperationException()
         {

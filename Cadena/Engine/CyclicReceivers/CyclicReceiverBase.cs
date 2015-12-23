@@ -190,8 +190,8 @@ namespace Cadena.Engine.CyclicReceivers
             var inferCallableCount = rld.Remain * ApiConsumptionLimitRatio / _averageApiConsumption;
             var tick = (long)(remain.Ticks / inferCallableCount);
             var resetTick = (rld.Reset - DateTime.Now).Ticks;
-            // reset tick is override everything.
-            return tick > resetTick ? resetTick : tick;
+            // if calculated wait tick is after the reset tick, we should use reset tick.
+            return Math.Min(tick, resetTick);
         }
 
         ~CyclicReceiverBase()

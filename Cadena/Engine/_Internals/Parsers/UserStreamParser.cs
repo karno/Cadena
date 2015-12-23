@@ -151,8 +151,6 @@ namespace Cadena.Engine._Internals.Parsers
                         handler.OnMessage(new StreamAccessInformationEvent(source, target,
                             new AccessInformation(graph.target_object), ev, timestamp));
                         break;
-                    default:
-                        break;
                 }
             }
             catch (Exception ex)

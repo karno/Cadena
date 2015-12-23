@@ -15,8 +15,18 @@ using JetBrains.Annotations;
 
 namespace Cadena
 {
-    public sealed class ApiAccessor
+    public sealed class ApiAccessor : IDisposable
     {
+        #region Provide default configuration
+
+        public const string DefaultEndpoint = "https://api.twitter.com/1.1/";
+
+        public const string DefaultEndpointForUpload = "https://upload.twitter.com/1.1/";
+
+        public const string DefaultEndpointForUserStreams = "https://userstream.twitter.com/1.1/";
+
+        public const string DefaultUserAgent = "Project Cadena/Alchemic Library for Twitter API.";
+
         /// <summary>
         /// System proxy, equals to WebRequest.GetSystemWebProxy
         /// </summary>
@@ -25,6 +35,8 @@ namespace Cadena
         {
             return WebRequest.GetSystemWebProxy();
         }
+
+        #endregion
 
         /// <summary>
         /// Credential information of this accessor.
@@ -184,6 +196,26 @@ namespace Cadena
                 return new OAuthMessageHandler(exceptionHandler,
                     credential.OAuthConsumerKey, credential.OAuthConsumerSecret,
                     new AccessToken(credential.OAuthAccessToken, credential.OAuthAccessTokenSecret));
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~ApiAccessor()
+        {
+            Dispose(false);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _client.CancelPendingRequests();
+                _client.Dispose();
             }
         }
     }

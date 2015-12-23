@@ -36,13 +36,13 @@ namespace Cadena.Engine.StreamReceivers
 
         private bool _disposed;
 
-        private StreamState _currentState = StreamState.Connected;
+        private StreamState _currentState;
 
-        private BackoffMode _backoffMode = BackoffMode.None;
+        private BackoffMode _backoffMode;
 
-        private long _backoffWait = 0;
+        private long _backoffWait;
 
-        private int _hardErrorCount = 0;
+        private int _hardErrorCount;
 
         #region User Stream properties
 
@@ -82,6 +82,10 @@ namespace Cadena.Engine.StreamReceivers
             // set default values to parameters
             StallWarnings = true;
             StreamFilterLevel = StreamFilterLevel.None;
+            _currentState = StreamState.Connected;
+            _backoffMode = BackoffMode.None;
+            _backoffWait = 0;
+            _hardErrorCount = 0;
         }
 
         protected override async Task ExecuteInternalAsync(CancellationToken cancellationToken)
