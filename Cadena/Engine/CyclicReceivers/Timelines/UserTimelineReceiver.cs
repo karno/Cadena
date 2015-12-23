@@ -7,26 +7,23 @@ using Cadena.Api.Rest;
 using Cadena.Data;
 using JetBrains.Annotations;
 
-namespace Cadena.Engine.CyclicReceivers
+namespace Cadena.Engine.CyclicReceivers.Timelines
 {
     public class UserTimelineReceiver : CyclicTimelineReceiverBase
     {
         private readonly ApiAccessor _accessor;
-        private readonly Action<Exception> _exceptionHandler;
         private readonly UserParameter _target;
         private readonly int _receiveCount;
         private readonly bool _excludeReplies;
         private readonly bool _includeRetweets;
 
         public UserTimelineReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
-            [NotNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target, int receiveCount = 100,
-            bool excludeReplies = false, bool includeRetweets = true) : base(handler)
+            [CanBeNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target, int receiveCount = 100,
+            bool excludeReplies = false, bool includeRetweets = true) : base(handler, exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             if (target == null) throw new ArgumentNullException(nameof(target));
             _accessor = accessor;
-            _exceptionHandler = exceptionHandler;
             _target = target;
             _receiveCount = receiveCount;
             _excludeReplies = excludeReplies;
@@ -44,7 +41,7 @@ namespace Cadena.Engine.CyclicReceivers
             }
             catch (Exception ex)
             {
-                _exceptionHandler(ex);
+                CallExceptionHandler(ex);
                 throw;
             }
         }

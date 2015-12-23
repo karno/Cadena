@@ -13,17 +13,14 @@ namespace Cadena.Engine.CyclicReceivers
     {
         private readonly ApiAccessor _accessor;
         private readonly Action<TwitterList> _handler;
-        private readonly Action<Exception> _exceptionHandler;
 
         public OwnedListsInfoReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterList> handler,
-            [NotNull] Action<Exception> exceptionHandler)
+            [CanBeNull] Action<Exception> exceptionHandler) : base(exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
-            if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             _accessor = accessor;
             _handler = handler;
-            _exceptionHandler = exceptionHandler;
         }
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)
@@ -31,13 +28,13 @@ namespace Cadena.Engine.CyclicReceivers
             try
             {
                 var result = await _accessor.GetListsAsync(new UserParameter(_accessor.Credential.Id), token)
-                                          .ConfigureAwait(false);
+                                            .ConfigureAwait(false);
                 result.Result?.ForEach(i => _handler(i));
                 return result.RateLimit;
             }
             catch (Exception ex)
             {
-                _exceptionHandler(ex);
+                CallExceptionHandler(ex);
                 throw;
             }
         }

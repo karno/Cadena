@@ -14,8 +14,8 @@ namespace Cadena.Api.Rest
         #region friends/ids
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetFriendsIdsAsync(
-            [NotNull] this ApiAccessor accessor,
-            [CanBeNull] UserParameter nullableTargetUser, long? cursor, int? count, CancellationToken cancellationToken)
+            [NotNull] this ApiAccessor accessor, [CanBeNull] UserParameter nullableTargetUser,
+            long? cursor, int? count, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>

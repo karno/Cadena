@@ -12,18 +12,16 @@ namespace Cadena.Engine.CyclicReceivers
     {
         private readonly ApiAccessor _accessor;
         private readonly Action<TwitterUser> _handler;
-        private readonly Action<Exception> _exceptionHandler;
         private readonly UserParameter _target;
 
         public UserInfoReceiver(ApiAccessor accessor, [NotNull] Action<TwitterUser> handler,
-            [NotNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target)
+            [CanBeNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target)
+            : base(exceptionHandler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
-            if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             if (target == null) throw new ArgumentNullException(nameof(target));
             _accessor = accessor;
             _handler = handler;
-            _exceptionHandler = exceptionHandler;
             _target = target;
         }
 
@@ -37,7 +35,7 @@ namespace Cadena.Engine.CyclicReceivers
             }
             catch (Exception ex)
             {
-                _exceptionHandler(ex);
+                CallExceptionHandler(ex);
                 throw;
             }
         }

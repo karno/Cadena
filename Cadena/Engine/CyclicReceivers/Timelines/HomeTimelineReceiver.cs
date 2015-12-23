@@ -6,21 +6,18 @@ using Cadena.Api.Rest;
 using Cadena.Data;
 using JetBrains.Annotations;
 
-namespace Cadena.Engine.CyclicReceivers
+namespace Cadena.Engine.CyclicReceivers.Timelines
 {
-    public class DirectMessagesReceiver : CyclicTimelineReceiverBase
+    public class HomeTimelineReceiver : CyclicTimelineReceiverBase
     {
         private readonly ApiAccessor _accessor;
-        private readonly Action<Exception> _exceptionHandler;
         private readonly int _receiveCount;
 
-        public DirectMessagesReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
-            [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100) : base(handler)
+        public HomeTimelineReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
+            [CanBeNull] Action<Exception> exceptionHandler, int receiveCount = 100) : base(handler, exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             _accessor = accessor;
-            _exceptionHandler = exceptionHandler;
             _receiveCount = receiveCount;
         }
 
@@ -28,14 +25,14 @@ namespace Cadena.Engine.CyclicReceivers
         {
             try
             {
-                var result = await _accessor.GetDirectMessagesAsync(_receiveCount,
+                var result = await _accessor.GetHomeTimelineAsync(_receiveCount,
                     LastSinceId, null, token).ConfigureAwait(false);
                 result.Result?.ForEach(CallHandler);
                 return result.RateLimit;
             }
             catch (Exception ex)
             {
-                _exceptionHandler(ex);
+                CallExceptionHandler(ex);
                 throw;
             }
         }

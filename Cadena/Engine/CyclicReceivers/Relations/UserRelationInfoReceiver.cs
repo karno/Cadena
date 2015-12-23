@@ -7,7 +7,7 @@ using Cadena.Api.Rest;
 using Cadena.Data;
 using Cadena.Util;
 
-namespace Cadena.Engine.CyclicReceivers
+namespace Cadena.Engine.CyclicReceivers.Relations
 {
     public class UserRelationInfoReceiver : CyclicReceiverBase
     {
@@ -18,7 +18,7 @@ namespace Cadena.Engine.CyclicReceivers
         protected override long MinimumIntervalTicks => TimeSpan.FromHours(6).Ticks;
 
         public UserRelationInfoReceiver(ApiAccessor accessor, Action<RelationInfoResult> handler,
-            Action<Exception> exceptionHandler)
+            Action<Exception> exceptionHandler) : base(exceptionHandler)
         {
             _accessor = accessor;
             _handler = handler;
@@ -33,7 +33,8 @@ namespace Cadena.Engine.CyclicReceivers
             return RateLimitDescription.Empty;
         }
 
-        private async Task<IEnumerable<long>> ReceiveSingle(Func<ApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<long>>>>> func,
+        private async Task<IEnumerable<long>> ReceiveSingle(
+            Func<ApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<long>>>>> func,
             CancellationToken token)
         {
             var resultList = new List<long>();

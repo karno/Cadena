@@ -2,14 +2,15 @@
 using Cadena.Data;
 using JetBrains.Annotations;
 
-namespace Cadena.Engine.CyclicReceivers
+namespace Cadena.Engine.CyclicReceivers.Timelines
 {
     public abstract class CyclicTimelineReceiverBase : CyclicReceiverBase
     {
         private readonly Action<TwitterStatus> _handler;
         protected long? LastSinceId { get; private set; }
 
-        protected CyclicTimelineReceiverBase([NotNull] Action<TwitterStatus> handler)
+        protected CyclicTimelineReceiverBase([NotNull] Action<TwitterStatus> handler,
+            [CanBeNull] Action<Exception> exceptionHandler) : base(exceptionHandler)
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
             _handler = handler;

@@ -8,15 +8,10 @@ using Cadena.Api.Rest;
 using Cadena.Data;
 using JetBrains.Annotations;
 
-namespace Cadena.Engine.CyclicReceivers
+namespace Cadena.Engine.CyclicReceivers.Timelines
 {
     public class ListReceiver : CyclicReceiverBase
     {
-        #region Receive Moderation among ListReceivers
-
-
-        #endregion
-
         /// <summary>
         /// Access interval (per list)
         /// </summary>
@@ -24,7 +19,6 @@ namespace Cadena.Engine.CyclicReceivers
 
         private readonly ApiAccessor _accessor;
         private readonly Action<TwitterStatus> _handler;
-        private readonly Action<Exception> _exceptionHandler;
         private readonly int _receiveCount;
         private readonly bool _includeRetweets;
 
@@ -36,14 +30,13 @@ namespace Cadena.Engine.CyclicReceivers
         protected override long MinimumIntervalTicks => TimeSpan.FromSeconds(5).Ticks;
 
         public ListReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
-            [NotNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)
+            [CanBeNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)
+            : base(exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
-            if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             _accessor = accessor;
             _handler = handler;
-            _exceptionHandler = exceptionHandler;
             _receiveCount = receiveCount;
             _includeRetweets = includeRetweets;
         }
@@ -95,7 +88,7 @@ namespace Cadena.Engine.CyclicReceivers
             }
             catch (Exception ex)
             {
-                _exceptionHandler(ex);
+                CallExceptionHandler(ex);
                 throw;
             }
         }
@@ -109,7 +102,7 @@ namespace Cadena.Engine.CyclicReceivers
             }
             if (count == 0)
             {
-                // list receiver is empty -> next 5 second
+                // list receiver is empty -> re-evaluate 5 seconds later.
                 return TimeSpan.FromSeconds(5).Ticks;
             }
             // based on rate-limit description

@@ -7,22 +7,19 @@ using Cadena.Api.Rest;
 using Cadena.Data;
 using JetBrains.Annotations;
 
-namespace Cadena.Engine.CyclicReceivers
+namespace Cadena.Engine.CyclicReceivers.Timelines
 {
     public class SearchReceiver : CyclicTimelineReceiverBase
     {
         private readonly ApiAccessor _accessor;
-        private readonly Action<Exception> _exceptionHandler;
         private readonly SearchParameter _parameter;
 
         public SearchReceiver([NotNull] ApiAccessor accessor, Action<TwitterStatus> handler,
-            [NotNull] Action<Exception> exceptionHandler, [NotNull] SearchParameter parameter) : base(handler)
+            [CanBeNull] Action<Exception> exceptionHandler, [NotNull] SearchParameter parameter) : base(handler, exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             _accessor = accessor;
-            _exceptionHandler = exceptionHandler;
             _parameter = parameter;
         }
 
@@ -36,7 +33,7 @@ namespace Cadena.Engine.CyclicReceivers
             }
             catch (Exception ex)
             {
-                _exceptionHandler(ex);
+                CallExceptionHandler(ex);
                 throw;
             }
         }
