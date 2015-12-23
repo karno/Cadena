@@ -16,14 +16,21 @@ namespace Cadena.Engine.CyclicReceivers
     {
         private readonly Action<Exception> _exceptionHandler;
 
-        protected CyclicReceiverBase([CanBeNull] Action<Exception> exceptionHandler)
-        {
-            _exceptionHandler = exceptionHandler;
-        }
+        // ***** call interval management *****
 
         protected virtual long MinimumIntervalTicks => TimeSpan.FromSeconds(30).Ticks;
 
         protected virtual double ApiConsumptionLimitRatio => 0.8;
+
+        private RateLimitDescription? _lastRateLimitDescription;
+
+        private double _averageApiConsumption;
+
+        // ***** backoff management *****
+
+        private bool? _isExponentialBackoff;
+
+        private long _currentBackoffWaitTick;
 
         protected virtual TimeSpan LinearBackoffInitialWait => TimeSpan.FromMilliseconds(250);
 
@@ -33,9 +40,14 @@ namespace Cadena.Engine.CyclicReceivers
 
         protected virtual TimeSpan ExponentialBackoffMaxWait => TimeSpan.FromMilliseconds(320000);
 
-        private bool? _isExponentialBackoff = null;
-
-        private long _currentBackoffWaitTick = 0;
+        protected CyclicReceiverBase([CanBeNull] Action<Exception> exceptionHandler)
+        {
+            _exceptionHandler = exceptionHandler;
+            _lastRateLimitDescription = null;
+            _averageApiConsumption = 1;
+            _isExponentialBackoff = null;
+            _currentBackoffWaitTick = 0;
+        }
 
         /// <summary>
         /// Execute request
@@ -160,7 +172,26 @@ namespace Cadena.Engine.CyclicReceivers
 
         protected virtual long CalculateIntervalTicks(TimeSpan remain, RateLimitDescription rld)
         {
-            return (long)(remain.Ticks / (rld.Remain * ApiConsumptionLimitRatio));
+            if (_lastRateLimitDescription != null)
+            {
+                // estimate api consumption
+                var delta = _lastRateLimitDescription.Value.Remain - rld.Remain;
+                if (delta > 0)
+                {
+                    // sliding average
+                    _averageApiConsumption = _averageApiConsumption * 0.3 + delta * 0.7;
+                }
+            }
+            else
+            {
+                _averageApiConsumption = rld.Limit - rld.Remain;
+            }
+            _lastRateLimitDescription = rld;
+            var inferCallableCount = rld.Remain * ApiConsumptionLimitRatio / _averageApiConsumption;
+            var tick = (long)(remain.Ticks / inferCallableCount);
+            var resetTick = (rld.Reset - DateTime.Now).Ticks;
+            // reset tick is override everything.
+            return tick > resetTick ? resetTick : tick;
         }
 
         ~CyclicReceiverBase()

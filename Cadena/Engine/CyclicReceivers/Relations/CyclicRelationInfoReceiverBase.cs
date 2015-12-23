@@ -22,7 +22,7 @@ namespace Cadena.Engine.CyclicReceivers.Relations
             _handler = handler;
         }
 
-        protected async Task<IApiResult<IEnumerable<long>>> RetrieveCursoredResult(ApiAccessor accessor,
+        protected static async Task<IApiResult<IEnumerable<long>>> RetrieveCursoredResult(ApiAccessor accessor,
             Func<ApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<long>>>>> func,
              Action<Exception> exceptionHandler, CancellationToken token)
         {

@@ -9,11 +9,11 @@ using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
 {
-    public static class Blockings
+    public static class Blocks
     {
         #region blocks/ids
 
-        public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetBlockingsIdsAsync(
+        public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetBlocksIdsAsync(
             [NotNull] this ApiAccessor accessor, long cursor, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
