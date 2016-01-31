@@ -20,7 +20,7 @@ namespace Cadena._Internals
     /// </summary>
     internal sealed class CancellableStreamReader : IDisposable
     {
-        private const int BufferLength = 1024;
+        private const int BufferLength = 1024 * 4;
 
         private readonly Stream _stream;
         private readonly Decoder _decoder;
@@ -121,6 +121,22 @@ namespace Cadena._Internals
             return GetStringAndRecycle(builder);
         }
 
+        private async Task ReceiveToBufferAsync(CancellationToken cancellationToken)
+        {
+            do
+            {
+                // fill buffer from Stream
+                var length = await _stream.ReadAsync(_byteBuffer, 0, BufferLength,
+                    cancellationToken).ConfigureAwait(false);
+                // decode chars and reset cursor
+                _bufferedLength = _decoder.GetChars(_byteBuffer, 0, length, _buffer, 0);
+                _bufferCursor = 0;
+                // length == 0 => End of Stream, break.
+                if (length == 0) break;
+                // if _bufferedLength is zero although _byteBuffer is not empty, loop once more.
+            } while (_bufferedLength == 0);
+        }
+
         private string GetStringAndRecycle(StringBuilder builder)
         {
             var result = builder.ToString();
@@ -147,22 +163,6 @@ namespace Cadena._Internals
             _recycledStringBuilder = builder;
             _recycledStringBuilder.Clear();
             return result;
-        }
-
-        private async Task ReceiveToBufferAsync(CancellationToken cancellationToken)
-        {
-            do
-            {
-                // fill buffer from NetworkStream
-                var length = await _stream.ReadAsync(_byteBuffer, 0, BufferLength,
-                    cancellationToken).ConfigureAwait(false);
-                // decode chars and reset cursor
-                _bufferedLength = _decoder.GetChars(_byteBuffer, 0, length, _buffer, 0);
-                _bufferCursor = 0;
-                // length == 0 => End of Stream, break.
-                if (length == 0) break;
-                // if _bufferedLength is zero although _byteBuffer is not empty, loop once more.
-            } while (_bufferCursor == _bufferedLength);
         }
 
         public void Dispose()

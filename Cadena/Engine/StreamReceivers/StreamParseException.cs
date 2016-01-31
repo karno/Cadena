@@ -41,5 +41,10 @@ namespace Cadena.Engine.StreamReceivers
         {
             get { return _received; }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + Environment.NewLine + "text: " + _received;
+        }
     }
 }

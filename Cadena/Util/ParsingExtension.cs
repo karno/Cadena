@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
 namespace Cadena.Util
@@ -16,6 +17,7 @@ namespace Cadena.Util
         /// <param name="s">convert value</param>
         /// <param name="@default">default value if string is null or unacceptable value</param>
         /// <returns>converted value</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ParseBool([CanBeNull] this string s, bool @default = false)
         {
             if (s == null)
@@ -28,6 +30,7 @@ namespace Cadena.Util
         /// <summary>
         /// Parse string as long
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long ParseLong([CanBeNull] this string s)
         {
             long v;
@@ -37,8 +40,7 @@ namespace Cadena.Util
         /// <summary>
         /// Parse nullable id
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long? ParseNullableId([CanBeNull] this string s)
         {
             long v;
@@ -52,15 +54,16 @@ namespace Cadena.Util
         /// <summary>
         /// Parse date time
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime ParseDateTime([CanBeNull] this string s)
         {
             return s.ParseDateTime(DateTime.MinValue);
         }
 
-
         /// <summary>
         /// Parse date time
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime ParseDateTime([CanBeNull] this string s, DateTime @default)
         {
             DateTime dt;
@@ -74,6 +77,7 @@ namespace Cadena.Util
         /// <summary>
         /// Parse date time
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime ParseDateTime([CanBeNull] this string s, [NotNull] string format)
         {
             if (format == null) throw new ArgumentNullException(nameof(format));
@@ -84,6 +88,7 @@ namespace Cadena.Util
         /// <summary>
         /// Parse date time
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime ParseDateTime([CanBeNull] this string s,
             [NotNull] string format, DateTime @default)
         {
@@ -103,6 +108,7 @@ namespace Cadena.Util
         /// <summary>
         /// Parse date time by twitter default format
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime ParseTwitterDateTime([CanBeNull] this string s)
         {
             return s.ParseDateTime(TwitterDateTimeFormat);
@@ -111,6 +117,7 @@ namespace Cadena.Util
         /// <summary>
         /// Parse string as unix serial time
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime ParseUnixTime([CanBeNull] this string s)
         {
             if (s == null) return DateTime.MinValue;
@@ -120,6 +127,7 @@ namespace Cadena.Util
         /// <summary>
         /// Parse uri
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Uri ParseUri([CanBeNull] this string s)
         {
             Uri ret;
@@ -133,6 +141,7 @@ namespace Cadena.Util
         /// <summary>
         /// Parse uri as absolute uri
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Uri ParseUriAbsolute([CanBeNull] this string s)
         {
             var ret = s.ParseUri();
@@ -146,6 +155,7 @@ namespace Cadena.Util
         /// <summary>
         /// Resolve entity-escaped string
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ResolveEntity([CanBeNull] string text)
         {
             return text
@@ -158,6 +168,7 @@ namespace Cadena.Util
         /// <summary>
         /// Escape string with entities
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string EscapeEntity([CanBeNull] string text)
         {
             return text

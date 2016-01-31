@@ -48,7 +48,10 @@ namespace Cadena.Data
             {
                 StatusType = StatusType.Tweet;
                 User = new TwitterUser(json.user);
-                Source = json.source;
+                if (json.source())
+                {
+                    Source = json.source;
+                }
                 if (json.in_reply_to_status_id_str())
                 {
                     InReplyToStatusId = ((string)json.in_reply_to_status_id_str).ParseNullableId();
