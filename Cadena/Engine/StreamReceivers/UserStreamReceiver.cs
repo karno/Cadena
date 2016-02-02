@@ -124,7 +124,7 @@ namespace Cadena.Engine.StreamReceivers
             _hardErrorCount = 0;
             _backoffMode = BackoffMode.None;
             ChangeState(StreamState.Connected);
-            UserStreamParser.ParseStreamLine(json, _handler);
+            UserStreamParserDynamic.ParseStreamLine(json, _handler);
         }
 
         private async Task<bool> HandleException(Exception ex)

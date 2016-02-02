@@ -5,17 +5,13 @@ using Cadena.Data.Streams;
 using Cadena.Data.Streams.Events;
 using Cadena.Data.Streams.Warnings;
 using Cadena.Engine.StreamReceivers;
-using Cadena.Meteor;
 using Cadena.Util;
+using Codeplex.Data;
 
 namespace Cadena.Engine._Internals.Parsers
 {
-    internal static class UserStreamParser
+    internal static class UserStreamParserDynamic
     {
-        const string EventSourceKey = "source";
-        const string EventTargetKey = "target";
-        const string EventCreatedAtKey = "target";
-        const string EventTargetObjectKey = "target_object";
 
         /// <summary>
         /// Parse streamed JSON line
@@ -26,7 +22,7 @@ namespace Cadena.Engine._Internals.Parsers
         {
             try
             {
-                var element = MeteorJson.Parse(line);
+                var element = DynamicJson.Parse(line);
                 ParseStreamLine(element, handler);
             }
             catch (Exception ex)
@@ -41,10 +37,8 @@ namespace Cadena.Engine._Internals.Parsers
         /// </summary>
         /// <param name="graph">JSON object graph</param>
         /// <param name="handler">result handler</param>
-        internal static void ParseStreamLine(JsonValue graph, IStreamHandler handler)
+        internal static void ParseStreamLine(dynamic graph, IStreamHandler handler)
         {
-
-
             try
             {
                 // element.foo() -> element.IsDefined("foo")
@@ -52,7 +46,7 @@ namespace Cadena.Engine._Internals.Parsers
                 //
                 // fast path: first, identify standard status payload
                 ////////////////////////////////////////////////////////////////////////////////////
-                if (TwitterStreamParser.ParseStreamLineAsStatus(graph, handler))
+                if (TwitterStreamParserDynamic.ParseStreamLineAsStatus(graph, handler))
                 {
                     return;
                 }
@@ -62,47 +56,43 @@ namespace Cadena.Engine._Internals.Parsers
                 //
 
                 // friends lists
-                JsonValue friends;
-                if (graph.TryGetValue("friends", out friends))
+                if (graph.friends())
                 {
                     // friends enumeration
-                    var friendsIds = ((JsonArray)friends).Select(v => v.GetLong()).ToArray();
-                    handler.OnMessage(new StreamEnumeration(friendsIds));
+                    handler.OnMessage(new StreamEnumeration((long[])graph.friends));
                     return;
                 }
-                if (graph.TryGetValue("friends_str", out friends))
+                if (graph.friends_str())
                 {
                     // friends enumeration(stringified)
-                    var friendsIds = ((JsonArray)friends).Select(v => v.GetString().ParseLong()).ToArray();
-                    handler.OnMessage(new StreamEnumeration(friendsIds));
+                    handler.OnMessage(new StreamEnumeration(
+                        ((string[])graph.friends).Select(s => s.ParseLong()).ToArray()));
                     return;
                 }
 
-                JsonValue @event;
-                if (graph.TryGetValue("event", out @event))
+                if (graph.IsDefined("event")) // graph.event()
                 {
-                    ParseStreamEvent(@event.GetString().ToLower(), graph, handler);
+                    ParseStreamEvent(((string)graph["event"]).ToLower(), graph, handler);
                     return;
                 }
+
 
                 // too many follows warning
-                JsonValue warning;
-                if (graph.TryGetValue("warning", out warning))
+                if (graph.warning())
                 {
-                    var code = warning["code"].GetString();
-                    if (code == "FOLLOWS_OVER_LIMIT")
+                    if (graph.warning.code == "FOLLOWS_OVER_LIMIT")
                     {
                         handler.OnMessage(new StreamTooManyFollowsWarning(
-                            code,
-                            warning["message"].GetString(),
-                            warning["user_id"].GetLong(),
-                            TwitterStreamParser.GetTimestamp(warning)));
+                            graph.warning.code,
+                            graph.warning.message,
+                            graph.warning.user_id,
+                            TwitterStreamParserDynamic.GetTimestamp(graph.warning)));
                         return;
                     }
                 }
 
                 // fallback to default stream handler
-                TwitterStreamParser.ParseNotStatusStreamLine(graph, handler);
+                TwitterStreamParserDynamic.ParseNotStatusStreamLine(graph, handler);
             }
             catch (Exception ex)
             {
@@ -117,13 +107,13 @@ namespace Cadena.Engine._Internals.Parsers
         /// <param name="ev">event name</param>
         /// <param name="graph">JSON object graph</param>
         /// <param name="handler">result handler</param>
-        private static void ParseStreamEvent(string ev, JsonValue graph, IStreamHandler handler)
+        private static void ParseStreamEvent(string ev, dynamic graph, IStreamHandler handler)
         {
             try
             {
-                var source = new TwitterUser(graph[EventSourceKey]);
-                var target = new TwitterUser(graph[EventTargetKey]);
-                var timestamp = graph[EventCreatedAtKey].GetString().ParseTwitterDateTime();
+                var source = new TwitterUser(graph.source);
+                var target = new TwitterUser(graph.target);
+                var timestamp = ((string)graph.created_at).ParseTwitterDateTime();
                 switch (ev)
                 {
                     case "favorite":
@@ -132,7 +122,7 @@ namespace Cadena.Engine._Internals.Parsers
                     case "favorited_retweet":
                     case "retweeted_retweet":
                         handler.OnMessage(new StreamStatusEvent(source, target,
-                            new TwitterStatus(graph[EventTargetObjectKey]), ev, timestamp));
+                            new TwitterStatus(graph.target_object), ev, timestamp));
                         break;
                     case "block":
                     case "unblock":
@@ -154,12 +144,12 @@ namespace Cadena.Engine._Internals.Parsers
                     case "list_user_subscribed":
                     case "list_user_unsubscribed":
                         handler.OnMessage(new StreamListEvent(source, target,
-                            new TwitterList(graph[EventTargetObjectKey]), ev, timestamp));
+                            new TwitterList(graph.target_object), ev, timestamp));
                         break;
                     case "access_revoked":
                     case "access_unrevoked":
                         handler.OnMessage(new StreamAccessInformationEvent(source, target,
-                            new AccessInformation(graph[EventTargetObjectKey]), ev, timestamp));
+                            new AccessInformation(graph.target_object), ev, timestamp));
                         break;
                 }
             }

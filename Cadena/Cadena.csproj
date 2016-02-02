@@ -144,6 +144,8 @@
     <Compile Include="Engine\Requests\UpdateMuteRequest.cs" />
     <Compile Include="Engine\Requests\UpdateRelationRequest.cs" />
     <Compile Include="Engine\Requests\UploadMediaRequest.cs" />
+    <Compile Include="Engine\_Internals\Parsers\TwitterStreamParser.cs" />
+    <Compile Include="Engine\_Internals\Parsers\UserStreamParser.cs" />
     <Compile Include="Engine\_Internals\TaskFactoryDistrict.cs" />
     <Compile Include="Meteor\JsonArray.cs" />
     <Compile Include="Meteor\JsonBoolean.cs" />
@@ -153,8 +155,8 @@
     <Compile Include="Meteor\JsonParseException.cs" />
     <Compile Include="Meteor\JsonString.cs" />
     <Compile Include="Meteor\JsonValue.cs" />
+    <Compile Include="Meteor\_Internals\MeteorJsonParserBase.cs" />
     <Compile Include="Meteor\MeteorJson.cs" />
-    <Compile Include="Meteor\MeteorJsonHelper.cs" />
     <Compile Include="ProblemType.cs" />
     <Compile Include="Engine\RequestEngine.cs" />
     <Compile Include="Engine\ReceiveEngine.cs" />
@@ -167,8 +169,8 @@
     <Compile Include="Engine\StreamReceivers\StreamReceiverBase.cs" />
     <Compile Include="Engine\StreamReceivers\UserStreamReceiver.cs" />
     <Compile Include="Engine\IReceiver.cs" />
-    <Compile Include="Engine\_Internals\Parsers\TwitterStreamParser.cs" />
-    <Compile Include="Engine\_Internals\Parsers\UserStreamParser.cs" />
+    <Compile Include="Engine\_Internals\Parsers\TwitterStreamParserDynamic.cs" />
+    <Compile Include="Engine\_Internals\Parsers\UserStreamParserDynamic.cs" />
     <Compile Include="Util\CursorResultExtension.cs" />
     <Compile Include="Data\IApiResult.cs" />
     <Compile Include="Data\ICursorResult.cs" />
