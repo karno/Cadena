@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Cadena.Meteor._Internals
 {
-    internal abstract unsafe class MeteorJsonParserBase
+    public abstract unsafe class MeteorJsonParserBase
     {
-        const int StringBufferLength = 16;
+        const int StringBufferLength = 32;
 
         /// <summary>
         /// Read value.
@@ -141,7 +141,7 @@ namespace Cadena.Meteor._Internals
                 var keyBegin = ptr;
 
                 // read key
-                Assert(ptr, ref end, '\"');
+                Assert(ref ptr, ref end, '\"');
                 var key = ReadString(ref ptr, ref end).GetString();
 
                 if (dict.ContainsKey(key))
@@ -323,9 +323,7 @@ namespace Cadena.Meteor._Internals
         {
             Debug.Assert(*ptr == '+' || *ptr == '-' || (*ptr >= '0' && *ptr <= '9'));
 
-            var begin = ptr;
-            var isFrac = false;
-            var isExp = false;
+            var isNegative = false;
 
             //   number = [ minus ] int [ frac ] [ exp ]
             // => [sign] int [. int] [(e|E) int]
@@ -335,56 +333,137 @@ namespace Cadena.Meteor._Internals
             {
                 // RFC7159 says sign is only for '-', but twitter sometime returns stupid JSON. 
                 // So we also check '+' sign.
+                isNegative = *ptr == '-';
                 ptr++;
             }
 
-            // read main int 
-            if (!SkipDigits(ref ptr, ref end))
-            {
-                throw CreateException(ptr, "number is required after the sign.");
-            }
+            // check before reading numbers
+            // only call after - or +
+            // otherwise, parent don't call this method.
+            AssertDigit(ref ptr, ref end, "number is required after the sign.");
 
+            // read main int 
+            var longValue = ReadInteger(ref ptr, ref end);
             // read frac
             if (!IsEndOfJson(ref ptr, ref end) && *ptr == '.')
             {
-                isFrac = true;
-                ptr++;
-                if (!SkipDigits(ref ptr, ref end))
-                {
-                    throw CreateException(ptr, "number is required after the decimal point.");
-                }
+                // this is real number, pass to real parser.
+                return ReadRealNumber(isNegative, longValue, ref ptr, ref end);
             }
 
             // read exp
             if (!IsEndOfJson(ref ptr, ref end) && (*ptr == 'e' || *ptr == 'E'))
             {
-                isExp = true;
                 ptr++;
-                if (!SkipDigits(ref ptr, ref end))
+                // read sign
+                if (!IsEndOfJson(ref ptr, ref end) && (*ptr == '+' || *ptr == '-'))
                 {
-                    throw CreateException(ptr, "number is required after the exponent sign.");
+                    if (*ptr == '-')
+                    {
+                        // this is negative exp, real number.
+                        return ReadRealNumber(isNegative, longValue, ref ptr, ref end);
+                    }
+                    ptr++;
+                }
+                AssertDigit(ref ptr, ref end, "number is required after the exponent sign.");
+
+                // read exp value
+                var expValue = ReadInteger(ref ptr, ref end);
+                while (expValue-- > 0)
+                {
+                    longValue *= 10;
+                }
+            }
+            // *ptr currently indicating next char of numbers.
+
+            // number is integer.
+            if (isNegative)
+            {
+                longValue *= -1;
+            }
+            return new JsonNumber(longValue);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private JsonNumber ReadRealNumber(bool isNegative, long intpart, ref char* ptr, ref char* end)
+        {
+            Debug.Assert(!IsEndOfJson(ref ptr, ref end) && (*ptr == '.' || *ptr == '-'));
+            var readExp = *ptr == '-';
+            double value = 0;
+
+            if (*ptr == '.')
+            {
+                var fracdigit = 0;
+                ptr++;
+                AssertDigit(ref ptr, ref end, "number is required after the decimal point.");
+                do
+                {
+                    value = value * 10 + (*ptr - '0');
+                    ptr++;
+                    fracdigit++;
+                } while (!IsEndOfJson(ref ptr, ref end) && IsDigit(ptr));
+                while (fracdigit-- > 0)
+                {
+                    value /= 10;
                 }
             }
 
-            // *ptr currently indicating next char of numbers.
+            // add intpart.
+            value += intpart;
+            if (isNegative)
+            {
+                value *= -1;
+            }
 
-            if (isFrac || isExp)
+            // read exp
+            if (readExp || (!IsEndOfJson(ref ptr, ref end) && (*ptr == 'e' || *ptr == 'E')))
             {
-                var numstr = new String(begin, 0, (int)(ptr - begin));
-                // this is floating point values
-                return new JsonNumber(Double.Parse(numstr));
+                var isNegativeExp = false;
+                if (!readExp)
+                {
+                    ptr++;
+                }
+                if (!IsEndOfJson(ref ptr, ref end) && (*ptr == '+' || *ptr == '-'))
+                {
+                    isNegativeExp = *ptr == '-';
+                    ptr++;
+                }
+                AssertDigit(ref ptr, ref end, "number is required after the exponent sign.");
+
+                // read exp value
+                var expValue = ReadInteger(ref ptr, ref end);
+                if (isNegativeExp)
+                {
+                    while (expValue-- > 0)
+                    {
+                        value /= 10;
+                    }
+                }
+                else
+                {
+                    while (expValue-- > 0)
+                    {
+                        value *= 10;
+                    }
+                }
             }
-            // this is integer
-            // parsing integer is faster than Int64.Parse
-            long total = 0;
-            for (var np = begin; np != ptr; np++)
-            {
-                total = total * 10 + (*np - '0');
-            }
-            return new JsonNumber(total);
+
+            return new JsonNumber(value);
         }
 
         // read values -----------------------------------
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private long ReadInteger(ref char* ptr, ref char* end)
+        {
+            long value = 0;
+            do
+            {
+                value = value * 10 + (*ptr - '0');
+                ptr++;
+            } while (!IsEndOfJson(ref ptr, ref end) && IsDigit(ptr));
+            return value;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private JsonBoolean ReadTrue(ref char* ptr, ref char* end)
@@ -443,11 +522,20 @@ namespace Cadena.Meteor._Internals
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Assert(char* ptr, ref char* end, char c)
+        private void Assert(ref char* ptr, ref char* end, char c)
         {
             if (IsEndOfJson(ref ptr, ref end) || *ptr != c)
             {
                 CreateException(ptr, $"{c} is expected in this place, but placed char is {*ptr}.");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AssertDigit(ref char* ptr, ref char* end, string message)
+        {
+            if (IsEndOfJson(ref ptr, ref end) || !IsDigit(ptr))
+            {
+                throw CreateException(ptr, message);
             }
         }
 
@@ -466,17 +554,6 @@ namespace Cadena.Meteor._Internals
         private bool IsWhitespace(char* c)
         {
             return *c == ' ' || *c == '\t' || *c == '\r' || *c == '\n';
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool SkipDigits(ref char* ptr, ref char* end)
-        {
-            if (!IsDigit(ptr)) return false;
-            do
-            {
-                ptr++;
-            } while (!IsEndOfJson(ref ptr, ref end) && IsDigit(ptr));
-            return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

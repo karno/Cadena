@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Text.Json;
 using Cadena.Meteor;
 using Codeplex.Data;
@@ -11,6 +13,19 @@ namespace Cadena.Test
     [TestClass]
     public class MeteorJsonTest
     {
+        const int LoopCount = 100;
+
+        [TestMethod]
+        public void MeteorJsonValueTest()
+        {
+            Assert.AreEqual(1234567890e0, MeteorJson.Parse("1234567890e0").GetDouble());
+            Assert.AreEqual(1.234567890e4, MeteorJson.Parse("1.234567890e4").GetDouble(), 0.00000001);
+            Assert.AreEqual(-543.21e-4, MeteorJson.Parse("-543.21e-4").GetDouble(), 0.0000001);
+            Assert.AreEqual(
+                "＼(#`・△・)/ < Merurulince Rede Arls!",
+                MeteorJson.Parse(@"""＼(#`・△・)/ < Merurulince Rede Arls!""").GetString());
+        }
+
         [TestMethod]
         public void MeteorJsonDecodeTest()
         {
@@ -20,6 +35,7 @@ namespace Cadena.Test
                 {
                     // Trace.WriteLine(MeteorJson.Parse(elements).ToString());
                     Trace.WriteLine(MeteorJson.Parse(elements).ToString());
+                    Trace.WriteLine(SafeMeteorJson.Parse(elements).ToString());
                 }
 
             }
@@ -34,7 +50,7 @@ namespace Cadena.Test
         public void MeteorJsonPerformanceTest()
         {
             var cs = "";
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < LoopCount; i++)
             {
                 foreach (var elements in TweetSamples.GetStreamSampleElements())
                 {
@@ -49,10 +65,68 @@ namespace Cadena.Test
         }
 
         [TestMethod]
+        public void MeteorJsonStreamPerformanceTest()
+        {
+            var cs = "";
+            for (int i = 0; i < LoopCount; i++)
+            {
+                foreach (var elements in TweetSamples.GetStreamSampleElements())
+                {
+                    var memstream = new MemoryStream(Encoding.UTF8.GetBytes(elements));
+                    var reader = new JsonStreamReader(memstream);
+                    var parsed = reader.Parse();
+                    if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
+                    {
+                        cs = "@" + parsed["user"]["screen_name"].GetString() + ": " + parsed["text"].GetString();
+                    }
+                }
+            }
+            // Trace.WriteLine(cs);
+        }
+
+        [TestMethod]
+        public void SafeMeteorJsonPerformanceTest()
+        {
+            var cs = "";
+            for (int i = 0; i < LoopCount; i++)
+            {
+                foreach (var elements in TweetSamples.GetStreamSampleElements())
+                {
+                    var parsed = SafeMeteorJson.Parse(elements);
+                    if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
+                    {
+                        cs = "@" + parsed["user"]["screen_name"].GetString() + ": " + parsed["text"].GetString();
+                    }
+                }
+            }
+            // Trace.WriteLine(cs);
+        }
+
+        [TestMethod]
+        public void SafeMeteorJsonStreamPerformanceTest()
+        {
+            var cs = "";
+            for (int i = 0; i < LoopCount; i++)
+            {
+                foreach (var elements in TweetSamples.GetStreamSampleElements())
+                {
+                    var memstream = new MemoryStream(Encoding.UTF8.GetBytes(elements));
+                    var reader = new JsonSafeStreamReader(memstream);
+                    var parsed = reader.Parse();
+                    if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
+                    {
+                        cs = "@" + parsed["user"]["screen_name"].GetString() + ": " + parsed["text"].GetString();
+                    }
+                }
+            }
+            // Trace.WriteLine(cs);
+        }
+
+        [TestMethod]
         public void DynamicJsonPerformanceTest()
         {
             var cs = "";
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < LoopCount; i++)
             {
                 foreach (var elements in TweetSamples.GetStreamSampleElements())
                 {
@@ -70,7 +144,7 @@ namespace Cadena.Test
         public void NewtonsoftJsonPerformanceTest()
         {
             var cs = "";
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < LoopCount; i++)
             {
                 foreach (var elements in TweetSamples.GetStreamSampleElements())
                 {
@@ -89,7 +163,7 @@ namespace Cadena.Test
         public void SystemTextJsonPerformanceTest()
         {
             var cs = "";
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < LoopCount; i++)
             {
                 foreach (var elements in TweetSamples.GetStreamSampleElements())
                 {
@@ -129,6 +203,27 @@ namespace Cadena.Test
             MeteorJsonPerformanceTest();
             sw.Stop();
             Trace.WriteLine($"MeteorJson: {sw.ElapsedMilliseconds} ms.");
+            sw.Reset();
+
+            MeteorJsonPerformanceTest();
+            sw.Start();
+            MeteorJsonStreamPerformanceTest();
+            sw.Stop();
+            Trace.WriteLine($"MeteorJson(Stream): {sw.ElapsedMilliseconds} ms.");
+            sw.Reset();
+
+            MeteorJsonPerformanceTest();
+            sw.Start();
+            SafeMeteorJsonPerformanceTest();
+            sw.Stop();
+            Trace.WriteLine($"MeteorJson(Safe): {sw.ElapsedMilliseconds} ms.");
+            sw.Reset();
+
+            MeteorJsonPerformanceTest();
+            sw.Start();
+            SafeMeteorJsonStreamPerformanceTest();
+            sw.Stop();
+            Trace.WriteLine($"MeteorJson(SafeStream): {sw.ElapsedMilliseconds} ms.");
             sw.Reset();
 
             NewtonsoftJsonPerformanceTest();
