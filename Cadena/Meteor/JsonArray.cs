@@ -27,6 +27,26 @@ namespace Cadena.Meteor
             _values = values;
         }
 
+        public IEnumerable<string> AsString()
+        {
+            return _values.Select(v => v.GetString());
+        }
+
+        public IEnumerable<long> AsLong()
+        {
+            return _values.Select(v => v.GetLong());
+        }
+
+        public IEnumerable<double> AsDouble()
+        {
+            return _values.Select(v => v.GetDouble());
+        }
+
+        public IEnumerable<bool> AsBoolean()
+        {
+            return _values.Select(v => v.GetBoolean());
+        }
+
         public override JsonValue GetValue(int index)
         {
             return _values[index];

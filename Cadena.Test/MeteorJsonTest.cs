@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using Cadena.Meteor;
+using Cadena.Meteor.Safe;
 using Codeplex.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -158,16 +159,15 @@ namespace Cadena.Test
             // Trace.WriteLine(cs);
         }
 
-
         [TestMethod]
         public void SystemTextJsonPerformanceTest()
         {
             var cs = "";
+            var parser = new JsonParser();
             for (int i = 0; i < LoopCount; i++)
             {
                 foreach (var elements in TweetSamples.GetStreamSampleElements())
                 {
-                    var parser = new JsonParser();
                     var parsed = parser.Parse(elements) as Dictionary<string, object>;
                     if (parsed != null && parsed.ContainsKey("text") && parsed.ContainsKey("user") && ((Dictionary<string, object>)parsed["user"]).ContainsKey("screen_name"))
                     {
@@ -198,18 +198,18 @@ namespace Cadena.Test
             Trace.WriteLine($"System.Text.Json: {sw.ElapsedMilliseconds} ms.");
             sw.Reset();
 
+            NewtonsoftJsonPerformanceTest();
+            sw.Start();
+            NewtonsoftJsonPerformanceTest();
+            sw.Stop();
+            Trace.WriteLine($"Newtonsoft.Json: {sw.ElapsedMilliseconds} ms.");
+            sw.Reset();
+
             MeteorJsonPerformanceTest();
             sw.Start();
             MeteorJsonPerformanceTest();
             sw.Stop();
             Trace.WriteLine($"MeteorJson: {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
-
-            MeteorJsonPerformanceTest();
-            sw.Start();
-            MeteorJsonStreamPerformanceTest();
-            sw.Stop();
-            Trace.WriteLine($"MeteorJson(Stream): {sw.ElapsedMilliseconds} ms.");
             sw.Reset();
 
             MeteorJsonPerformanceTest();
@@ -221,16 +221,16 @@ namespace Cadena.Test
 
             MeteorJsonPerformanceTest();
             sw.Start();
+            MeteorJsonStreamPerformanceTest();
+            sw.Stop();
+            Trace.WriteLine($"MeteorJson(Stream): {sw.ElapsedMilliseconds} ms.");
+            sw.Reset();
+
+            MeteorJsonPerformanceTest();
+            sw.Start();
             SafeMeteorJsonStreamPerformanceTest();
             sw.Stop();
             Trace.WriteLine($"MeteorJson(SafeStream): {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
-
-            NewtonsoftJsonPerformanceTest();
-            sw.Start();
-            NewtonsoftJsonPerformanceTest();
-            sw.Stop();
-            Trace.WriteLine($"Newtonsoft.Json: {sw.ElapsedMilliseconds} ms.");
             sw.Reset();
         }
     }

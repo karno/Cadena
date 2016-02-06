@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Cadena.Meteor._Internals
+namespace Cadena.Meteor.Safe
 {
     public abstract class MeteorSafeJsonParserBase
     {
-        const int StringBufferLength = 32;
+        const int StringBufferLength = 64;
 
         /// <summary>
         /// Read value.
@@ -377,7 +377,6 @@ namespace Cadena.Meteor._Internals
             return new JsonNumber(longValue);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private JsonNumber ReadRealNumber(bool isNegative, long intpart, ref char[] buffer, ref int index, ref int length)
         {
             Debug.Assert(!IsEndOfJson(ref buffer, ref index, ref length) && (buffer[index] == '.' || buffer[index] == '-'));
@@ -457,6 +456,7 @@ namespace Cadena.Meteor._Internals
             } while (!IsEndOfJson(ref buffer, ref index, ref length) && IsDigit(buffer, index));
             return value;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private JsonBoolean ReadTrue(ref char[] buffer, ref int index, ref int length)
         {

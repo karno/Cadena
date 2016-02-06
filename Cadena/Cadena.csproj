@@ -153,12 +153,14 @@
     <Compile Include="Meteor\JsonNumber.cs" />
     <Compile Include="Meteor\JsonObject.cs" />
     <Compile Include="Meteor\JsonParseException.cs" />
+    <Compile Include="Meteor\Safe\JsonSafeStreamReader.cs" />
     <Compile Include="Meteor\JsonStreamReader.cs" />
     <Compile Include="Meteor\JsonString.cs" />
     <Compile Include="Meteor\JsonValue.cs" />
-    <Compile Include="Meteor\_Internals\MeteorJsonParserBase.cs" />
+    <Compile Include="Meteor\MeteorJsonParserBase.cs" />
     <Compile Include="Meteor\MeteorJson.cs" />
-    <Compile Include="Meteor\_Internals\MeteorSafeJsonParserBase.cs" />
+    <Compile Include="Meteor\Safe\SafeMeteorJson.cs" />
+    <Compile Include="Meteor\Safe\MeteorSafeJsonParserBase.cs" />
     <Compile Include="ProblemType.cs" />
     <Compile Include="Engine\RequestEngine.cs" />
     <Compile Include="Engine\ReceiveEngine.cs" />

@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Cadena.Meteor._Internals
+namespace Cadena.Meteor
 {
     public abstract unsafe class MeteorJsonParserBase
     {
-        const int StringBufferLength = 32;
+        const int StringBufferLength = 64;
 
         /// <summary>
         /// Read value.
@@ -315,8 +315,8 @@ namespace Cadena.Meteor._Internals
                 }
                 // return from builder
                 builder.Append(bufptr, (int)(bp - bufptr));
-                return new JsonString(builder.ToString());
             }
+            return new JsonString(builder.ToString());
         }
 
         private JsonNumber ReadNumber(ref char* ptr, ref char* end)
@@ -337,13 +337,14 @@ namespace Cadena.Meteor._Internals
                 ptr++;
             }
 
-            // check before reading numbers
+            // check before reading integer 
             // only call after - or +
             // otherwise, parent don't call this method.
             AssertDigit(ref ptr, ref end, "number is required after the sign.");
 
-            // read main int 
+            // read main integer
             var longValue = ReadInteger(ref ptr, ref end);
+
             // read frac
             if (!IsEndOfJson(ref ptr, ref end) && *ptr == '.')
             {
@@ -365,6 +366,8 @@ namespace Cadena.Meteor._Internals
                     }
                     ptr++;
                 }
+
+                // check before reading exp value
                 AssertDigit(ref ptr, ref end, "number is required after the exponent sign.");
 
                 // read exp value
@@ -384,7 +387,6 @@ namespace Cadena.Meteor._Internals
             return new JsonNumber(longValue);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private JsonNumber ReadRealNumber(bool isNegative, long intpart, ref char* ptr, ref char* end)
         {
             Debug.Assert(!IsEndOfJson(ref ptr, ref end) && (*ptr == '.' || *ptr == '-'));

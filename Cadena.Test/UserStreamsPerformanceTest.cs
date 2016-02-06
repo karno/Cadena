@@ -22,7 +22,7 @@ namespace Cadena.Test
     public class UserStreamsPerformanceTest
     {
         [TestMethod]
-        public async Task UserStreamParserPerformanceTest()
+        public void UserStreamParserPerformanceTest()
         {
             var source = new CancellationTokenSource();
             var handler = new PseudoStreamHandler();

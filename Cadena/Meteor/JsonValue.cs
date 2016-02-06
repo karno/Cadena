@@ -78,6 +78,18 @@ namespace Cadena.Meteor
         {
             throw new NotSupportedException();
         }
+
+        [CanBeNull]
+        public JsonArray GetArray()
+        {
+            return this as JsonArray;
+        }
+
+        [CanBeNull]
+        public JsonObject GetObject()
+        {
+            return this as JsonObject;
+        }
     }
 }
 

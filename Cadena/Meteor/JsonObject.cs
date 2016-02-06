@@ -42,7 +42,7 @@ namespace Cadena.Meteor
 
         public override bool TryGetValue(string key, out JsonValue value)
         {
-            return base.TryGetValue(key, out value);
+            return _dictionary.TryGetValue(key, out value);
         }
 
         public override JsonValue GetValue(string key)
