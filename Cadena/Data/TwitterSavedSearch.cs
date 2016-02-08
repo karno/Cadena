@@ -1,4 +1,5 @@
 ﻿using System;
+using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
 
@@ -16,6 +17,15 @@ namespace Cadena.Data
                 .ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
             Name = json.name;
             Query = json.query;
+        }
+
+        internal TwitterSavedSearch(JsonValue json)
+        {
+            Id = json["id_str"].AsString().ParseLong();
+            CreatedAt = json["created_at"].AsString()
+                .ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
+            Query = json["query"].AsString().AssertNotNull("json.query could not be null.");
+            Name = json["name"].AsString() ?? Query;
         }
 
         /// <summary>

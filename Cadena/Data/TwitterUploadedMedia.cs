@@ -1,4 +1,5 @@
-﻿using Cadena.Util;
+﻿using Cadena.Meteor;
+using Cadena.Util;
 
 namespace Cadena.Data
 {
@@ -26,6 +27,25 @@ namespace Cadena.Data
                 Payload = new TwitterUploadedVideoPayload(json.video);
             }
         }
+
+        public TwitterUploadedMedia(JsonValue json)
+        {
+            MediaId = json["media_id_string"].AsString().ParseLong();
+            var size = json["size"];
+            Size = size.IsNumber ? (int)size.AsLong() : (int?)null;
+            var expire = json["expires_after_secs"];
+            ExpireAfterSecs = expire.IsNumber ? (int)expire.AsLong() : (int?)null;
+            var image = json["image"].AsObject();
+            var video = json["video"].AsObject();
+            if (image != null)
+            {
+                Payload = new TwitterUploadedPhotoPayload(image);
+            }
+            else if (video != null)
+            {
+                Payload = new TwitterUploadedVideoPayload(video);
+            }
+        }
     }
 
     public abstract class TwitterUploadedMediaPayload { }
@@ -44,6 +64,13 @@ namespace Cadena.Data
             Height = image.h;
             ImageType = image.image_type;
         }
+
+        public TwitterUploadedPhotoPayload(JsonValue image)
+        {
+            Width = (int)image["w"].AsLong();
+            Height = (int)image["h"].AsLong();
+            ImageType = image["image_type"].AsString();
+        }
     }
 
     public class TwitterUploadedVideoPayload : TwitterUploadedMediaPayload
@@ -53,6 +80,11 @@ namespace Cadena.Data
         public TwitterUploadedVideoPayload(dynamic video)
         {
             VideoType = video.video_type;
+        }
+
+        public TwitterUploadedVideoPayload(JsonValue video)
+        {
+            VideoType = video["video_type"].AsString();
         }
     }
 }

@@ -62,40 +62,41 @@ namespace Cadena.Engine._Internals.Parsers
                 //
 
                 // friends lists
-                JsonValue friends;
-                if (graph.TryGetValue("friends", out friends))
+                var friends = graph["friends"].AsArray();
+                if (friends != null)
                 {
                     // friends enumeration
-                    var friendsIds = ((JsonArray)friends).Select(v => v.GetLong()).ToArray();
+                    var friendsIds = friends.Select(v => v.AsLong()).ToArray();
                     handler.OnMessage(new StreamEnumeration(friendsIds));
                     return;
                 }
-                if (graph.TryGetValue("friends_str", out friends))
+                friends = graph["friends_str"].AsArray();
+                if (friends != null)
                 {
                     // friends enumeration(stringified)
-                    var friendsIds = ((JsonArray)friends).Select(v => v.GetString().ParseLong()).ToArray();
+                    var friendsIds = friends.Select(v => v.AsString().ParseLong()).ToArray();
                     handler.OnMessage(new StreamEnumeration(friendsIds));
                     return;
                 }
 
-                JsonValue @event;
-                if (graph.TryGetValue("event", out @event))
+                var @event = graph["event"].AsString();
+                if (@event != null)
                 {
-                    ParseStreamEvent(@event.GetString().ToLower(), graph, handler);
+                    ParseStreamEvent(@event.ToLower(), graph, handler);
                     return;
                 }
 
                 // too many follows warning
-                JsonValue warning;
-                if (graph.TryGetValue("warning", out warning))
+                var warning = graph["warning"].AsObject();
+                if (warning != null)
                 {
-                    var code = warning["code"].GetString();
+                    var code = warning["code"].AsString();
                     if (code == "FOLLOWS_OVER_LIMIT")
                     {
                         handler.OnMessage(new StreamTooManyFollowsWarning(
                             code,
-                            warning["message"].GetString(),
-                            warning["user_id"].GetLong(),
+                            warning["message"].AsString(),
+                            warning["user_id"].AsLong(),
                             TwitterStreamParser.GetTimestamp(warning)));
                         return;
                     }
@@ -123,7 +124,7 @@ namespace Cadena.Engine._Internals.Parsers
             {
                 var source = new TwitterUser(graph[EventSourceKey]);
                 var target = new TwitterUser(graph[EventTargetKey]);
-                var timestamp = graph[EventCreatedAtKey].GetString().ParseTwitterDateTime();
+                var timestamp = graph[EventCreatedAtKey].AsString().ParseTwitterDateTime();
                 switch (ev)
                 {
                     case "favorite":

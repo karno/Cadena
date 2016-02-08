@@ -11,6 +11,17 @@ namespace Cadena.Util
     {
         public const string TwitterDateTimeFormat = "ddd MMM d HH':'mm':'ss zzz yyyy";
 
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string AssertNotNull([CanBeNull] this string s, string message)
+        {
+            if (s == null)
+            {
+                throw new ArgumentException(message);
+            }
+            return s;
+        }
+
         /// <summary>
         /// Parse text as bool
         /// </summary>

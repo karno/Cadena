@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
 
@@ -49,6 +50,50 @@ namespace Cadena.Data
                 if (json.entities.description())
                 {
                     DescriptionEntities = Enumerable.ToArray(TwitterEntity.ParseEntities(json.entities.description));
+                }
+            }
+        }
+
+        public TwitterUser(JsonValue json)
+        {
+            Id = json["id_str"].AsString().ParseLong();
+            ScreenName = ParsingExtension.ResolveEntity(json["screen_name"].AsString());
+            Name = ParsingExtension.ResolveEntity(json["name"].AsString() ?? String.Empty);
+            Description = ParsingExtension.ResolveEntity(json["description"].AsString() ?? String.Empty);
+            Location = ParsingExtension.ResolveEntity(json["location"].AsString() ?? String.Empty);
+            Url = json["url"].AsString();
+            IsDefaultProfileImage = json["default_profile_image"].AsBoolean();
+            ProfileImageUri = json["profile_image_url"].AsString().ParseUri();
+            ProfileBackgroundImageUri = json["profile_background_image_url"].AsString().ParseUri();
+            var banner = json["profile_banner_url"].AsString();
+            if (banner != null)
+            {
+                ProfileBannerUri = banner.ParseUri();
+            }
+            IsProtected = json["protected"].AsBoolean();
+            IsVerified = json["verified"].AsBoolean();
+            IsTranslator = json["is_translator"].AsBoolean();
+            IsContributorsEnabled = json["contributors_enabled"].AsBoolean();
+            IsGeoEnabled = json["geo_enabled"].AsBoolean();
+            StatusesCount = json["statuses_count"].AsLong();
+            FollowingsCount = json["friends_count"].AsLong();
+            FollowersCount = json["followers_count"].AsLong();
+            FavoritesCount = json["favourites_count"].AsLong();
+            ListedCount = json["listed_count"].AsLong();
+            Language = json["lang"].AsString();
+            CreatedAt = json["created_at"].AsString().ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
+            var entities = json["entities"].AsObject();
+            if (entities != null)
+            {
+                var urls = entities["url"].AsString();
+                var descs = entities["description"].AsString();
+                if (urls != null)
+                {
+                    UrlEntities = TwitterEntity.ParseEntities(urls).ToArray();
+                }
+                if (descs != null)
+                {
+                    DescriptionEntities = TwitterEntity.ParseEntities(descs).ToArray();
                 }
             }
         }

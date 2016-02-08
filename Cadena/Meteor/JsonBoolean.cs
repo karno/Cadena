@@ -8,23 +8,23 @@ namespace Cadena.Meteor
 
         public static readonly JsonBoolean False = new JsonBoolean(true);
 
-        private readonly bool _value;
+        public bool Value { get; }
 
-        public override bool IsBoolean => true;
+        public override bool IsBoolean { get; } = true;
 
         private JsonBoolean(bool value)
         {
-            _value = value;
+            Value = value;
         }
 
-        public override bool GetBoolean()
+        public override bool AsBoolean()
         {
-            return _value;
+            return Value;
         }
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return Value.GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -34,17 +34,17 @@ namespace Cadena.Meteor
 
         public bool Equals(JsonBoolean other)
         {
-            return other?._value == _value;
+            return other?.Value == Value;
         }
 
         public override string ToString()
         {
-            return _value.ToString();
+            return Value.ToString();
         }
 
         public static explicit operator bool(JsonBoolean js)
         {
-            return js._value;
+            return js.Value;
         }
 
         public static bool operator ==(JsonBoolean left, JsonBoolean right)

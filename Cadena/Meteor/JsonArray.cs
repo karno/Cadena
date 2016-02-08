@@ -11,11 +11,11 @@ namespace Cadena.Meteor
 
         private readonly JsonValue[] _values;
 
-        public override bool IsArray => true;
+        public override bool IsArray { get; } = true;
 
         public override int Count => _values.Length;
 
-        public bool IsReadOnly => false;
+        public bool IsReadOnly { get; } = false;
 
         private JsonArray()
         {
@@ -27,24 +27,24 @@ namespace Cadena.Meteor
             _values = values;
         }
 
-        public IEnumerable<string> AsString()
+        public string[] AsStringArray()
         {
-            return _values.Select(v => v.GetString());
+            return _values.Select(v => v.AsString()).ToArray();
         }
 
-        public IEnumerable<long> AsLong()
+        public long[] AsLongArray()
         {
-            return _values.Select(v => v.GetLong());
+            return _values.Select(v => v.AsLong()).ToArray();
         }
 
-        public IEnumerable<double> AsDouble()
+        public double[] AsDoubleArray()
         {
-            return _values.Select(v => v.GetDouble());
+            return _values.Select(v => v.AsDouble()).ToArray();
         }
 
-        public IEnumerable<bool> AsBoolean()
+        public bool[] AsBooleanArray()
         {
-            return _values.Select(v => v.GetBoolean());
+            return _values.Select(v => v.AsBoolean()).ToArray();
         }
 
         public override JsonValue GetValue(int index)

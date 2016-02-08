@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
 
@@ -85,6 +86,71 @@ namespace Cadena.Data
                     Latitude = (double)json.coordinates.coordinates[1];
                 }
             }
+        }
+
+        internal TwitterStatus(JsonValue json)
+        {
+            Id = json["id_str"].AsString().ParseLong();
+            CreatedAt = json["created_at"].AsString().ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
+            Text = ParsingExtension.ResolveEntity(json["text"].AsString());
+            if (json.ContainsKey("extended_entities"))
+            {
+                // get correctly typed entities array
+                var orgEntities = TwitterEntity.ParseEntities(json["entities"]).ToArray();
+                var extEntities = TwitterEntity.ParseEntities(json["extended_entities"]).ToArray();
+
+                // merge entities
+                Entities = orgEntities.Where(e => e.EntityType != EntityType.Media)
+                                           .Concat(extEntities) // extended entities contains media entities only.
+                                           .ToArray();
+            }
+            else if (json.ContainsKey("entities"))
+            {
+                Entities = TwitterEntity.ParseEntities(json["entities"]).ToArray();
+            }
+            else
+            {
+                Entities = new TwitterEntity[0];
+            }
+            if (json.ContainsKey("recipient"))
+            {
+                // THIS IS DIRECT MESSAGE!
+                StatusType = StatusType.DirectMessage;
+                User = new TwitterUser(json["sender"]);
+                Recipient = new TwitterUser(json["recipient"]);
+            }
+            else
+            {
+                StatusType = StatusType.Tweet;
+                User = new TwitterUser(json["user"]);
+                Source = json["source"].AsString();
+                InReplyToStatusId = json["in_reply_to_status_id_str"].AsString().ParseNullableId();
+                InReplyToUserId = json["in_reply_to_user_id_str"].AsString().ParseNullableId();
+                InReplyToScreenName = json["in_reply_to_screen_name"].AsString();
+
+                if (json.ContainsKey("retweeted_status"))
+                {
+                    var retweeted = new TwitterStatus(json["retweeted_status"]);
+                    RetweetedStatus = retweeted;
+                    RetweetedStatusId = retweeted.Id;
+                    // merge text and entities
+                    Text = retweeted.Text;
+                    Entities = retweeted.Entities;
+                }
+                if (json.ContainsKey("quoted_status"))
+                {
+                    var quoted = new TwitterStatus(json["quoted_status"]);
+                    QuotedStatus = quoted;
+                    QuotedStatusId = quoted.Id;
+                }
+                var coordinates = json["coordinates"].AsArray()?.AsDoubleArray();
+                if (coordinates != null)
+                {
+                    Longitude = coordinates[0];
+                    Latitude = coordinates[1];
+                }
+            }
+
         }
 
         /// <summary>

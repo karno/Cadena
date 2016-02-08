@@ -139,7 +139,7 @@ namespace Cadena.Meteor.Safe
 
                 // read key
                 Assert(ref buffer, ref index, ref length, '\"');
-                var key = ReadString(ref buffer, ref index, ref length).GetString();
+                var key = ReadString(ref buffer, ref index, ref length).AsString();
 
                 if (dict.ContainsKey(key))
                 {

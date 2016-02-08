@@ -1,4 +1,5 @@
 ﻿using System;
+using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
 
@@ -48,6 +49,23 @@ namespace Cadena.Data
             {
                 throw new ArgumentException("json.description could not be null.");
             }
+        }
+
+        internal TwitterList(JsonValue json)
+        {
+            Id = json["id_str"].AsString().ParseLong();
+            User = new TwitterUser(json["user"]);
+            Name = json["name"].AsString().AssertNotNull("json.name could not be null.");
+            FullName = json["full_name"].AsString().AssertNotNull("json.full_name could not be null.");
+            Uri = new Uri(TwitterListUriPrefix + json["uri"].AsString().AssertNotNull("json.url could not be null."));
+            Slug = json["slug"].AsString().AssertNotNull("json.slug could not be null.");
+            ListMode = json["mode"].AsString() == "public"
+                ? ListMode.Public
+                : ListMode.Private;
+            Description = json["description"].AsString().AssertNotNull("json.description could not be null.");
+            MemberCount = json["member_count"].AsLong();
+            SubscriberCount = json["subscriber_count"].AsLong();
+            CreatedAt = json["created_at"].AsString().ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
         }
 
         /// <summary>

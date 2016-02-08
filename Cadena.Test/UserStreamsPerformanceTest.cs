@@ -22,6 +22,23 @@ namespace Cadena.Test
     public class UserStreamsPerformanceTest
     {
         [TestMethod]
+        public void UserStreamDynamicParserPerformanceTest()
+        {
+            var source = new CancellationTokenSource();
+            var handler = new PseudoStreamHandler();
+            var received = 0;
+            source.CancelAfter(TimeSpan.FromSeconds(10));
+            foreach (var content in TweetSamples.GetStreamSamples())
+            {
+                if (source.IsCancellationRequested) break;
+                received++;
+                UserStreamParserDynamic.ParseStreamLine(content, handler);
+            }
+            Trace.WriteLine("received:" + received);
+            Trace.WriteLine("handler: statuses: " + handler.ReceivedStatuses + " / events: " + handler.ReceivedEvents);
+        }
+
+        [TestMethod]
         public void UserStreamParserPerformanceTest()
         {
             var source = new CancellationTokenSource();
@@ -31,11 +48,13 @@ namespace Cadena.Test
             foreach (var content in TweetSamples.GetStreamSamples())
             {
                 if (source.IsCancellationRequested) break;
-                UserStreamParserDynamic.ParseStreamLine(content, handler);
+                received++;
+                UserStreamParser.ParseStreamLine(content, handler);
             }
             Trace.WriteLine("received:" + received);
             Trace.WriteLine("handler: statuses: " + handler.ReceivedStatuses + " / events: " + handler.ReceivedEvents);
         }
+
 
         [TestMethod]
         public async Task StreamWinderPerformanceTest()
@@ -61,6 +80,7 @@ namespace Cadena.Test
             }
             System.Diagnostics.Debug.WriteLine(received);
             // i promise myself the cadena engine can handle > 10K events per second.
+            Trace.WriteLine("receiver 1 result:");
             Trace.WriteLine("received:" + received);
             Trace.WriteLine("handler: statuses: " + handler.ReceivedStatuses + " / events: " + handler.ReceivedEvents);
             // Assert.IsTrue(received > 10000 * 10);

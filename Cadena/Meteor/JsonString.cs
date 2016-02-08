@@ -5,24 +5,24 @@ namespace Cadena.Meteor
 {
     public class JsonString : JsonValue, IEquatable<JsonString>
     {
-        private readonly string _value;
+        public string Value { get; }
 
-        public override bool IsString => true;
+        public override bool IsString { get; } = true;
 
         public JsonString([NotNull] string value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
-            _value = value;
+            Value = value;
         }
 
-        public override string GetString()
+        public override string AsString()
         {
-            return _value;
+            return Value;
         }
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return Value.GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -32,17 +32,17 @@ namespace Cadena.Meteor
 
         public bool Equals(JsonString other)
         {
-            return other?._value == _value;
+            return other?.Value == Value;
         }
 
         public override string ToString()
         {
-            return "\"" + _value + "\"";
+            return "\"" + Value + "\"";
         }
 
         public static explicit operator string(JsonString js)
         {
-            return js._value;
+            return js.Value;
         }
 
         public static bool operator ==(JsonString left, JsonString right)

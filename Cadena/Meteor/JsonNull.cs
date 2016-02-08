@@ -11,7 +11,7 @@ namespace Cadena.Meteor
             return 0;
         }
 
-        public override bool IsNull => true;
+        public override bool IsNull { get; } = true;
 
         private JsonNull()
         {

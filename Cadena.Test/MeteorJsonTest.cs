@@ -19,12 +19,12 @@ namespace Cadena.Test
         [TestMethod]
         public void MeteorJsonValueTest()
         {
-            Assert.AreEqual(1234567890e0, MeteorJson.Parse("1234567890e0").GetDouble());
-            Assert.AreEqual(1.234567890e4, MeteorJson.Parse("1.234567890e4").GetDouble(), 0.00000001);
-            Assert.AreEqual(-543.21e-4, MeteorJson.Parse("-543.21e-4").GetDouble(), 0.0000001);
+            Assert.AreEqual(1234567890e0, MeteorJson.Parse("1234567890e0").AsDouble());
+            Assert.AreEqual(1.234567890e4, MeteorJson.Parse("1.234567890e4").AsDouble(), 0.00000001);
+            Assert.AreEqual(-543.21e-4, MeteorJson.Parse("-543.21e-4").AsDouble(), 0.0000001);
             Assert.AreEqual(
                 "＼(#`・△・)/ < Merurulince Rede Arls!",
-                MeteorJson.Parse(@"""＼(#`・△・)/ < Merurulince Rede Arls!""").GetString());
+                MeteorJson.Parse(@"""＼(#`・△・)/ < Merurulince Rede Arls!""").AsString());
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace Cadena.Test
                     var parsed = MeteorJson.Parse(elements);
                     if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
                     {
-                        cs = "@" + parsed["user"]["screen_name"].GetString() + ": " + parsed["text"].GetString();
+                        cs = "@" + parsed["user"]["screen_name"].AsString() + ": " + parsed["text"].AsString();
                     }
                 }
             }
@@ -78,7 +78,7 @@ namespace Cadena.Test
                     var parsed = reader.Parse();
                     if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
                     {
-                        cs = "@" + parsed["user"]["screen_name"].GetString() + ": " + parsed["text"].GetString();
+                        cs = "@" + parsed["user"]["screen_name"].AsString() + ": " + parsed["text"].AsString();
                     }
                 }
             }
@@ -96,7 +96,7 @@ namespace Cadena.Test
                     var parsed = SafeMeteorJson.Parse(elements);
                     if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
                     {
-                        cs = "@" + parsed["user"]["screen_name"].GetString() + ": " + parsed["text"].GetString();
+                        cs = "@" + parsed["user"]["screen_name"].AsString() + ": " + parsed["text"].AsString();
                     }
                 }
             }
@@ -116,7 +116,7 @@ namespace Cadena.Test
                     var parsed = reader.Parse();
                     if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
                     {
-                        cs = "@" + parsed["user"]["screen_name"].GetString() + ": " + parsed["text"].GetString();
+                        cs = "@" + parsed["user"]["screen_name"].AsString() + ": " + parsed["text"].AsString();
                     }
                 }
             }

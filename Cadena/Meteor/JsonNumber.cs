@@ -4,37 +4,39 @@ namespace Cadena.Meteor
 {
     public class JsonNumber : JsonValue, IEquatable<JsonNumber>
     {
-        private readonly bool _isInteger;
-        private readonly long _longValue;
-        private readonly double _doubleValue;
-
         public JsonNumber(long longValue)
         {
-            _isInteger = true;
-            _longValue = longValue;
+            IsInteger = true;
+            LongValue = longValue;
         }
 
         public JsonNumber(double doubleValue)
         {
-            _isInteger = false;
-            _doubleValue = doubleValue;
+            IsInteger = false;
+            DoubleValue = doubleValue;
         }
 
-        public override bool IsNumber => true;
+        public bool IsInteger { get; }
 
-        public override long GetLong()
+        public long LongValue { get; }
+
+        public double DoubleValue { get; }
+
+        public override bool IsNumber { get; } = true;
+
+        public override long AsLong()
         {
-            return _isInteger ? _longValue : (long)_doubleValue;
+            return IsInteger ? LongValue : (long)DoubleValue;
         }
 
-        public override double GetDouble()
+        public override double AsDouble()
         {
-            return _isInteger ? _longValue : _doubleValue;
+            return IsInteger ? LongValue : DoubleValue;
         }
 
         public override int GetHashCode()
         {
-            return _isInteger.GetHashCode() ^ _longValue.GetHashCode() ^ _doubleValue.GetHashCode();
+            return IsInteger.GetHashCode() ^ LongValue.GetHashCode() ^ DoubleValue.GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -45,19 +47,19 @@ namespace Cadena.Meteor
         public bool Equals(JsonNumber other)
         {
             if (other == null) return false;
-            return other._isInteger
-                ? other._longValue == _longValue
-                : other._doubleValue == _doubleValue;
+            return other.IsInteger
+                ? other.LongValue == LongValue
+                : Math.Abs(other.DoubleValue - DoubleValue) < Double.Epsilon;
         }
 
         public static explicit operator long(JsonNumber number)
         {
-            return number.GetLong();
+            return number.AsLong();
         }
 
         public static explicit operator double(JsonNumber number)
         {
-            return number.GetDouble();
+            return number.AsDouble();
         }
 
         public static bool operator ==(JsonNumber left, JsonNumber right)
@@ -73,7 +75,7 @@ namespace Cadena.Meteor
 
         public override string ToString()
         {
-            return _isInteger ? _longValue.ToString() : _doubleValue.ToString();
+            return IsInteger ? LongValue.ToString() : DoubleValue.ToString();
         }
     }
 }

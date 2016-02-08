@@ -5,17 +5,17 @@ namespace Cadena.Meteor
 {
     public abstract class JsonValue
     {
-        public virtual bool IsObject => false;
+        public virtual bool IsObject { get; } = false;
 
-        public virtual bool IsString => false;
+        public virtual bool IsString { get; } = false;
 
-        public virtual bool IsNumber => false;
+        public virtual bool IsNumber { get; } = false;
 
-        public virtual bool IsArray => false;
+        public virtual bool IsArray { get; } = false;
 
-        public virtual bool IsBoolean => false;
+        public virtual bool IsBoolean { get; } = false;
 
-        public virtual bool IsNull => false;
+        public virtual bool IsNull { get; } = false;
 
         public virtual int Count
         {
@@ -34,13 +34,15 @@ namespace Cadena.Meteor
             get { return GetValue(key); }
         }
 
-        public virtual bool ContainsKey(string key)
+        public virtual bool ContainsKey([NotNull] string key)
         {
+            if (key == null) throw new ArgumentNullException(nameof(key));
             return false;
         }
 
-        public virtual bool TryGetValue(string key, out JsonValue value)
+        public virtual bool TryGetValue([NotNull] string key, out JsonValue value)
         {
+            if (key == null) throw new ArgumentNullException(nameof(key));
             value = null;
             return false;
         }
@@ -55,41 +57,40 @@ namespace Cadena.Meteor
         public virtual JsonValue GetValue([NotNull] string key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            throw new NotSupportedException();
-        }
-
-        [NotNull]
-        public virtual string GetString()
-        {
-            throw new NotSupportedException();
-        }
-
-        public virtual long GetLong()
-        {
-            throw new NotSupportedException();
-        }
-
-        public virtual double GetDouble()
-        {
-            throw new NotSupportedException();
-        }
-
-        public virtual bool GetBoolean()
-        {
-            throw new NotSupportedException();
+            return JsonNull.Null;
         }
 
         [CanBeNull]
-        public JsonArray GetArray()
+        public virtual string AsString()
+        {
+            return null;
+        }
+
+        public virtual long AsLong()
+        {
+            return default(long);
+        }
+
+        public virtual double AsDouble()
+        {
+            return default(double);
+        }
+
+        public virtual bool AsBoolean()
+        {
+            return default(bool);
+        }
+
+        [CanBeNull]
+        public JsonArray AsArray()
         {
             return this as JsonArray;
         }
 
         [CanBeNull]
-        public JsonObject GetObject()
+        public JsonObject AsObject()
         {
             return this as JsonObject;
         }
     }
 }
-

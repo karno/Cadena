@@ -75,16 +75,16 @@ namespace Cadena.Engine._Internals.Parsers
                     if (delete.TryGetValue("status", out status))
                     {
                         handler.OnMessage(new StreamDelete(
-                            Int64.Parse(status["id_str"].GetString()),
-                            Int64.Parse(status["user_id_str"].GetString()),
+                            Int64.Parse(status["id_str"].AsString()),
+                            Int64.Parse(status["user_id_str"].AsString()),
                             timestamp));
                         return;
                     }
                     if (delete.TryGetValue("direct_message", out directMessage))
                     {
                         handler.OnMessage(new StreamDelete(
-                            Int64.Parse(directMessage["id_str"].GetString()),
-                            Int64.Parse(directMessage["user_id"].GetString()),
+                            Int64.Parse(directMessage["id_str"].AsString()),
+                            Int64.Parse(directMessage["user_id"].AsString()),
                             timestamp));
                         return;
                     }
@@ -95,8 +95,8 @@ namespace Cadena.Engine._Internals.Parsers
                 if (graph.TryGetValue("scrub_geo", out scrubGeo))
                 {
                     handler.OnMessage(new StreamScrubGeo(
-                        Int64.Parse(scrubGeo["user_id_str"].GetString()),
-                        Int64.Parse(scrubGeo["up_to_status_id_str"].GetString()),
+                        Int64.Parse(scrubGeo["user_id_str"].AsString()),
+                        Int64.Parse(scrubGeo["up_to_status_id_str"].AsString()),
                         GetTimestamp(scrubGeo)));
                     return;
                 }
@@ -106,7 +106,7 @@ namespace Cadena.Engine._Internals.Parsers
                 if (graph.TryGetValue("limit", out limit))
                 {
                     handler.OnMessage(new StreamLimit(
-                        limit["track"].GetLong(),
+                        limit["track"].AsLong(),
                         GetTimestamp(limit)));
                     return;
                 }
@@ -116,9 +116,9 @@ namespace Cadena.Engine._Internals.Parsers
                 if (graph.TryGetValue("status_withheld", out statusWithheld))
                 {
                     handler.OnMessage(new StreamWithheld(
-                        statusWithheld["user_id"].GetLong(),
-                        statusWithheld["id"].GetLong(),
-                        ((JsonArray)statusWithheld["withheld_in_countries"]).Select(s => s.GetString()).ToArray(),
+                        statusWithheld["user_id"].AsLong(),
+                        statusWithheld["id"].AsLong(),
+                        ((JsonArray)statusWithheld["withheld_in_countries"]).Select(s => s.AsString()).ToArray(),
                         GetTimestamp(statusWithheld)));
                     return;
                 }
@@ -126,8 +126,8 @@ namespace Cadena.Engine._Internals.Parsers
                 if (graph.TryGetValue("user_withheld", out userWithheld))
                 {
                     handler.OnMessage(new StreamWithheld(
-                        userWithheld["id"].GetLong(),
-                        ((JsonArray)statusWithheld["withheld_in_countries"]).Select(s => s.GetString()).ToArray(),
+                        userWithheld["id"].AsLong(),
+                        ((JsonArray)statusWithheld["withheld_in_countries"]).Select(s => s.AsString()).ToArray(),
                         GetTimestamp(statusWithheld)));
                     return;
                 }
@@ -137,9 +137,9 @@ namespace Cadena.Engine._Internals.Parsers
                 if (graph.TryGetValue("disconnect", out disconnect))
                 {
                     handler.OnMessage(new StreamDisconnect(
-                        (DisconnectCode)disconnect["code"].GetLong(),
-                        disconnect["stream_name"].GetString(),
-                        disconnect["reason"].GetString(),
+                        (DisconnectCode)disconnect["code"].AsLong(),
+                        disconnect["stream_name"].AsString(),
+                        disconnect["reason"].AsString(),
                         GetTimestamp(disconnect)));
                     return;
                 }
@@ -149,13 +149,13 @@ namespace Cadena.Engine._Internals.Parsers
                 if (graph.TryGetValue("warning", out warning))
                 {
                     var timestamp = GetTimestamp(warning);
-                    var code = warning["code"].GetString();
+                    var code = warning["code"].AsString();
                     if (code == "FALLING_BEHIND")
                     {
                         handler.OnMessage(new StreamStallWarning(
                             code,
-                            warning["message"].GetString(),
-                            (int)warning["percent_full"].GetLong(),
+                            warning["message"].AsString(),
+                            (int)warning["percent_full"].AsLong(),
                             timestamp));
                         return;
                     }
@@ -165,14 +165,14 @@ namespace Cadena.Engine._Internals.Parsers
                 JsonValue @event;
                 if (graph.TryGetValue("event", out @event))
                 {
-                    var ev = @event.GetString().ToLower();
+                    var ev = @event.AsString().ToLower();
                     if (ev == "user_update")
                     {
                         // parse user_update only in generic streams.
                         handler.OnMessage(new StreamUserEvent(
                             new TwitterUser(graph["source"]),
                             new TwitterUser(graph["target"]),
-                            ev, graph["created_at"].GetString().ParseTwitterDateTime()));
+                            ev, graph["created_at"].AsString().ParseTwitterDateTime()));
                         return;
                     }
                     // unknown event...
@@ -198,7 +198,7 @@ namespace Cadena.Engine._Internals.Parsers
         internal static string GetTimestamp(JsonValue graph)
         {
             return graph.ContainsKey("timestamp_ms")
-                ? graph["timestamp_ms"].GetString()
+                ? graph["timestamp_ms"].AsString()
                 : ((long)(DateTime.Now.ToUniversalTime() - StreamMessage.SerialTime)
                     .TotalMilliseconds).ToString();
         }

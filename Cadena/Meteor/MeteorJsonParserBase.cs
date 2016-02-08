@@ -10,6 +10,17 @@ namespace Cadena.Meteor
     {
         const int StringBufferLength = 64;
 
+        /* TODO: Cache object key strings.
+         * In general JSON, same object keys are used for multiple times.
+         * Therefore, we can cache it for improve parse performance.
+         *
+         * Implementation Note:
+         * Use red-black tree for caching keys.
+         * The tree is being dug according to reading the character.
+         * We can pass partial result to ReadString method 
+         * when parser noticed that the reading key is not cached yet.
+         */
+
         /// <summary>
         /// Read value.
         /// </summary>
@@ -142,7 +153,7 @@ namespace Cadena.Meteor
 
                 // read key
                 Assert(ref ptr, ref end, '\"');
-                var key = ReadString(ref ptr, ref end).GetString();
+                var key = ReadString(ref ptr, ref end).AsString();
 
                 if (dict.ContainsKey(key))
                 {

@@ -10,19 +10,16 @@ namespace Cadena.Meteor
     {
         public static readonly JsonObject Empty = new JsonObject();
 
+        [NotNull]
         private readonly Dictionary<string, JsonValue> _dictionary;
 
-        public override bool IsObject => true;
+        public override bool IsObject { get; } = true;
 
         public override int Count => _dictionary.Count;
 
-        public ICollection<string> Keys => _dictionary.Keys;
+        public IEnumerable<string> Keys => _dictionary.Keys;
 
-        IEnumerable<string> IReadOnlyDictionary<string, JsonValue>.Keys => Keys;
-
-        public ICollection<JsonValue> Values => _dictionary.Values;
-
-        IEnumerable<JsonValue> IReadOnlyDictionary<string, JsonValue>.Values => Values;
+        public IEnumerable<JsonValue> Values => _dictionary.Values;
 
         private JsonObject()
         {
@@ -34,7 +31,7 @@ namespace Cadena.Meteor
             _dictionary = new Dictionary<string, JsonValue>(dictionary);
         }
 
-        public override bool ContainsKey([NotNull] string key)
+        public override bool ContainsKey(string key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
             return _dictionary.ContainsKey(key);
@@ -42,18 +39,21 @@ namespace Cadena.Meteor
 
         public override bool TryGetValue(string key, out JsonValue value)
         {
+            if (key == null) throw new ArgumentNullException(nameof(key));
             return _dictionary.TryGetValue(key, out value);
         }
 
         public override JsonValue GetValue(string key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            return _dictionary[key];
+            JsonValue value;
+            return _dictionary.TryGetValue(key, out value) ? value : JsonNull.Null;
         }
 
         public IEnumerator<KeyValuePair<string, JsonValue>> GetEnumerator()
         {
             return _dictionary.GetEnumerator();
+
         }
 
         public override bool Equals(object obj)
@@ -63,7 +63,7 @@ namespace Cadena.Meteor
 
         public override int GetHashCode()
         {
-            return _dictionary?.GetHashCode() ?? 0;
+            return _dictionary.GetHashCode();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
