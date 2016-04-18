@@ -14,46 +14,6 @@ namespace Cadena.Data
             ScreenName = String.Empty;
         }
 
-        public TwitterUser(dynamic json)
-        {
-            Id = ((string)json.id_str).ParseLong();
-            ScreenName = ParsingExtension.ResolveEntity(json.screen_name);
-            Name = ParsingExtension.ResolveEntity(json.name ?? String.Empty);
-            Description = ParsingExtension.ResolveEntity(json.description ?? String.Empty);
-            Location = ParsingExtension.ResolveEntity(json.location ?? String.Empty);
-            Url = json.url;
-            IsDefaultProfileImage = json.default_profile_image;
-            ProfileImageUri = ((string)json.profile_image_url).ParseUri();
-            ProfileBackgroundImageUri = ((string)json.profile_background_image_url).ParseUri();
-            if (json.profile_banner_url())
-            {
-                ProfileBannerUri = ((string)json.profile_banner_url).ParseUri();
-            }
-            IsProtected = json["protected"];
-            IsVerified = json.verified;
-            IsTranslator = json.is_translator;
-            IsContributorsEnabled = json.contributors_enabled;
-            IsGeoEnabled = json.geo_enabled;
-            StatusesCount = (long)((double?)json.statuses_count ?? default(double));
-            FollowingsCount = (long)((double?)json.friends_count ?? default(double));
-            FollowersCount = (long)((double?)json.followers_count ?? default(double));
-            FavoritesCount = (long)((double?)json.favourites_count ?? default(double));
-            ListedCount = (long)((double?)json.listed_count ?? default(double));
-            Language = json.lang;
-            CreatedAt = ((string)json.created_at).ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
-            if (json.entities())
-            {
-                if (json.entities.url())
-                {
-                    UrlEntities = Enumerable.ToArray(TwitterEntity.ParseEntities(json.entities.url));
-                }
-                if (json.entities.description())
-                {
-                    DescriptionEntities = Enumerable.ToArray(TwitterEntity.ParseEntities(json.entities.description));
-                }
-            }
-        }
-
         public TwitterUser(JsonValue json)
         {
             Id = json["id_str"].AsString().ParseLong();

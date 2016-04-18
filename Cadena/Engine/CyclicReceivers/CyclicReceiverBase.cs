@@ -3,8 +3,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena.Api;
 using Cadena.Data;
+using Cadena.Twitter;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers

@@ -13,21 +13,6 @@ namespace Cadena.Data
 
         public TwitterUploadedMediaPayload Payload { get; }
 
-        public TwitterUploadedMedia(dynamic json)
-        {
-            MediaId = ((string)json.media_id_string).ParseLong();
-            Size = json.size() ? (int)json.size : (int?)null;
-            ExpireAfterSecs = json.expires_after_secs() ? (int)json.expires_after_secs : (int?)null;
-            if (json.image())
-            {
-                Payload = new TwitterUploadedPhotoPayload(json.image);
-            }
-            else if (json.video())
-            {
-                Payload = new TwitterUploadedVideoPayload(json.video);
-            }
-        }
-
         public TwitterUploadedMedia(JsonValue json)
         {
             MediaId = json["media_id_string"].AsString().ParseLong();

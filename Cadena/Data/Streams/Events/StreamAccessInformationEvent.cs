@@ -1,4 +1,5 @@
 ﻿using System;
+using Cadena.Meteor;
 using JetBrains.Annotations;
 
 namespace Cadena.Data.Streams.Events
@@ -33,10 +34,10 @@ namespace Cadena.Data.Streams.Events
         [NotNull]
         public ClientApplication ClientApplication { get; }
 
-        public AccessInformation(dynamic json)
+        public AccessInformation(JsonValue json)
         {
-            Token = json.token;
-            ClientApplication = new ClientApplication(json.client_application);
+            Token = json["token"].AsString() ?? String.Empty;
+            ClientApplication = new ClientApplication(json["client_application"]);
         }
     }
 
@@ -53,12 +54,12 @@ namespace Cadena.Data.Streams.Events
         [NotNull]
         public string ConsumerKey { get; }
 
-        public ClientApplication(dynamic json)
+        public ClientApplication(JsonValue json)
         {
-            Id = json.id;
-            Name = json.name;
-            Url = json.url;
-            ConsumerKey = json.consumer_key;
+            Id = json["id"].AsLong();
+            Name = json["name"].AsString() ?? String.Empty;
+            Url = json["url"].AsString() ?? String.Empty;
+            ConsumerKey = json["consumer_key"].AsString() ?? String.Empty;
         }
     }
 

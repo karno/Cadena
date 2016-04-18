@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Cadena.Data;
 using Cadena.Data.Streams;
 using JetBrains.Annotations;
@@ -83,7 +84,7 @@ namespace Cadena.Engine.StreamReceivers
                     {
                         break;
                     }
-                    type = type.BaseType;
+                    type = type.GetTypeInfo().BaseType;
                 } while (type != null && typeof(StreamMessage).IsAssignableFrom(type));
             }
             // invoke if value is not null

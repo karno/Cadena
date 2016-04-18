@@ -2,7 +2,7 @@
 {
     public static class SafeMeteorJson
     {
-        public static unsafe JsonValue Parse(string text)
+        public static JsonValue Parse(string text)
         {
             return new JsonStringParser(text).Parse();
         }
@@ -16,7 +16,7 @@
                 _json = json;
             }
 
-            public unsafe JsonValue Parse()
+            public JsonValue Parse()
             {
                 var array = _json.ToCharArray();
                 var index = 0;

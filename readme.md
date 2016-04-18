@@ -1,7 +1,6 @@
-# Cadena, the alchemic Twitter Library
+# Cadena, the Alchemic Twitter Library
 
-This library is built for project Krile Asterisk, but you can use this 
-library for your own project.
+This library is built for project Krile Asterisk, but you can use this library for your own project.
 
 # Contains
 
@@ -9,6 +8,8 @@ library for your own project.
 + data structures
 + very-high-performance User Streams receiver
 + request/receive schedulers
++ High-speed and High-efficiency JSON parser(a.k.a. MeteorJson)
++ Handy OAuth library(from AsyncOAuth)
 
 # License
 

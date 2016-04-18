@@ -119,8 +119,7 @@ namespace Cadena.Util
                         bytes.Add(
                             (byte)
                             int.Parse(
-                                s[++i].ToString(CultureInfo.InvariantCulture) +
-                                s[++i].ToString(CultureInfo.InvariantCulture), NumberStyles.HexNumber));
+                                s[++i].ToString() + s[++i], NumberStyles.HexNumber));
                         break;
                     case '+':
                         bytes.Add(0x20);

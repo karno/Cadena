@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.System.Threading;
 
 namespace Cadena.Engine._Internals
 {
@@ -75,7 +76,9 @@ namespace Cadena.Engine._Internals
 
         private void InvokeNewTask()
         {
-            ThreadPool.UnsafeQueueUserWorkItem(async _ =>
+            // fire and forget
+#pragma warning disable CS4014 // この呼び出しを待たないため、現在のメソッドの実行は、呼び出しが完了する前に続行します
+            ThreadPool.RunAsync(async _ =>
             {
                 while (true)
                 {
@@ -93,11 +96,10 @@ namespace Cadena.Engine._Internals
                     }
                     var wrappedTask = executor() as Task<Task>;
                     if (wrappedTask != null)
-                    {
                         await wrappedTask.Unwrap().ConfigureAwait(false);
-                    }
                 }
-            }, null);
+            });
+#pragma warning restore CS4014 // この呼び出しを待たないため、現在のメソッドの実行は、呼び出しが完了する前に続行します
         }
 
         private sealed class ShadowTaskScheduler : TaskScheduler

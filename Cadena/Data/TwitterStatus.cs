@@ -343,9 +343,10 @@ namespace Cadena.Data
                 else
                 {
                     sb.Append("Entities: ");
-                    Entities.OrderBy(e => e.StartIndex)
-                            .Select(e => e.StartIndex + "- " + e.EndIndex + " : " + e.DisplayText)
-                            .ForEach(s => sb.AppendLine("    " + s));
+                    foreach (var e in Entities.OrderBy(e => e.StartIndex))
+                    {
+                        sb.AppendLine("    " + e.StartIndex + "- " + e.EndIndex + " : " + e.DisplayText);
+                    }
                 }
                 throw new ArgumentOutOfRangeException(sb.ToString(), ex);
             }

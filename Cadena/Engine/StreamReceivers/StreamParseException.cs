@@ -3,9 +3,10 @@ using System.Runtime.Serialization;
 
 namespace Cadena.Engine.StreamReceivers
 {
-    [Serializable]
+    [DataContract]
     public class StreamParseException : Exception
     {
+        [DataMember]
         private readonly string _received;
 
         public StreamParseException(string received)
@@ -23,18 +24,6 @@ namespace Cadena.Engine.StreamReceivers
             : base(message, inner)
         {
             _received = received;
-        }
-
-        protected StreamParseException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            _received = info.GetString("_received");
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue("_received", _received);
         }
 
         public string ReceivedMessage

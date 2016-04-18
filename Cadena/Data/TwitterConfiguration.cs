@@ -6,20 +6,6 @@ namespace Cadena.Data
 {
     public class TwitterConfiguration
     {
-        internal TwitterConfiguration(dynamic json)
-        {
-            CharactersReservedPerMedia = (int)json.characters_reserved_per_media;
-            PhotoSizeLimit = (int)json.photo_size_limit;
-            NonUserPaths = (string[])json.non_user_paths;
-            ShortUrlLength = (int)json.short_url_length;
-            ShortUrlLengthHttps = (int)json.short_url_length_https;
-            // MaxMediaPerUpload = json.max_media_per_upload;
-            if (NonUserPaths == null)
-            {
-                throw new ArgumentException("json.non_user_paths could not be null.");
-            }
-        }
-
         internal TwitterConfiguration(JsonValue json)
         {
             CharactersReservedPerMedia = (int)json["characters_reserved_per_media"].AsLong();
