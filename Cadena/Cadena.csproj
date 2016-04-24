@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0A4ED4E8-64C0-4C4B-BF6D-8F78FF959BCE}</ProjectGuid>
+    <ProjectGuid>{5BDAA2D5-317B-414F-AD62-389E434F62F3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cadena</RootNamespace>
@@ -112,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiAccessor.cs" />
+    <Compile Include="Meteor\_Internals\KeyCacheTree.cs" />
     <Compile Include="OAuth\OAuthAuthorizer.cs" />
     <Compile Include="OAuth\OAuthMessageHandler.cs" />
     <Compile Include="OAuth\OAuthUtility.cs" />
@@ -222,13 +223,13 @@
     <Compile Include="Meteor\JsonNumber.cs" />
     <Compile Include="Meteor\JsonObject.cs" />
     <Compile Include="Meteor\JsonParseException.cs" />
-    <Compile Include="Meteor\JsonStreamReader.cs" />
+    <Compile Include="Meteor\JsonStreamParser.cs" />
     <Compile Include="Meteor\JsonString.cs" />
     <Compile Include="Meteor\JsonValue.cs" />
     <Compile Include="Meteor\MeteorJson.cs" />
     <Compile Include="Meteor\MeteorJsonParserBase.cs" />
-    <Compile Include="Meteor\Safe\JsonSafeStreamReader.cs" />
-    <Compile Include="Meteor\Safe\MeteorSafeJsonParserBase.cs" />
+    <Compile Include="Meteor\Safe\SafeJsonStreamParser.cs" />
+    <Compile Include="Meteor\Safe\SafeMeteorJsonParserBase.cs" />
     <Compile Include="Meteor\Safe\SafeMeteorJson.cs" />
     <Compile Include="ProblemType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

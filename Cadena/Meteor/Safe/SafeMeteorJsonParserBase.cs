@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Cadena.Meteor.Safe
 {
-    public abstract class MeteorSafeJsonParserBase
+    public abstract class SafeMeteorJsonParserBase
     {
         const int StringBufferLength = 64;
 

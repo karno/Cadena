@@ -4,24 +4,24 @@ using System.Text;
 
 namespace Cadena.Meteor.Safe
 {
-    public sealed class JsonSafeStreamReader : MeteorSafeJsonParserBase, IDisposable
+    public sealed class SafeJsonStreamParser : SafeMeteorJsonParserBase, IDisposable
     {
         const int BufferSize = 2048;
 
         private readonly StreamReader _reader;
 
-        public JsonSafeStreamReader(Stream stream)
+        public SafeJsonStreamParser(Stream stream)
             : this(stream, Encoding.UTF8)
         {
         }
 
-        public JsonSafeStreamReader(Stream stream, Encoding encoding)
+        public SafeJsonStreamParser(Stream stream, Encoding encoding)
             : this(new StreamReader(stream, encoding))
         {
 
         }
 
-        public JsonSafeStreamReader(StreamReader reader)
+        public SafeJsonStreamParser(StreamReader reader)
         {
             _reader = reader;
         }

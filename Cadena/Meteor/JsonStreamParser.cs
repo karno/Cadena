@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Cadena.Meteor
 {
-    public sealed class JsonStreamReader : MeteorJsonParserBase, IDisposable
+    public sealed class JsonStreamParser : MeteorJsonParserBase, IDisposable
     {
         const int BufferSize = 2048;
 
@@ -13,18 +13,18 @@ namespace Cadena.Meteor
         private char[] _buffer;
         private unsafe char* _begin = null;
 
-        public JsonStreamReader(Stream stream)
+        public JsonStreamParser(Stream stream)
             : this(stream, Encoding.UTF8)
         {
         }
 
-        public JsonStreamReader(Stream stream, Encoding encoding)
+        public JsonStreamParser(Stream stream, Encoding encoding)
             : this(new StreamReader(stream, encoding))
         {
 
         }
 
-        public JsonStreamReader(StreamReader reader)
+        public JsonStreamParser(StreamReader reader)
         {
             _reader = reader;
         }
