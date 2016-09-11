@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using Cadena.Api;
+using Cadena.Twitter;
 using JetBrains.Annotations;
 
 namespace Cadena._Internals
@@ -33,7 +33,7 @@ namespace Cadena._Internals
             return String.Join("&",
                 dict.Where(kvp => kvp.Value != null)
                     .OrderBy(kvp => kvp.Key)
-                    .Select(kvp => $"{kvp.Key}={EncodeForParameters(kvp.Value.ToString())}"));
+                    .Select(kvp => $"{kvp.Key}={EncodeParameters(kvp.Value.ToString())}"));
         }
 
         internal static IDictionary<string, object> ApplyParameter(
@@ -46,7 +46,7 @@ namespace Cadena._Internals
             return dict;
         }
 
-        private static string EncodeForParameters([NotNull] string value)
+        private static string EncodeParameters([NotNull] string value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -67,6 +67,11 @@ namespace Cadena._Internals
                 }
             }
             return result.ToString();
+        }
+
+        private static string DecodeParameters(string value)
+        {
+            return Uri.UnescapeDataString(value.Replace('+', ' '));
         }
 
         internal static string JoinString(

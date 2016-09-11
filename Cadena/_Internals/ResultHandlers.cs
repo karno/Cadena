@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Cadena.Data;
-using Codeplex.Data;
+using Cadena.Meteor;
 using JetBrains.Annotations;
 
 namespace Cadena._Internals
@@ -74,13 +74,13 @@ namespace Cadena._Internals
         }
 
         private static async Task<T> ReadAsAsync<T>([NotNull] HttpResponseMessage response,
-            [NotNull] Func<dynamic, T> instantiator)
+            [NotNull] Func<JsonValue, T> instantiator)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
             if (instantiator == null) throw new ArgumentNullException(nameof(instantiator));
 
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
-            return instantiator(DynamicJson.Parse(json));
+            return instantiator(MeteorJson.Parse(json));
         }
 
         public static Task<IEnumerable<TwitterUser>> ReadAsUserCollectionAsync(
@@ -103,7 +103,7 @@ namespace Cadena._Internals
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            return ReadAsCollectionAsync(response, d => (long)d);
+            return ReadAsCollectionAsync(response, d => d.AsLong());
         }
 
         public static Task<IEnumerable<TwitterSavedSearch>> ReadAsSavedSearchCollectionAsync(
@@ -120,22 +120,23 @@ namespace Cadena._Internals
             if (response == null) throw new ArgumentNullException(nameof(response));
 
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
-            var parsed = DynamicJson.Parse(json);
-            if (parsed.statuses())
+            var parsed = MeteorJson.Parse(json);
+            if (parsed.ContainsKey("statuses"))
             {
-                parsed = parsed.statuses;
+                parsed = parsed["statuses"];
             }
-            return ((dynamic[])parsed).Select(status => new TwitterStatus(status));
+            return parsed.AsArray().Select(status => new TwitterStatus(status));
         }
 
         private static async Task<IEnumerable<T>> ReadAsCollectionAsync<T>(
-            [NotNull] HttpResponseMessage response, [NotNull] Func<dynamic, T> factory)
+            [NotNull] HttpResponseMessage response, [NotNull] Func<JsonValue, T> factory)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
             if (factory == null) throw new ArgumentNullException(nameof(factory));
 
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
-            return ((dynamic[])DynamicJson.Parse(json)).Select(collection => (T)factory(collection));
+            var parsed = MeteorJson.Parse(json);
+            return parsed.AsArray().Select(factory);
         }
 
         public static Task<ICursorResult<IEnumerable<long>>> ReadAsCursoredIdsAsync(
@@ -143,7 +144,7 @@ namespace Cadena._Internals
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            return ReadAsCursoredAsync(response, json => json.ids, d => (long)d);
+            return ReadAsCursoredAsync(response, json => json["ids"].AsArray(), d => d.AsLong());
         }
 
         public static Task<ICursorResult<IEnumerable<TwitterUser>>> ReadAsCursoredUsersAsync(
@@ -151,7 +152,7 @@ namespace Cadena._Internals
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            return ReadAsCursoredAsync(response, json => json.users, d => new TwitterUser(d));
+            return ReadAsCursoredAsync(response, json => json["users"].AsArray(), d => new TwitterUser(d));
         }
 
         public static Task<ICursorResult<IEnumerable<TwitterList>>> ReadAsCursoredListsAsync(
@@ -159,21 +160,23 @@ namespace Cadena._Internals
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            return ReadAsCursoredAsync(response, json => json.lists, d => new TwitterList(d));
+            return ReadAsCursoredAsync(response, json => json["lists"].AsArray(), d => new TwitterList(d));
         }
 
         private static async Task<ICursorResult<IEnumerable<T>>> ReadAsCursoredAsync<T>(
-            [NotNull] HttpResponseMessage response, [NotNull] Func<dynamic, dynamic> selector,
-            [NotNull] Func<dynamic, T> instantiator)
+            [NotNull] HttpResponseMessage response, [NotNull] Func<JsonValue, JsonArray> selector,
+            [NotNull] Func<JsonValue, T> instantiator)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
             if (selector == null) throw new ArgumentNullException(nameof(selector));
             if (instantiator == null) throw new ArgumentNullException(nameof(instantiator));
 
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
-            var parsed = DynamicJson.Parse(json);
-            var converteds = ((dynamic[])selector(parsed)).Select(d => (T)instantiator(d));
-            return CursorResult.Create(converteds, parsed.previous_cursor_str, parsed.next_cursor_str);
+            var parsed = MeteorJson.Parse(json);
+            var converteds = selector(parsed).Select(instantiator);
+            var prevCursor = parsed["previous_cursor_str"].AsString() ?? "-1";
+            var nextCursor = parsed["next_cursor_str"].AsString() ?? "-1";
+            return CursorResult.Create(converteds, prevCursor, nextCursor);
         }
     }
 }

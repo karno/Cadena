@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cadena.Data;
-using Codeplex.Data;
+using Cadena.Meteor;
 
 namespace Cadena.Test
 {
@@ -1684,7 +1684,7 @@ namespace Cadena.Test
             {
                 foreach (var status in statuses)
                 {
-                    var stobj = new TwitterStatus(DynamicJson.Parse(status));
+                    var stobj = new TwitterStatus(MeteorJson.Parse(status));
                     yield return Tuple.Create(stobj, status);
                 }
             }

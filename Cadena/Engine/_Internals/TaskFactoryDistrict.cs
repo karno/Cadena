@@ -75,7 +75,8 @@ namespace Cadena.Engine._Internals
 
         private void InvokeNewTask()
         {
-            ThreadPool.UnsafeQueueUserWorkItem(async _ =>
+            // fire and forget
+            ThreadPool.QueueUserWorkItem(async _ =>
             {
                 while (true)
                 {
@@ -93,11 +94,9 @@ namespace Cadena.Engine._Internals
                     }
                     var wrappedTask = executor() as Task<Task>;
                     if (wrappedTask != null)
-                    {
                         await wrappedTask.Unwrap().ConfigureAwait(false);
-                    }
                 }
-            }, null);
+            });
         }
 
         private sealed class ShadowTaskScheduler : TaskScheduler

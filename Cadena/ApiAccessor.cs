@@ -6,10 +6,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncOAuth;
 using Cadena._Internals;
-using Cadena.Api;
 using Cadena.Data;
+using Cadena.OAuth;
+using Cadena.Twitter;
 using Cadena.Util;
 using JetBrains.Annotations;
 
@@ -33,7 +33,7 @@ namespace Cadena
         /// <returns>System web proxy</returns>
         public static IWebProxy GetSystemWebProxy()
         {
-            return WebRequest.GetSystemWebProxy();
+            return WebRequest.DefaultWebProxy;
         }
 
         #endregion

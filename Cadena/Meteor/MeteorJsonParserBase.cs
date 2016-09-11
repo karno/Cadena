@@ -153,7 +153,7 @@ namespace Cadena.Meteor
 
                 // read key
                 Assert(ref ptr, ref end, '\"');
-                var key = ReadString(ref ptr, ref end).AsString();
+                var key = ReadObjectKey(ref ptr, ref end);
 
                 if (dict.ContainsKey(key))
                 {
@@ -192,142 +192,6 @@ namespace Cadena.Meteor
             }
 
             return new JsonObject(dict);
-        }
-
-        private JsonString ReadString(ref char* ptr, ref char* end)
-        {
-            // check first letter
-            Debug.Assert(*ptr == '\"');
-            ptr++;
-
-            // for long string
-            StringBuilder builder = null;
-
-            var buffer = new char[StringBufferLength];
-            fixed (char* bufptr = buffer)
-            {
-                var bp = bufptr;
-                var bend = bufptr + StringBufferLength - 1;
-                for (; !IsEndOfJson(ref ptr, ref end) && *ptr != '\"'; ptr++)
-                {
-                    // check buffer
-                    if (bp > bend)
-                    {
-                        // buffer is full
-                        if (builder == null)
-                        {
-                            builder = new StringBuilder(StringBufferLength * 2);
-                        }
-                        bp = bufptr;
-                        builder.Append(bp, StringBufferLength);
-                    }
-
-                    if (*ptr == '\\')
-                    {
-                        // escaped
-                        ptr++;
-                        if (!IsEndOfJson(ref ptr, ref end))
-                        {
-                            switch (*ptr)
-                            {
-                                case '"':
-                                    *bp = '"';
-                                    break;
-                                case '\\':
-                                    *bp = '\\';
-                                    break;
-                                case '/':
-                                    *bp = '/';
-                                    break;
-                                case 'b':
-                                    *bp = '\b';
-                                    break;
-                                case 'f':
-                                    *bp = '\f';
-                                    break;
-                                case 'n':
-                                    *bp = '\n';
-                                    break;
-                                case 'r':
-                                    *bp = '\r';
-                                    break;
-                                case 't':
-                                    *bp = '\t';
-                                    break;
-                                case 'u':
-                                    // hex unicode
-                                    var code = 0;
-                                    for (var i = 0; i < 4; i++)
-                                    {
-                                        ptr++;
-                                        if (IsEndOfJson(ref ptr, ref end))
-                                        {
-                                            // hitting end of char
-                                            break;
-                                        }
-                                        code <<= 4;
-                                        if (*ptr <= '9' && *ptr >= '0')
-                                        {
-                                            code += *ptr - '0';
-                                        }
-                                        else if (*ptr <= 'F' && *ptr >= 'A')
-                                        {
-                                            // code += *sp - 'A' + 10
-                                            code += *ptr - '7';
-                                        }
-                                        else if (*ptr <= 'f' && *ptr >= 'a')
-                                        {
-                                            // code += *sp - 'a' + 10
-                                            code += *ptr - 'W';
-                                        }
-                                        else
-                                        {
-                                            // invalid code, abort processing
-                                            ptr--;
-                                            break;
-                                        }
-                                    }
-                                    // we can decode 0x0000~0xffff, so we can't exceed the Char.MaxValue
-                                    Debug.Assert(code <= Char.MaxValue);
-                                    *bp = (char)code;
-                                    break;
-
-                                default:
-                                    // this is not registered escape code.
-                                    ptr--;
-                                    *bp = '\\';
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            ptr--;
-                            *bp = '\\';
-                        }
-                    }
-                    else
-                    {
-                        // copy letter
-                        *bp = *ptr;
-                    }
-                    bp++;
-                }
-                if (IsEndOfJson(ref ptr, ref end))
-                {
-                    // end in middle of string
-                    throw CreateException(ptr, "string is not closed.");
-                }
-                // read " and direct to next char
-                AssertAndReadNext(ref ptr, '\"');
-                if (builder == null)
-                {
-                    // builder is not used
-                    return new JsonString(new String(bufptr, 0, (int)(bp - bufptr)));
-                }
-                // return from builder
-                builder.Append(bufptr, (int)(bp - bufptr));
-            }
-            return new JsonString(builder.ToString());
         }
 
         private JsonNumber ReadNumber(ref char* ptr, ref char* end)
@@ -464,6 +328,147 @@ namespace Cadena.Meteor
             return new JsonNumber(value);
         }
 
+        private JsonString ReadString(ref char* ptr, ref char* end)
+        {
+            // check first letter
+            Debug.Assert(*ptr == '\"');
+            ptr++;
+
+            // for long string
+            StringBuilder builder = null;
+
+            var bufptr = stackalloc char[StringBufferLength];
+            var bp = bufptr;
+            var bend = bufptr + StringBufferLength - 1;
+            for (; !IsEndOfJson(ref ptr, ref end) && *ptr != '\"'; ptr++)
+            {
+                // check buffer
+                if (bp > bend)
+                {
+                    // buffer is full
+                    if (builder == null)
+                    {
+                        builder = new StringBuilder(StringBufferLength * 2);
+                    }
+                    bp = bufptr;
+                    builder.Append(bp, StringBufferLength);
+                }
+
+                if (*ptr == '\\')
+                {
+                    // escaped
+                    ptr++;
+                    if (!IsEndOfJson(ref ptr, ref end))
+                    {
+                        switch (*ptr)
+                        {
+                            case '"':
+                                *bp = '"';
+                                break;
+                            case '\\':
+                                *bp = '\\';
+                                break;
+                            case '/':
+                                *bp = '/';
+                                break;
+                            case 'b':
+                                *bp = '\b';
+                                break;
+                            case 'f':
+                                *bp = '\f';
+                                break;
+                            case 'n':
+                                *bp = '\n';
+                                break;
+                            case 'r':
+                                *bp = '\r';
+                                break;
+                            case 't':
+                                *bp = '\t';
+                                break;
+                            case 'u':
+                                // hex unicode
+                                var code = 0;
+                                for (var i = 0; i < 4; i++)
+                                {
+                                    ptr++;
+                                    if (IsEndOfJson(ref ptr, ref end))
+                                    {
+                                        // hitting end of char
+                                        break;
+                                    }
+                                    code <<= 4;
+                                    if (*ptr <= '9' && *ptr >= '0')
+                                    {
+                                        code += *ptr - '0';
+                                    }
+                                    else if (*ptr <= 'F' && *ptr >= 'A')
+                                    {
+                                        // code += *sp - 'A' + 10
+                                        code += *ptr - '7';
+                                    }
+                                    else if (*ptr <= 'f' && *ptr >= 'a')
+                                    {
+                                        // code += *sp - 'a' + 10
+                                        code += *ptr - 'W';
+                                    }
+                                    else
+                                    {
+                                        // invalid code, abort processing
+                                        ptr--;
+                                        break;
+                                    }
+                                }
+                                // we can decode 0x0000~0xffff, so we can't exceed the Char.MaxValue
+                                Debug.Assert(code <= Char.MaxValue);
+                                *bp = (char)code;
+                                break;
+
+                            default:
+                                // this is not registered escape code.
+                                ptr--;
+                                *bp = '\\';
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        ptr--;
+                        *bp = '\\';
+                    }
+                }
+                else
+                {
+                    // copy letter
+                    *bp = *ptr;
+                }
+                bp++;
+            }
+            if (IsEndOfJson(ref ptr, ref end))
+            {
+                // end in middle of string
+                throw CreateException(ptr, "string is not closed.");
+            }
+            // read " and direct to next char
+            AssertAndReadNext(ref ptr, '\"');
+            if (builder == null)
+            {
+                // builder is not used
+                return new JsonString(new String(bufptr, 0, (int)(bp - bufptr)));
+            }
+            // return from builder
+            builder.Append(bufptr, (int)(bp - bufptr));
+            return new JsonString(builder.ToString());
+        }
+
+        // object key specialization ---------------------
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string ReadObjectKey(ref char* ptr, ref char* end)
+        {
+            return ReadString(ref ptr, ref end).AsString();
+        }
+
         // read values -----------------------------------
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -578,7 +583,13 @@ namespace Cadena.Meteor
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsEndOfJson(ref char* ptr, ref char* end)
         {
-            return ptr > end && !ReadMore(ref ptr, ref end);
+            return IsEndOfBuffer(ptr, end) && !ReadMore(ref ptr, ref end);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsEndOfBuffer(char* ptr, char* end)
+        {
+            return ptr > end;
         }
 
         protected abstract bool ReadMore(ref char* ptr, ref char* end);

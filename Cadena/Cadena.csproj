@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6B69921E-5817-4730-BC51-B71CD0B24CF1}</ProjectGuid>
+    <ProjectGuid>{5BDAA2D5-317B-414F-AD62-389E434F62F3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cadena</RootNamespace>
@@ -70,27 +70,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\ParameterBase.cs" />
-    <Compile Include="Api\Parameters\ListParameter.cs" />
-    <Compile Include="Api\Parameters\SearchParameter.cs" />
-    <Compile Include="Api\Parameters\StatusParameter.cs" />
-    <Compile Include="Api\Parameters\UserParameter.cs" />
-    <Compile Include="Api\Rest\Accounts.cs" />
-    <Compile Include="Api\Rest\Blocks.cs" />
-    <Compile Include="Api\Rest\DirectMessages.cs" />
-    <Compile Include="Api\Rest\Favorites.cs" />
-    <Compile Include="Api\Rest\Help.cs" />
-    <Compile Include="Api\Rest\Lists.cs" />
-    <Compile Include="Api\Rest\Relations.cs" />
-    <Compile Include="Api\Rest\Searching.cs" />
-    <Compile Include="Api\Rest\Timelines.cs" />
-    <Compile Include="Api\Rest\Tweets.cs" />
-    <Compile Include="Api\Rest\Users.cs" />
-    <Compile Include="Api\Streams\StreamFilterLevel.cs" />
-    <Compile Include="Api\Streams\StreamWinder.cs" />
-    <Compile Include="Api\Streams\UserStreams.cs" />
-    <Compile Include="Api\TwitterApiException.cs" />
-    <Compile Include="Api\TwitterErrorCode.cs" />
     <Compile Include="CadenaInitializer.cs" />
     <Compile Include="Data\Streams\Events\StreamAccessInformationEvent.cs" />
     <Compile Include="Data\Streams\Events\StreamEvent.cs" />
@@ -153,14 +132,21 @@
     <Compile Include="Meteor\JsonNumber.cs" />
     <Compile Include="Meteor\JsonObject.cs" />
     <Compile Include="Meteor\JsonParseException.cs" />
-    <Compile Include="Meteor\Safe\JsonSafeStreamReader.cs" />
-    <Compile Include="Meteor\JsonStreamReader.cs" />
+    <Compile Include="Meteor\JsonStreamParser.cs" />
     <Compile Include="Meteor\JsonString.cs" />
     <Compile Include="Meteor\JsonValue.cs" />
     <Compile Include="Meteor\MeteorJsonParserBase.cs" />
     <Compile Include="Meteor\MeteorJson.cs" />
+    <Compile Include="Meteor\Safe\SafeJsonStreamParser.cs" />
     <Compile Include="Meteor\Safe\SafeMeteorJson.cs" />
-    <Compile Include="Meteor\Safe\MeteorSafeJsonParserBase.cs" />
+    <Compile Include="Meteor\Safe\SafeMeteorJsonParserBase.cs" />
+    <Compile Include="Meteor\_Internals\KeyCacheTree.cs" />
+    <Compile Include="OAuth\OAuthAuthorizer.cs" />
+    <Compile Include="OAuth\OAuthMessageHandler.cs" />
+    <Compile Include="OAuth\OAuthUtility.cs" />
+    <Compile Include="OAuth\Token.cs" />
+    <Compile Include="OAuth\TokenResponse.cs" />
+    <Compile Include="OAuth\_Internals\Utility.cs" />
     <Compile Include="ProblemType.cs" />
     <Compile Include="Engine\RequestEngine.cs" />
     <Compile Include="Engine\ReceiveEngine.cs" />
@@ -173,8 +159,27 @@
     <Compile Include="Engine\StreamReceivers\StreamReceiverBase.cs" />
     <Compile Include="Engine\StreamReceivers\UserStreamReceiver.cs" />
     <Compile Include="Engine\IReceiver.cs" />
-    <Compile Include="Engine\_Internals\Parsers\TwitterStreamParserDynamic.cs" />
-    <Compile Include="Engine\_Internals\Parsers\UserStreamParserDynamic.cs" />
+    <Compile Include="Twitter\ParameterBase.cs" />
+    <Compile Include="Twitter\Parameters\ListParameter.cs" />
+    <Compile Include="Twitter\Parameters\SearchParameter.cs" />
+    <Compile Include="Twitter\Parameters\StatusParameter.cs" />
+    <Compile Include="Twitter\Parameters\UserParameter.cs" />
+    <Compile Include="Twitter\Rest\Accounts.cs" />
+    <Compile Include="Twitter\Rest\Blocks.cs" />
+    <Compile Include="Twitter\Rest\DirectMessages.cs" />
+    <Compile Include="Twitter\Rest\Favorites.cs" />
+    <Compile Include="Twitter\Rest\Help.cs" />
+    <Compile Include="Twitter\Rest\Lists.cs" />
+    <Compile Include="Twitter\Rest\Relations.cs" />
+    <Compile Include="Twitter\Rest\Searching.cs" />
+    <Compile Include="Twitter\Rest\Timelines.cs" />
+    <Compile Include="Twitter\Rest\Tweets.cs" />
+    <Compile Include="Twitter\Rest\Users.cs" />
+    <Compile Include="Twitter\Streams\StreamFilterLevel.cs" />
+    <Compile Include="Twitter\Streams\StreamWinder.cs" />
+    <Compile Include="Twitter\Streams\UserStreams.cs" />
+    <Compile Include="Twitter\TwitterApiException.cs" />
+    <Compile Include="Twitter\TwitterErrorCode.cs" />
     <Compile Include="Util\CursorResultExtension.cs" />
     <Compile Include="Data\IApiResult.cs" />
     <Compile Include="Data\ICursorResult.cs" />
@@ -185,7 +190,6 @@
     <Compile Include="Data\TwitterSavedSearch.cs" />
     <Compile Include="Data\TwitterStatus.cs" />
     <Compile Include="Data\TwitterUser.cs" />
-    <Compile Include="DynamicJson.cs" />
     <Compile Include="ApiAccessor.cs" />
     <Compile Include="IOAuthCredential.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -202,9 +206,12 @@
     <Compile Include="_Internals\ResultHandlers.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="OAuth\README.md" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="OAuth\LICENSE.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

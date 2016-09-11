@@ -10,11 +10,12 @@ namespace Cadena.Test
         [TestMethod]
         public void DetermineImageType()
         {
-            var gif = File.ReadAllBytes("test.gif");
-            var bmp = File.ReadAllBytes("test.bmp");
-            var png = File.ReadAllBytes("test.png");
-            var agif = File.ReadAllBytes("test_animated.gif");
-            var mp4 = File.ReadAllBytes("test.mp4");
+            var dir = "TestMedia\\";
+            var gif = File.ReadAllBytes(dir + "test.gif");
+            var bmp = File.ReadAllBytes(dir + "test.bmp");
+            var png = File.ReadAllBytes(dir + "test.png");
+            var agif = File.ReadAllBytes(dir + "test_animated.gif");
+            var mp4 = File.ReadAllBytes(dir + "test.mp4");
             Assert.AreEqual(MediaFileUtility.GetMediaType(gif), SupportedMediaTypes.Gif);
             Assert.AreEqual(MediaFileUtility.GetMediaType(bmp), SupportedMediaTypes.Bmp);
             Assert.AreEqual(MediaFileUtility.GetMediaType(png), SupportedMediaTypes.Png);

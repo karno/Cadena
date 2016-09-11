@@ -5,13 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Cadena.Api.Streams;
 using Cadena.Data;
 using Cadena.Data.Streams;
 using Cadena.Engine._Internals.Parsers;
 using Cadena.Engine.StreamReceivers;
+using Cadena.Twitter.Streams;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Task = System.Threading.Tasks.Task;
 
 namespace Cadena.Test
 {
@@ -21,23 +21,6 @@ namespace Cadena.Test
     [TestClass]
     public class UserStreamsPerformanceTest
     {
-        [TestMethod]
-        public void UserStreamDynamicParserPerformanceTest()
-        {
-            var source = new CancellationTokenSource();
-            var handler = new PseudoStreamHandler();
-            var received = 0;
-            source.CancelAfter(TimeSpan.FromSeconds(10));
-            foreach (var content in TweetSamples.GetStreamSamples())
-            {
-                if (source.IsCancellationRequested) break;
-                received++;
-                UserStreamParserDynamic.ParseStreamLine(content, handler);
-            }
-            Trace.WriteLine("received:" + received);
-            Trace.WriteLine("handler: statuses: " + handler.ReceivedStatuses + " / events: " + handler.ReceivedEvents);
-        }
-
         [TestMethod]
         public void UserStreamParserPerformanceTest()
         {
@@ -51,8 +34,8 @@ namespace Cadena.Test
                 received++;
                 UserStreamParser.ParseStreamLine(content, handler);
             }
-            Trace.WriteLine("received:" + received);
-            Trace.WriteLine("handler: statuses: " + handler.ReceivedStatuses + " / events: " + handler.ReceivedEvents);
+            Debug.WriteLine("received: {0}", received);
+            Debug.WriteLine("handler: statuses: {0} / events: {1}", handler.ReceivedStatuses, handler.ReceivedEvents);
         }
 
 
@@ -80,9 +63,8 @@ namespace Cadena.Test
             }
             System.Diagnostics.Debug.WriteLine(received);
             // i promise myself the cadena engine can handle > 10K events per second.
-            Trace.WriteLine("receiver 1 result:");
-            Trace.WriteLine("received:" + received);
-            Trace.WriteLine("handler: statuses: " + handler.ReceivedStatuses + " / events: " + handler.ReceivedEvents);
+            Debug.WriteLine("received: {0}", received);
+            Debug.WriteLine("handler: statuses: {0} / events: {1}", handler.ReceivedStatuses, handler.ReceivedEvents);
             // Assert.IsTrue(received > 10000 * 10);
         }
 
@@ -114,7 +96,7 @@ namespace Cadena.Test
 
             public void OnException(StreamParseException exception)
             {
-                Trace.WriteLine(exception);
+                Debug.WriteLine("exception thrown: " + exception);
             }
 
             public void OnStateChanged(StreamState state)

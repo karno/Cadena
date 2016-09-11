@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Cadena.Engine
 {
-    [Serializable]
+    [DataContract]
     public sealed class ReceiverOperationException : Exception
     {
+        [DataMember]
         public ProblemType ProblemType { get; }
 
         public ReceiverOperationException()

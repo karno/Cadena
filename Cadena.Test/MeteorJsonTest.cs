@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Text.Json;
 using Cadena.Meteor;
 using Cadena.Meteor.Safe;
-using Codeplex.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 
 namespace Cadena.Test
 {
@@ -35,14 +32,14 @@ namespace Cadena.Test
                 foreach (var elements in TweetSamples.GetStreamSampleElements())
                 {
                     // Trace.WriteLine(MeteorJson.Parse(elements).ToString());
-                    Trace.WriteLine(MeteorJson.Parse(elements).ToString());
-                    Trace.WriteLine(SafeMeteorJson.Parse(elements).ToString());
+                    Debug.WriteLine("{0}", MeteorJson.Parse(elements).ToString());
+                    Debug.WriteLine("{0}", SafeMeteorJson.Parse(elements).ToString());
                 }
 
             }
             catch (JsonParseException ex)
             {
-                Trace.WriteLine(ex);
+                Debug.WriteLine(ex.ToString());
                 throw;
             }
         }
@@ -74,7 +71,7 @@ namespace Cadena.Test
                 foreach (var elements in TweetSamples.GetStreamSampleElements())
                 {
                     var memstream = new MemoryStream(Encoding.UTF8.GetBytes(elements));
-                    var reader = new JsonStreamReader(memstream);
+                    var reader = new JsonStreamParser(memstream);
                     var parsed = reader.Parse();
                     if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
                     {
@@ -112,7 +109,7 @@ namespace Cadena.Test
                 foreach (var elements in TweetSamples.GetStreamSampleElements())
                 {
                     var memstream = new MemoryStream(Encoding.UTF8.GetBytes(elements));
-                    var reader = new JsonSafeStreamReader(memstream);
+                    var reader = new SafeJsonStreamParser(memstream);
                     var parsed = reader.Parse();
                     if (parsed.ContainsKey("text") && parsed.ContainsKey("user") && parsed["user"].ContainsKey("screen_name"))
                     {
@@ -124,114 +121,33 @@ namespace Cadena.Test
         }
 
         [TestMethod]
-        public void DynamicJsonPerformanceTest()
-        {
-            var cs = "";
-            for (int i = 0; i < LoopCount; i++)
-            {
-                foreach (var elements in TweetSamples.GetStreamSampleElements())
-                {
-                    var parsed = DynamicJson.Parse(elements);
-                    if (parsed.text() && parsed.user() && parsed.user.screen_name())
-                    {
-                        cs = (string)("@" + parsed.user.screen_name + ": " + parsed.text);
-                    }
-                }
-            }
-            // Trace.WriteLine(cs);
-        }
-
-        [TestMethod]
-        public void NewtonsoftJsonPerformanceTest()
-        {
-            var cs = "";
-            for (int i = 0; i < LoopCount; i++)
-            {
-                foreach (var elements in TweetSamples.GetStreamSampleElements())
-                {
-                    var parsed = JObject.Parse(elements);
-                    if (parsed["text"] != null && parsed["user"]?["screen_name"] != null)
-                    {
-                        cs = "@" + parsed["user"]["screen_name"] + ": " + parsed["text"];
-                    }
-                }
-            }
-            // Trace.WriteLine(cs);
-        }
-
-        [TestMethod]
-        public void SystemTextJsonPerformanceTest()
-        {
-            var cs = "";
-            var parser = new JsonParser();
-            for (int i = 0; i < LoopCount; i++)
-            {
-                foreach (var elements in TweetSamples.GetStreamSampleElements())
-                {
-                    var parsed = parser.Parse(elements) as Dictionary<string, object>;
-                    if (parsed != null && parsed.ContainsKey("text") && parsed.ContainsKey("user") && ((Dictionary<string, object>)parsed["user"]).ContainsKey("screen_name"))
-                    {
-                        var sn = (Dictionary<string, object>)parsed["user"];
-                        cs = "@" + sn["screen_name"] + ": " + parsed["text"];
-                    }
-                }
-            }
-            // Trace.WriteLine(cs);
-        }
-
-        [TestMethod]
         public void JsonPerformanceTests()
         {
+            RunPerformanceTest("MeteorJson", MeteorJsonPerformanceTest);
+            RunPerformanceTest("MeteorJson(Safe)", SafeMeteorJsonPerformanceTest);
+            RunPerformanceTest("MeteorJson(Stream)", MeteorJsonStreamPerformanceTest);
+            RunPerformanceTest("MeteorJson(SafeStream)", SafeMeteorJsonStreamPerformanceTest);
+        }
+
+        private void RunPerformanceTest(string name, Action testFunc)
+        {
+            var proc = Process.GetCurrentProcess();
             var sw = new Stopwatch();
-
-            DynamicJsonPerformanceTest();
+            // pre-run
+            testFunc();
+            // measure start
+            var mb = proc.PrivateMemorySize64;
             sw.Start();
-            DynamicJsonPerformanceTest();
+            // main run
+            testFunc();
+            // measure stop
             sw.Stop();
-            Trace.WriteLine($"DynamicJson: {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
+            var ma = proc.PrivateMemorySize64;
+            var delta = (ma - mb) / 1024;
+            // print result
+            Debug.WriteLine("{0}: {1}ms, delta:{2}KB ({3} -> {4})", name, sw.ElapsedMilliseconds, delta, mb, ma);
 
-            SystemTextJsonPerformanceTest();
-            sw.Start();
-            SystemTextJsonPerformanceTest();
-            sw.Stop();
-            Trace.WriteLine($"System.Text.Json: {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
 
-            NewtonsoftJsonPerformanceTest();
-            sw.Start();
-            NewtonsoftJsonPerformanceTest();
-            sw.Stop();
-            Trace.WriteLine($"Newtonsoft.Json: {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
-
-            MeteorJsonPerformanceTest();
-            sw.Start();
-            MeteorJsonPerformanceTest();
-            sw.Stop();
-            Trace.WriteLine($"MeteorJson: {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
-
-            MeteorJsonPerformanceTest();
-            sw.Start();
-            SafeMeteorJsonPerformanceTest();
-            sw.Stop();
-            Trace.WriteLine($"MeteorJson(Safe): {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
-
-            MeteorJsonPerformanceTest();
-            sw.Start();
-            MeteorJsonStreamPerformanceTest();
-            sw.Stop();
-            Trace.WriteLine($"MeteorJson(Stream): {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
-
-            MeteorJsonPerformanceTest();
-            sw.Start();
-            SafeMeteorJsonStreamPerformanceTest();
-            sw.Stop();
-            Trace.WriteLine($"MeteorJson(SafeStream): {sw.ElapsedMilliseconds} ms.");
-            sw.Reset();
         }
     }
 }

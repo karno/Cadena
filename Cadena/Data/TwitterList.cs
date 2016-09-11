@@ -17,7 +17,7 @@ namespace Cadena.Data
             FullName = json.full_name;
             Uri = new Uri(TwitterListUriPrefix + json.uri);
             Slug = json.slug;
-            ListMode = String.Equals(json.mode, "public", StringComparison.InvariantCultureIgnoreCase)
+            ListMode = String.Equals(json.mode, "public", StringComparison.OrdinalIgnoreCase)
                            ? ListMode.Public
                            : ListMode.Private;
             Description = json.description;

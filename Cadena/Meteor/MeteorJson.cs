@@ -6,57 +6,57 @@
         {
             return new JsonStringParser(text).Parse();
         }
+    }
 
-        private sealed class JsonStringParser : MeteorJsonParserBase
+    public sealed class JsonStringParser : MeteorJsonParserBase
+    {
+        private readonly string _json;
+        private unsafe char* _begin = null;
+
+        public JsonStringParser(string json)
         {
-            private readonly string _json;
-            private unsafe char* _begin = null;
+            _json = json;
+        }
 
-            public JsonStringParser(string json)
+        public unsafe JsonValue Parse()
+        {
+            try
             {
-                _json = json;
-            }
-
-            public unsafe JsonValue Parse()
-            {
-                try
+                fixed (char* jsonptr = _json)
                 {
-                    fixed (char* jsonptr = _json)
+                    var ptr = _begin = jsonptr;
+                    var end = jsonptr + _json.Length - 1;
+                    // read value
+                    var value = ReadValue(ref ptr, ref end);
+                    // check after object
+                    SkipWhitespaces(ref ptr, ref end);
+                    if (ptr <= end)
                     {
-                        var ptr = _begin = jsonptr;
-                        var end = jsonptr + _json.Length - 1;
-                        // read value
-                        var value = ReadValue(ref ptr, ref end);
-                        // check after object
-                        SkipWhitespaces(ref ptr, ref end);
-                        if (ptr <= end)
-                        {
-                            throw CreateException(ptr, "invalid character is existed after the valid object: " + *ptr);
-                        }
-                        // return result
-                        return value;
+                        throw CreateException(ptr, "invalid character is existed after the valid object: " + *ptr);
                     }
-                }
-                finally
-                {
-                    _begin = null;
+                    // return result
+                    return value;
                 }
             }
-
-            protected override unsafe bool ReadMore(ref char* ptr, ref char* end)
+            finally
             {
-                return false;
+                _begin = null;
             }
+        }
 
-            protected override unsafe JsonParseException CreateException(char* ptr, string message)
+        protected override unsafe bool ReadMore(ref char* ptr, ref char* end)
+        {
+            return false;
+        }
+
+        protected override unsafe JsonParseException CreateException(char* ptr, string message)
+        {
+            var index = ptr - _begin;
+            if (index > _json.Length)
             {
-                var index = ptr - _begin;
-                if (index > _json.Length)
-                {
-                    index = _json.Length;
-                }
-                throw new JsonParseException(message, _json, index);
+                index = _json.Length;
             }
+            throw new JsonParseException(message, _json, index);
         }
     }
 }

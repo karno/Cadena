@@ -4,10 +4,12 @@ using System.Runtime.Serialization;
 
 namespace Cadena.Meteor
 {
-    [Serializable]
+    [DataContract]
     public class JsonParseException : Exception
     {
+        [DataMember]
         private readonly string _json;
+        [DataMember]
         private readonly long _index;
 
         public JsonParseException(string json, long index)
@@ -26,21 +28,6 @@ namespace Cadena.Meteor
         {
             _json = json;
             _index = index;
-        }
-
-        protected JsonParseException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-            _json = info.GetString("json");
-            _index = info.GetInt64("index");
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("json", _json);
-            info.AddValue("index", _index);
-            base.GetObjectData(info, context);
         }
 
         public override string ToString()

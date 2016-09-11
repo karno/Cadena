@@ -35,11 +35,17 @@ namespace Cadena.Util
 #endif
                 {SupportedMediaTypes.Mp4, Encoding.ASCII.GetBytes("\0\0\0\0ftyp")} // optimistic determination
             };
+
             var memoedMedia = media.Memoize();
             var headBytes = memoedMedia.Take(12).ToArray();
             if (CheckMediaIsAnimatedGif(memoedMedia))
             {
                 return SupportedMediaTypes.AnimatedGif;
+            }
+
+            foreach (var b in media)
+            {
+
             }
 
             foreach (var tuple in table)
@@ -92,7 +98,6 @@ namespace Cadena.Util
             // completed. this file is must be Animated GIF. Thank you for your hard work.
             return true;
         }
-
 
         public static string GetMime(SupportedMediaTypes type)
         {

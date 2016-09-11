@@ -5,10 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena.Api;
-using Cadena.Api.Streams;
 using Cadena.Data.Streams.Internals;
 using Cadena.Engine._Internals.Parsers;
+using Cadena.Twitter;
+using Cadena.Twitter.Streams;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.StreamReceivers
@@ -124,7 +124,7 @@ namespace Cadena.Engine.StreamReceivers
             _hardErrorCount = 0;
             _backoffMode = BackoffMode.None;
             ChangeState(StreamState.Connected);
-            UserStreamParserDynamic.ParseStreamLine(json, _handler);
+            UserStreamParser.ParseStreamLine(json, _handler);
         }
 
         private async Task<bool> HandleException(Exception ex)
