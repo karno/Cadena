@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9326E1A1-A07A-4FAD-B2EE-CF17CA6DB82E}</ProjectGuid>
+    <ProjectGuid>{37B8226A-37E7-4F75-963D-326FE3BE51E7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cadena.Test</RootNamespace>

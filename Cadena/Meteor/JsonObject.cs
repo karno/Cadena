@@ -66,6 +66,11 @@ namespace Cadena.Meteor
             return _dictionary.GetHashCode();
         }
 
+        public override bool Equals(JsonValue other)
+        {
+            return Equals(other as JsonObject);
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

@@ -17,30 +17,24 @@ namespace Cadena.Meteor
         {
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object other)
         {
-            return Equals(obj as JsonNull);
+            return ReferenceEquals(other, Null) || other == null;
+        }
+
+        public override bool Equals(JsonValue other)
+        {
+            return Equals((object)other);
         }
 
         public bool Equals(JsonNull other)
         {
-            return other != null;
+            return Equals((object)other);
         }
 
         public override string ToString()
         {
             return "null";
-        }
-
-        public static bool operator ==(JsonNull left, JsonNull right)
-        {
-            if (left == null) return right == null;
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(JsonNull left, JsonNull right)
-        {
-            return !(left == right);
         }
     }
 }

@@ -18,66 +18,6 @@ namespace Cadena.Data
         /// <param name="json"></param>
         /// <param name="mediaUrlUseHttps">read media_url_https instead of media_url</param>
         /// <returns></returns>
-        public static IEnumerable<TwitterEntity> ParseEntities(dynamic json,
-            bool mediaUrlUseHttps = true)
-        {
-            if (json.IsDefined("hashtags"))
-            {
-                var tags = json.hashtags;
-                foreach (var tag in tags)
-                {
-                    yield return new TwitterEntity(EntityType.Hashtags, tag.text,
-                        null, null, null,
-                        (int)tag.indices[0], (int)tag.indices[1]);
-                }
-            }
-            if (json.IsDefined("media"))
-            {
-                var medias = json.media;
-                foreach (var media in medias)
-                {
-                    var mediaUrl = mediaUrlUseHttps
-                        ? media.media_url_https
-                        : media.media_url;
-
-                    yield return new TwitterEntity(EntityType.Hashtags, media.display_url,
-                        media.url, mediaUrl, null,
-                        (int)media.indices[0], (int)media.indices[1]);
-                }
-            }
-            if (json.IsDefined("urls"))
-            {
-                var urls = json.urls;
-                foreach (var url in urls)
-                {
-                    string display = url.url;
-                    string expanded = url.url;
-                    if (url.display_url())
-                    {
-                        display = url.display_url;
-                    }
-                    if (url.expanded_url())
-                    {
-                        expanded = url.expanded_url;
-                    }
-                    var orgurl = !String.IsNullOrEmpty(expanded) ? expanded : display;
-                    yield return new TwitterEntity(EntityType.Hashtags,
-                        orgurl, orgurl, null, null,
-                        (int)url.indices[0], (int)url.indices[1]);
-                }
-            }
-            if (json.IsDefined("user_mentions"))
-            {
-                var mentions = json.user_mentions;
-                foreach (var mention in mentions)
-                {
-                    yield return new TwitterEntity(EntityType.UserMentions,
-                        mention.screen_name, null, null, Int64.Parse(mention.id_str),
-                        (int)mention.indices[0], (int)mention.indices[1]);
-                }
-            }
-        }
-
         public static IEnumerable<TwitterEntity> ParseEntities(JsonValue json,
             bool mediaUrlUseHttps = true)
         {
@@ -86,6 +26,7 @@ namespace Cadena.Data
             {
                 foreach (var tag in tags)
                 {
+                    if (tag == null) continue;
                     var text = tag["text"].AsString();
                     var indices = tag["indices"].AsArray()?.AsLongArray();
                     if (text != null && indices != null && indices.Length >= 2)
@@ -100,6 +41,7 @@ namespace Cadena.Data
             {
                 foreach (var media in medias)
                 {
+                    if (media == null) continue;
                     var mediaUrl = (mediaUrlUseHttps ? media["media_url_https"] : media["media_url"]).AsString();
                     var disp = media["display_url"].AsString();
                     var url = media["url"].AsString();
@@ -117,6 +59,7 @@ namespace Cadena.Data
             {
                 foreach (var url in urls)
                 {
+                    if (url == null) continue;
                     var display = url["url"].AsString();
                     var expanded = display;
                     if (url.ContainsKey("display_url"))

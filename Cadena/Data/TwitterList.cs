@@ -9,48 +9,6 @@ namespace Cadena.Data
     {
         private const string TwitterListUriPrefix = "http://twitter.com";
 
-        internal TwitterList(dynamic json)
-        {
-            Id = Int64.Parse(json.id_str);
-            User = new TwitterUser(json.user);
-            Name = json.name;
-            FullName = json.full_name;
-            Uri = new Uri(TwitterListUriPrefix + json.uri);
-            Slug = json.slug;
-            ListMode = String.Equals(json.mode, "public", StringComparison.OrdinalIgnoreCase)
-                           ? ListMode.Public
-                           : ListMode.Private;
-            Description = json.description;
-            MemberCount = (long)json.member_count;
-            SubscriberCount = (long)json.subscriber_count;
-            CreatedAt = ((string)json.created_at).ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
-            // check null 
-            if (User == null)
-            {
-                throw new ArgumentException("json.user could not be null.");
-            }
-            if (Name == null)
-            {
-                throw new ArgumentException("json.name could not be null.");
-            }
-            if (FullName == null)
-            {
-                throw new ArgumentException("json.full_name could not be null.");
-            }
-            if (Uri == null)
-            {
-                throw new ArgumentException("json.uri could not be null.");
-            }
-            if (Slug == null)
-            {
-                throw new ArgumentException("json.slug could not be null.");
-            }
-            if (Description == null)
-            {
-                throw new ArgumentException("json.description could not be null.");
-            }
-        }
-
         internal TwitterList(JsonValue json)
         {
             Id = json["id_str"].AsString().ParseLong();

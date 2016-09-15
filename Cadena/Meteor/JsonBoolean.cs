@@ -29,12 +29,22 @@ namespace Cadena.Meteor
 
         public override bool Equals(object obj)
         {
+            if (obj is bool)
+            {
+                return (bool)obj == Value;
+            }
             return Equals(obj as JsonBoolean);
+        }
+
+        public override bool Equals(JsonValue other)
+        {
+            return Equals(other as JsonBoolean);
         }
 
         public bool Equals(JsonBoolean other)
         {
             return other?.Value == Value;
+
         }
 
         public override string ToString()
@@ -49,7 +59,7 @@ namespace Cadena.Meteor
 
         public static bool operator ==(JsonBoolean left, JsonBoolean right)
         {
-            if (left == null) return right == null;
+            if ((object)left == null) return (object)right == null;
             return left.Equals(right);
         }
 

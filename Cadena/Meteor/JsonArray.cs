@@ -67,6 +67,11 @@ namespace Cadena.Meteor
             return Equals(obj as JsonArray);
         }
 
+        public override bool Equals(JsonValue other)
+        {
+            return Equals(other as JsonArray);
+        }
+
         public bool Equals(JsonArray other)
         {
             return other?._values == _values;

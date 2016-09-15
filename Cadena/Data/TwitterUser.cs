@@ -45,13 +45,13 @@ namespace Cadena.Data
             var entities = json["entities"].AsObject();
             if (entities != null)
             {
-                var urls = entities["url"].AsString();
-                var descs = entities["description"].AsString();
-                if (urls != null)
+                var urls = entities["url"];
+                var descs = entities["description"];
+                if (!urls.IsNull)
                 {
                     UrlEntities = TwitterEntity.ParseEntities(urls).ToArray();
                 }
-                if (descs != null)
+                if (!descs.IsNull)
                 {
                     DescriptionEntities = TwitterEntity.ParseEntities(descs).ToArray();
                 }

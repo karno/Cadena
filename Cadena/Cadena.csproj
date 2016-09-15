@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5BDAA2D5-317B-414F-AD62-389E434F62F3}</ProjectGuid>
+    <ProjectGuid>{6B69921E-5817-4730-BC51-B71CD0B24CF1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cadena</RootNamespace>

@@ -10,7 +10,7 @@ namespace Cadena.Test
         [TestMethod]
         public void DetermineImageType()
         {
-            var dir = "TestMedia\\";
+            var dir = "..\\..\\TestMedia\\";
             var gif = File.ReadAllBytes(dir + "test.gif");
             var bmp = File.ReadAllBytes(dir + "test.bmp");
             var png = File.ReadAllBytes(dir + "test.png");

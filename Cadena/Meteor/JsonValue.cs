@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace Cadena.Meteor
 {
-    public abstract class JsonValue
+    public abstract class JsonValue : IEquatable<JsonValue>
     {
         public virtual bool IsObject { get; } = false;
 
@@ -60,6 +60,20 @@ namespace Cadena.Meteor
             return JsonNull.Null;
         }
 
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as JsonValue);
+        }
+
+        public override int GetHashCode()
+        {
+            // dummy method, child class should implement this.
+            return 0;
+        }
+
+        public abstract bool Equals(JsonValue other);
+
+
         [CanBeNull]
         public virtual string AsString()
         {
@@ -92,5 +106,54 @@ namespace Cadena.Meteor
         {
             return this as JsonObject;
         }
+
+        public int AsInteger()
+        {
+            return (int)AsLong();
+        }
+
+        public long? AsLongOrNull()
+        {
+            return IsNumber ? (long?)AsLong() : null;
+        }
+
+        public int? AsIntegerOrNull()
+        {
+            return IsNumber ? (int?)AsInteger() : null;
+        }
+
+
+        public double? AsDoubleOrNull()
+        {
+            return IsNumber ? (double?)AsDouble() : null;
+        }
+
+        public bool? AsBooleanOrNull()
+        {
+            return IsBoolean ? (bool?)AsBoolean() : null;
+        }
+
+
+        #region overriding comparators
+
+        public static bool operator ==(JsonValue left, object right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return true;
+            }
+            if (ReferenceEquals(left, null) || ReferenceEquals(left, JsonNull.Null))
+            {
+                return ReferenceEquals(right, JsonNull.Null) || right == null;
+            }
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(JsonValue left, object right)
+        {
+            return !(left == right);
+        }
+
+        #endregion
     }
 }

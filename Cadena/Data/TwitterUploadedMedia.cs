@@ -7,9 +7,9 @@ namespace Cadena.Data
     {
         public long MediaId { get; }
 
-        public int? ExpireAfterSecs { get; }
+        public long? ExpireAfterSecs { get; }
 
-        public int? Size { get; }
+        public long? Size { get; }
 
         public TwitterUploadedMediaPayload Payload { get; }
 
@@ -17,9 +17,8 @@ namespace Cadena.Data
         {
             MediaId = json["media_id_string"].AsString().ParseLong();
             var size = json["size"];
-            Size = size.IsNumber ? (int)size.AsLong() : (int?)null;
-            var expire = json["expires_after_secs"];
-            ExpireAfterSecs = expire.IsNumber ? (int)expire.AsLong() : (int?)null;
+            Size = size.AsLongOrNull();
+            ExpireAfterSecs = json["expires_after_secs"].AsLongOrNull();
             var image = json["image"].AsObject();
             var video = json["video"].AsObject();
             if (image != null)
@@ -43,17 +42,10 @@ namespace Cadena.Data
 
         public string ImageType { get; }
 
-        public TwitterUploadedPhotoPayload(dynamic image)
-        {
-            Width = image.w;
-            Height = image.h;
-            ImageType = image.image_type;
-        }
-
         public TwitterUploadedPhotoPayload(JsonValue image)
         {
-            Width = (int)image["w"].AsLong();
-            Height = (int)image["h"].AsLong();
+            Width = image["w"].AsInteger();
+            Height = image["h"].AsInteger();
             ImageType = image["image_type"].AsString();
         }
     }
@@ -61,11 +53,6 @@ namespace Cadena.Data
     public class TwitterUploadedVideoPayload : TwitterUploadedMediaPayload
     {
         public string VideoType { get; }
-
-        public TwitterUploadedVideoPayload(dynamic video)
-        {
-            VideoType = video.video_type;
-        }
 
         public TwitterUploadedVideoPayload(JsonValue video)
         {

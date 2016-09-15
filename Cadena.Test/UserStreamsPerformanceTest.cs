@@ -21,6 +21,23 @@ namespace Cadena.Test
     [TestClass]
     public class UserStreamsPerformanceTest
     {
+        private TestContext testContextInstance;
+        /// <summary>
+        ///Gets or sets the test context which provides
+        ///information about and functionality for the current test run.
+        ///</summary>
+        public TestContext TestContext
+        {
+            get
+            {
+                return testContextInstance;
+            }
+            set
+            {
+                testContextInstance = value;
+            }
+        }
+
         [TestMethod]
         public void UserStreamParserPerformanceTest()
         {
@@ -34,8 +51,8 @@ namespace Cadena.Test
                 received++;
                 UserStreamParser.ParseStreamLine(content, handler);
             }
-            Debug.WriteLine("received: {0}", received);
-            Debug.WriteLine("handler: statuses: {0} / events: {1}", handler.ReceivedStatuses, handler.ReceivedEvents);
+            TestContext.WriteLine("received: {0}", received);
+            TestContext.WriteLine("handler: statuses: {0} / events: {1}", handler.ReceivedStatuses, handler.ReceivedEvents);
         }
 
 
@@ -49,9 +66,8 @@ namespace Cadena.Test
             source.CancelAfter(TimeSpan.FromSeconds(10));
             var receiveTask = StreamWinder.Run(testStream, content =>
             {
-                //UserStreamParserDynamic.ParseStreamLine(content, handler);
+                UserStreamParser.ParseStreamLine(content, handler);
                 received++;
-                //System.Diagnostics.Debug.WriteLine(content);
             }, Timeout.InfiniteTimeSpan, source.Token);
             try
             {
@@ -91,6 +107,7 @@ namespace Cadena.Test
 
             public void OnMessage(StreamMessage notification)
             {
+
                 _receivedEvents++;
             }
 

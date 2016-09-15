@@ -10,31 +10,6 @@ namespace Cadena.Data
     /// </summary>
     public class TwitterFriendship
     {
-        public TwitterFriendship(dynamic json)
-        {
-            var rel = json.relationship;
-            var src = rel.source;
-            var tgt = rel.target;
-            SourceId = Int64.Parse(src.id_str);
-            SourceScreenName = src.screen_name;
-            TargetId = Int64.Parse(tgt.id_str);
-            TargetScreenName = tgt.screen_name;
-            IsSourceFollowingTarget = src.following;
-            IsTargetFollowingSource = src.followed_by;
-            IsBlocking = src.blocking;
-            IsMuting = src.muting;
-            // if source is not following target, twitter always returns false.
-            IsWantRetweets = IsSourceFollowingTarget ? (bool?)src.want_retweets : null;
-            if (SourceScreenName == null)
-            {
-                throw new ArgumentException("source.screen_name could not be null.");
-            }
-            if (TargetScreenName == null)
-            {
-                throw new ArgumentException("target.screen_name could not be null.");
-            }
-        }
-
         public TwitterFriendship(JsonValue json)
         {
             var rel = json["relationship"];

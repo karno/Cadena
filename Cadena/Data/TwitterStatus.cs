@@ -14,80 +14,6 @@ namespace Cadena.Data
     {
         public const string TwitterStatusUrl = "https://twitter.com/{0}/status/{1}";
 
-        internal TwitterStatus(dynamic json)
-        {
-            Id = ((string)json.id_str).ParseLong();
-            CreatedAt = ((string)json.created_at).ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
-            Text = ParsingExtension.ResolveEntity(json.text);
-            if (json.extended_entities())
-            {
-                // get correctly typed entities array
-                var orgEntities = (TwitterEntity[])Enumerable.ToArray(TwitterEntity.ParseEntities(json.entities));
-                var extEntities = (TwitterEntity[])Enumerable.ToArray(TwitterEntity.ParseEntities(json.extended_entities));
-
-                // merge entities
-                Entities = orgEntities.Where(e => e.EntityType != EntityType.Media)
-                                           .Concat(extEntities) // extended entities contains media entities only.
-                                           .ToArray();
-            }
-            else if (json.entities())
-            {
-                Entities = Enumerable.ToArray(TwitterEntity.ParseEntities(json.entities));
-            }
-            else
-            {
-                Entities = new TwitterEntity[0];
-            }
-            if (json.recipient())
-            {
-                // THIS IS DIRECT MESSAGE!
-                StatusType = StatusType.DirectMessage;
-                User = new TwitterUser(json.sender);
-                Recipient = new TwitterUser(json.recipient);
-            }
-            else
-            {
-                StatusType = StatusType.Tweet;
-                User = new TwitterUser(json.user);
-                if (json.source())
-                {
-                    Source = json.source;
-                }
-                if (json.in_reply_to_status_id_str())
-                {
-                    InReplyToStatusId = ((string)json.in_reply_to_status_id_str).ParseNullableId();
-                }
-                if (json.in_reply_to_user_id_str())
-                {
-                    InReplyToUserId = ((string)json.in_reply_to_user_id_str).ParseNullableId();
-                }
-                if (json.in_reply_to_screen_name())
-                {
-                    InReplyToScreenName = json.in_reply_to_screen_name;
-                }
-                if (json.retweeted_status())
-                {
-                    var retweeted = new TwitterStatus(json.retweeted_status);
-                    RetweetedStatus = retweeted;
-                    RetweetedStatusId = retweeted.Id;
-                    // merge text and entities
-                    Text = retweeted.Text;
-                    Entities = retweeted.Entities;
-                }
-                if (json.quoted_status())
-                {
-                    var quoted = new TwitterStatus(json.quoted_status);
-                    QuotedStatus = quoted;
-                    QuotedStatusId = quoted.Id;
-                }
-                if (json.coordinates() && json.coordinates != null)
-                {
-                    Longitude = (double)json.coordinates.coordinates[0];
-                    Latitude = (double)json.coordinates.coordinates[1];
-                }
-            }
-        }
-
         internal TwitterStatus(JsonValue json)
         {
             Id = json["id_str"].AsString().ParseLong();
@@ -248,7 +174,7 @@ namespace Cadena.Data
         #endregion
 
         /// <summary>
-        /// Entity objects of the status 
+        /// Entity objects of the status
         /// </summary>
         [CanBeNull]
         public TwitterEntity[] Entities { get; }

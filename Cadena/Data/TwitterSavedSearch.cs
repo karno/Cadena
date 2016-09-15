@@ -10,15 +10,6 @@ namespace Cadena.Data
     /// </summary>
     public class TwitterSavedSearch
     {
-        internal TwitterSavedSearch(dynamic json)
-        {
-            Id = ((string)json.id_str).ParseLong();
-            CreatedAt = ((string)json.created_at)
-                .ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
-            Name = json.name;
-            Query = json.query;
-        }
-
         internal TwitterSavedSearch(JsonValue json)
         {
             Id = json["id_str"].AsString().ParseLong();

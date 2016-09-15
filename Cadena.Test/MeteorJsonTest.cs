@@ -14,6 +14,25 @@ namespace Cadena.Test
         const int LoopCount = 100;
 
         [TestMethod]
+        public void MeteorJsonNullBehaviorTest()
+        {
+            Assert.AreEqual(JsonNull.Null.Equals(null), true);
+            Assert.AreEqual(JsonNull.Null.Equals(new object()), false);
+            Assert.AreEqual(JsonNull.Null == null, true);
+            Assert.AreEqual(JsonNull.Null != null, false);
+            Assert.AreEqual(null == JsonNull.Null, true);
+            Assert.AreEqual(null != JsonNull.Null, false);
+        }
+
+        [TestMethod]
+        public void MeteorJsonNumericBehaviorTest()
+        {
+            Assert.AreEqual(MeteorJson.Parse("1234567890e0").Equals(1234567890e0), true);
+            Assert.AreEqual(MeteorJson.Parse("1.2345").Equals(1.2345), true);
+        }
+
+
+        [TestMethod]
         public void MeteorJsonValueTest()
         {
             Assert.AreEqual(1234567890e0, MeteorJson.Parse("1234567890e0").AsDouble());
