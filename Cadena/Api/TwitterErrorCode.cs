@@ -1,4 +1,4 @@
-﻿namespace Cadena.Twitter
+﻿namespace Cadena.Api
 {
     public enum TwitterErrorCode
     {

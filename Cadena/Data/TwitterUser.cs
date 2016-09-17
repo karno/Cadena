@@ -22,14 +22,10 @@ namespace Cadena.Data
             Description = ParsingExtension.ResolveEntity(json["description"].AsString() ?? String.Empty);
             Location = ParsingExtension.ResolveEntity(json["location"].AsString() ?? String.Empty);
             Url = json["url"].AsString();
-            IsDefaultProfileImage = json["default_profile_image"].AsBoolean();
+            IsDefaultProfileImage = json["default_profile_image"].AsBooleanOrNull() ?? true;
             ProfileImageUri = json["profile_image_url"].AsString().ParseUri();
             ProfileBackgroundImageUri = json["profile_background_image_url"].AsString().ParseUri();
-            var banner = json["profile_banner_url"].AsString();
-            if (banner != null)
-            {
-                ProfileBannerUri = banner.ParseUri();
-            }
+            ProfileBannerUri = json["profile_banner_url"].AsString().ParseUri();
             IsProtected = json["protected"].AsBoolean();
             IsVerified = json["verified"].AsBoolean();
             IsTranslator = json["is_translator"].AsBoolean();

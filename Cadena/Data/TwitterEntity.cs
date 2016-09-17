@@ -32,7 +32,8 @@ namespace Cadena.Data
                     if (text != null && indices != null && indices.Length >= 2)
                     {
                         yield return new TwitterEntity(EntityType.Hashtags, text,
-                            null, null, null, (int)indices[0], (int)indices[1]);
+                            null, null, null,
+                            (int)indices[0], (int)indices[1]);
                     }
                 }
             }
@@ -85,6 +86,7 @@ namespace Cadena.Data
             {
                 foreach (var mention in mentions)
                 {
+                    if (mention == null) continue;
                     var screenName = mention["screen_name"].AsString();
                     var idStr = mention["id_str"].AsString().ParseLong();
                     var indices = mention["indices"].AsArray()?.AsLongArray();

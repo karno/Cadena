@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Cadena.Twitter.Parameters
+namespace Cadena.Api.Parameters
 {
     /// <summary>
     /// Describes parameter of twitter user 

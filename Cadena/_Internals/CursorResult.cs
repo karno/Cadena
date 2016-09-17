@@ -10,16 +10,6 @@ namespace Cadena._Internals
     internal static class CursorResult
     {
         public static ICursorResult<T> Create<T>([NotNull] T item,
-            [NotNull] string prevCursor, [NotNull] string nextCursor)
-        {
-            if (item == null) throw new ArgumentNullException(nameof(item));
-            if (prevCursor == null) throw new ArgumentNullException(nameof(prevCursor));
-            if (nextCursor == null) throw new ArgumentNullException(nameof(nextCursor));
-
-            return Create(item, Int64.Parse(prevCursor), Int64.Parse(nextCursor));
-        }
-
-        public static ICursorResult<T> Create<T>([NotNull] T item,
             long prevCursor, long nextCursor)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));

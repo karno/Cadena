@@ -8,7 +8,7 @@ using Cadena._Internals;
 using Cadena.Util;
 using JetBrains.Annotations;
 
-namespace Cadena.Twitter.Streams
+namespace Cadena.Api.Streams
 {
     public static class UserStreams
     {

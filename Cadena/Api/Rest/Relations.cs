@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Cadena._Internals;
+using Cadena.Api.Parameters;
 using Cadena.Data;
-using Cadena.Twitter.Parameters;
 using JetBrains.Annotations;
 
-namespace Cadena.Twitter.Rest
+namespace Cadena.Api.Rest
 {
     public static class Relations
     {

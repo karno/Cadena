@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Cadena.Api.Rest;
 using Cadena.Data;
-using Cadena.Twitter.Rest;
 using Cadena.Util;
 using JetBrains.Annotations;
 

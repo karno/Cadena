@@ -25,14 +25,6 @@ namespace Cadena.Data
             IsMuting = src["muting"].AsBoolean();
             // if source is not following target, twitter always returns false.
             IsWantRetweets = IsSourceFollowingTarget ? (bool?)src["want_retweets"].AsBoolean() : null;
-            if (SourceScreenName == null)
-            {
-                throw new ArgumentException("source.screen_name could not be null.");
-            }
-            if (TargetScreenName == null)
-            {
-                throw new ArgumentException("target.screen_name could not be null.");
-            }
         }
 
         /// <summary>

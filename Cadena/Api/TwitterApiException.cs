@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cadena.Meteor;
 
-namespace Cadena.Twitter
+namespace Cadena.Api
 {
     public class TwitterApiException : Exception
     {
@@ -46,70 +46,70 @@ namespace Cadena.Twitter
                 switch (TwitterErrorCode)
                 {
                     // https://dev.twitter.com/overview/api/response-codes
-                    case Twitter.TwitterErrorCode.AuthenticationFailed:
+                    case Api.TwitterErrorCode.AuthenticationFailed:
                         problemType = ProblemType.AuthorizationError;
                         description += "Could not authenticate you - " +
                                        "Your call could not be completed as dialed.";
                         return;
-                    case Twitter.TwitterErrorCode.PageNotExist:
+                    case Api.TwitterErrorCode.PageNotExist:
                         problemType = ProblemType.ProtocolViolation;
                         description += "Sorry, that page does not exist - " +
                                        "the specified resource was not found.";
                         return;
-                    case Twitter.TwitterErrorCode.AccountSuspended:
+                    case Api.TwitterErrorCode.AccountSuspended:
                         problemType = ProblemType.AuthorizationError;
                         description += "Your account is suspended and is not permitted to access this feature - " +
                                        "Corresponds with an HTTP 403 / the access token being used belongs to a suspended user " +
                                        "and they can’t complete the action you’re trying to take";
                         return;
-                    case Twitter.TwitterErrorCode.ApiNoLongerSupported:
+                    case Api.TwitterErrorCode.ApiNoLongerSupported:
                         problemType = ProblemType.ProtocolViolation;
                         description += "The Twitter REST API v1 is no longer active - " +
                                        "Please migrate to API v1.1.";
                         return;
-                    case Twitter.TwitterErrorCode.RateLimitExceeded:
+                    case Api.TwitterErrorCode.RateLimitExceeded:
                         problemType = ProblemType.RateLimitation;
                         description += "Rate limit exceeded - " +
                                        "The request limit for this resource has been reached for the " +
                                        "current rate limit window.";
                         return;
-                    case Twitter.TwitterErrorCode.InvalidOrExpiredToken:
+                    case Api.TwitterErrorCode.InvalidOrExpiredToken:
                         problemType = ProblemType.AuthorizationError;
                         description += "Invalid or expired token - " +
                                        "The access token used in the request is incorrect or has expired.";
                         return;
-                    case Twitter.TwitterErrorCode.SslRequired:
+                    case Api.TwitterErrorCode.SslRequired:
                         problemType = ProblemType.ProtocolViolation;
                         description += "SSL is required - " +
                                        "Only SSL connections are allowed in the API, you should update your " +
                                        "request to a secure connection.";
                         return;
-                    case Twitter.TwitterErrorCode.OverCapacity:
+                    case Api.TwitterErrorCode.OverCapacity:
                         problemType = ProblemType.TwitterInfrastructureError;
                         description += "Over capacity - Twitter is temporarily over capacity.";
                         return;
-                    case Twitter.TwitterErrorCode.InternalError:
+                    case Api.TwitterErrorCode.InternalError:
                         problemType = ProblemType.TwitterInfrastructureError;
                         description += "Internal Error - An unknown internal error occurred on Twitter.";
                         return;
-                    case Twitter.TwitterErrorCode.InvalidSignature:
+                    case Api.TwitterErrorCode.InvalidSignature:
                         problemType = ProblemType.AuthorizationError;
                         description += "Could not authenticate you - " +
                                        "it means that your oauth_timestamp is either ahead or behind " +
                                        "our acceptable range. (system time is incorrect?)";
                         return;
-                    case Twitter.TwitterErrorCode.TooManyFollow:
+                    case Api.TwitterErrorCode.TooManyFollow:
                         problemType = ProblemType.RateLimitation;
                         description += "You are unable to follow more people at this time - " +
                                        "thrown when a user cannot follow another user due to some kind of limit.";
                         return;
-                    case Twitter.TwitterErrorCode.AuthorizationRequired:
+                    case Api.TwitterErrorCode.AuthorizationRequired:
                         problemType = ProblemType.AuthorizationError;
                         description += "Sorry, you are not authorized to see this status - " +
                                        "thrown when a Tweet cannot be viewed by the authenticating user, " +
                                        "usually due to the tweet’s author having protected their tweets.";
                         return;
-                    case Twitter.TwitterErrorCode.StatusUpdateLimit:
+                    case Api.TwitterErrorCode.StatusUpdateLimit:
                         problemType = ProblemType.RateLimitation;
                         description += "User is over daily status update limit - " +
                                        "thrown when a tweet cannot be posted due to the user having no allowance " +
@@ -118,52 +118,52 @@ namespace Cadena.Twitter
                                        "thrown whenever a posting limitation has been reached. Posting allowances " +
                                        "have roaming windows of time of unspecified duration.";
                         return;
-                    case Twitter.TwitterErrorCode.StatusDuplicated:
+                    case Api.TwitterErrorCode.StatusDuplicated:
                         problemType = ProblemType.InvalidPayload;
                         description += "Status is a duplicate - " +
                                        "the status text has been Tweeted already by the authenticated account.";
                         return;
-                    case Twitter.TwitterErrorCode.BadAuthenticationData:
+                    case Api.TwitterErrorCode.BadAuthenticationData:
                         problemType = ProblemType.AuthorizationError;
                         description += "Bad authentication data - " +
                                        "the method requires authentication but it was not presented or was " +
                                        "wholly invalid.";
                         return;
-                    case Twitter.TwitterErrorCode.SuspiciousRequest:
+                    case Api.TwitterErrorCode.SuspiciousRequest:
                         problemType = ProblemType.AuthorizationError;
                         description += "This request looks like it might be automated - " +
                                        "to protect our users from spam and other malicious activity, we can’t " +
                                        "complete this action right now.";
                         return;
-                    case Twitter.TwitterErrorCode.LoginVerificationNeeded:
+                    case Api.TwitterErrorCode.LoginVerificationNeeded:
                         problemType = ProblemType.AuthorizationError;
                         description += "User must verify login - " +
                                        "returned as a challenge in xAuth when the user has login verification " +
                                        "enabled on their account and needs to be directed to twitter.com to generate " +
                                        "a temporary password.";
                         return;
-                    case Twitter.TwitterErrorCode.EndpointGone:
+                    case Api.TwitterErrorCode.EndpointGone:
                         problemType = ProblemType.ProtocolViolation;
                         description += "This endpoint has been retired and should not be used - " +
                                        "corresponds to a HTTP request to a retired URL.";
                         return;
-                    case Twitter.TwitterErrorCode.ApiPermissionDenined:
+                    case Api.TwitterErrorCode.ApiPermissionDenined:
                         problemType = ProblemType.AuthorizationError;
                         description += "Application cannot perform write actions - " +
                                        "thrown when the application is restricted from POST, PUT, or DELETE actions.";
                         return;
-                    case Twitter.TwitterErrorCode.TryToMuteYourself:
+                    case Api.TwitterErrorCode.TryToMuteYourself:
                         problemType = ProblemType.AuthorizationError;
                         description += "You can’t mute yourself - " +
                                        "the authenticated user account cannot mute itself.";
                         return;
-                    case Twitter.TwitterErrorCode.CouldNotMute:
+                    case Api.TwitterErrorCode.CouldNotMute:
                         problemType = ProblemType.AuthorizationError;
                         description += "You are not muting the specified user - " +
                                        "the authenticated user account is not muting the account a call is " +
                                        "attempting to unmute.";
                         return;
-                    case Twitter.TwitterErrorCode.DirectMessageTooLong:
+                    case Api.TwitterErrorCode.DirectMessageTooLong:
                         problemType = ProblemType.AuthorizationError;
                         description += "The text of your direct message is over the max character limit - " +
                                        "the message size exceeds the number of characters permitted in a direct message.";
@@ -261,7 +261,7 @@ namespace Cadena.Twitter
                 }
                 catch
                 {
-                    // ignore parse exception 
+                    // ignore parse exception
                 }
                 throw ex;
             }

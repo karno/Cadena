@@ -125,7 +125,7 @@ namespace Cadena._Internals
             {
                 parsed = parsed["statuses"];
             }
-            return parsed.AsArray().Select(status => new TwitterStatus(status));
+            return parsed.AsArray()?.Select(status => new TwitterStatus(status)) ?? Enumerable.Empty<TwitterStatus>();
         }
 
         private static async Task<IEnumerable<T>> ReadAsCollectionAsync<T>(
@@ -136,7 +136,7 @@ namespace Cadena._Internals
 
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
             var parsed = MeteorJson.Parse(json);
-            return parsed.AsArray().Select(factory);
+            return parsed.AsArray()?.Select(factory) ?? Enumerable.Empty<T>();
         }
 
         public static Task<ICursorResult<IEnumerable<long>>> ReadAsCursoredIdsAsync(
@@ -174,8 +174,8 @@ namespace Cadena._Internals
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
             var parsed = MeteorJson.Parse(json);
             var converteds = selector(parsed).Select(instantiator);
-            var prevCursor = parsed["previous_cursor_str"].AsString() ?? "-1";
-            var nextCursor = parsed["next_cursor_str"].AsString() ?? "-1";
+            var prevCursor = parsed["previous_cursor_str"].AsLongOrNull() ?? -1;
+            var nextCursor = parsed["next_cursor_str"].AsLongOrNull() ?? -1;
             return CursorResult.Create(converteds, prevCursor, nextCursor);
         }
     }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Cadena.Api.Rest;
 using Cadena.Data;
-using Cadena.Twitter.Rest;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers.Relations

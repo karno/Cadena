@@ -7,7 +7,7 @@ using Cadena._Internals;
 using Cadena.Data;
 using JetBrains.Annotations;
 
-namespace Cadena.Twitter.Rest
+namespace Cadena.Api.Rest
 {
     public static class Accounts
     {

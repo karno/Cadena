@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Cadena._Internals;
 using JetBrains.Annotations;
 
-namespace Cadena.Twitter.Streams
+namespace Cadena.Api.Streams
 {
     /// <summary>
     /// Core of engine of receiving general streams.

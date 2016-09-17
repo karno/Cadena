@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Cadena.Twitter
+namespace Cadena.Api
 {
     public abstract class ParameterBase
     {

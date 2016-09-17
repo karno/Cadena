@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cadena.Twitter.Streams
+namespace Cadena.Api.Streams
 {
     /// <summary>
     /// Describes filter level of the streams.

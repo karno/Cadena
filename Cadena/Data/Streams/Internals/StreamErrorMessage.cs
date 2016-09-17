@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Cadena.Twitter;
+using Cadena.Api;
 
 namespace Cadena.Data.Streams.Internals
 {

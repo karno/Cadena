@@ -1663,7 +1663,7 @@ namespace Cadena.Test
   ""event"":""{0}"",
   ""created_at"": ""Sat Sep 4 16:10:54 +0000 2010"",
   ""target"": {2},
-  ""source"": {1}, 
+  ""source"": {1},
   ""target_object"": {3}
 }}";
             if (targetObject == null)
@@ -1750,7 +1750,7 @@ namespace Cadena.Test
                 _eventUnfollowJson,
                 _eventUserUpdateJson
             };
-            var joined = statuses.Concat(notifications)
+            var joined = statuses.Concat(statuses).Concat(statuses).Concat(statuses).Concat(notifications)
                 .Select(s => s.Unline())
                 .ToArray();
             var rand = new Random();

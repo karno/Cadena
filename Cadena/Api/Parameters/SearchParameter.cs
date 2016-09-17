@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Cadena.Twitter.Parameters
+namespace Cadena.Api.Parameters
 {
     public sealed class SearchParameter : ParameterBase
     {

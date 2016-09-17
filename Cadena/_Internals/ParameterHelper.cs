@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using Cadena.Twitter;
+using Cadena.Api;
 using JetBrains.Annotations;
 
 namespace Cadena._Internals
