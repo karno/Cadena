@@ -141,6 +141,8 @@
     <Compile Include="Meteor\Safe\SafeMeteorJson.cs" />
     <Compile Include="Meteor\Safe\SafeMeteorJsonParserBase.cs" />
     <Compile Include="Meteor\_Internals\KeyCacheTree.cs" />
+    <Compile Include="Meteor\_Internals\KeyCacheTreeDigger.cs" />
+    <Compile Include="Meteor\_Internals\ListDictionary.cs" />
     <Compile Include="ProblemType.cs" />
     <Compile Include="Engine\RequestEngine.cs" />
     <Compile Include="Engine\ReceiveEngine.cs" />

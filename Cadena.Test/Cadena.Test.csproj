@@ -93,6 +93,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="KeyCacheTreeTest.cs" />
     <Compile Include="MediaFileUtilTest.cs" />
     <Compile Include="MeteorJsonTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

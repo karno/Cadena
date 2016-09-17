@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Cadena.Meteor._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Meteor
@@ -11,7 +12,7 @@ namespace Cadena.Meteor
         public static readonly JsonObject Empty = new JsonObject();
 
         [NotNull]
-        private readonly Dictionary<string, JsonValue> _dictionary;
+        private readonly IDictionary<string, JsonValue> _dictionary;
 
         public override bool IsObject { get; } = true;
 
@@ -23,12 +24,17 @@ namespace Cadena.Meteor
 
         private JsonObject()
         {
-            _dictionary = new Dictionary<string, JsonValue>();
+            _dictionary = new ListDictionary<string, JsonValue>(0);
         }
 
         public JsonObject(IDictionary<string, JsonValue> dictionary)
         {
             _dictionary = new Dictionary<string, JsonValue>(dictionary);
+        }
+
+        internal JsonObject(IDictionary<string, JsonValue> dictionary, bool unwrap)
+        {
+            _dictionary = unwrap ? dictionary : new Dictionary<string, JsonValue>(dictionary);
         }
 
         public override bool ContainsKey(string key)

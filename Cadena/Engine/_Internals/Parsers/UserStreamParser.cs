@@ -36,12 +36,26 @@ namespace Cadena.Engine._Internals.Parsers
             }
         }
 
+        public static void ParseStreamLine(JsonStringParser parser, string line, IStreamHandler handler)
+        {
+            try
+            {
+                var element = parser.Parse(line);
+                ParseStreamLine(element, handler);
+            }
+            catch (Exception ex)
+            {
+                handler.OnException(new StreamParseException(
+                    "JSON parse failed.", line, ex));
+            }
+        }
+
         /// <summary>
         /// Parse streamed JSON line
         /// </summary>
         /// <param name="graph">JSON object graph</param>
         /// <param name="handler">result handler</param>
-        internal static void ParseStreamLine(JsonValue graph, IStreamHandler handler)
+        public static void ParseStreamLine(JsonValue graph, IStreamHandler handler)
         {
 
 

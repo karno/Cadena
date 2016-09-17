@@ -3,23 +3,48 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Cadena.Meteor._Internals;
 
 namespace Cadena.Meteor
 {
     public abstract unsafe class MeteorJsonParserBase
     {
-        const int StringBufferLength = 64;
+        private const int SmallDictionaryLength = 8;
+        private const int SmallArrayLength = 16;
+        private const int StringBufferLength = 64;
+        private const int StringBuilderRecycleThreshold = 8192;
 
-        /* TODO: Cache object key strings.
-         * In general JSON, same object keys are used for multiple times.
-         * Therefore, we can cache it for improve parse performance.
-         *
-         * Implementation Note:
-         * Use red-black tree for caching keys.
-         * The tree is being dug according to reading the character.
-         * We can pass partial result to ReadString method 
-         * when parser noticed that the reading key is not cached yet.
-         */
+        private readonly KeyCacheTree _cacheTree;
+        private readonly IKeyCacheTreeDigger _cacheDigger;
+
+        private JsonValue[] _sharedArray = new JsonValue[16];
+        private StringBuilder _sharedStringBuilder = new StringBuilder(StringBufferLength * 4);
+
+        protected MeteorJsonParserBase() : this(new KeyCacheTree())
+        {
+        }
+
+        internal MeteorJsonParserBase(KeyCacheTree cacheTree)
+        {
+            _cacheTree = cacheTree;
+            _cacheDigger = _cacheTree.CreateDigger();
+        }
+
+        public void ClearObjectKeyCache()
+        {
+            _cacheTree.Clear();
+            _cacheDigger.Initialize();
+        }
+
+        public int CacheCount()
+        {
+            return _cacheTree.Count;
+        }
+
+        public int ALQCount()
+        {
+            return _cacheTree.AddRequestCount;
+        }
 
         /// <summary>
         /// Read value.
@@ -99,10 +124,10 @@ namespace Cadena.Meteor
             }
 
             // read array content
-            var list = new List<JsonValue>();
+            List<JsonValue> items = new List<JsonValue>();
             while (true)
             {
-                list.Add(ReadValue(ref ptr, ref end));
+                items.Add(ReadValue(ref ptr, ref end));
 
                 // read close bracket or comma
                 SkipWhitespaces(ref ptr, ref end);
@@ -124,7 +149,7 @@ namespace Cadena.Meteor
                 // otherwise, next letter should be ','.
                 AssertAndReadNext(ref ptr, ',');
             }
-            return new JsonArray(list.ToArray());
+            return new JsonArray(items.ToArray());
         }
 
         private JsonObject ReadObject(ref char* ptr, ref char* end)
@@ -146,7 +171,8 @@ namespace Cadena.Meteor
                 return JsonObject.Empty;
             }
 
-            var dict = new Dictionary<string, JsonValue>();
+            IDictionary<string, JsonValue> dict = new ListDictionary<string, JsonValue>(SmallDictionaryLength);
+            int lest = SmallDictionaryLength;
             while (true)
             {
                 var keyBegin = ptr;
@@ -166,6 +192,10 @@ namespace Cadena.Meteor
 
                 // read value and add to dictionary
                 dict.Add(key, ReadValue(ref ptr, ref end));
+                if (--lest == 0)
+                {
+                    dict = ((ListDictionary<string, JsonValue>)dict).CreateDictionary();
+                }
 
                 // read close brace or comma
                 SkipWhitespaces(ref ptr, ref end);
@@ -191,7 +221,7 @@ namespace Cadena.Meteor
                 SkipWhitespaces(ref ptr, ref end);
             }
 
-            return new JsonObject(dict);
+            return new JsonObject(dict, true);
         }
 
         private JsonNumber ReadNumber(ref char* ptr, ref char* end)
@@ -206,13 +236,13 @@ namespace Cadena.Meteor
             // read sign
             if (*ptr == '-' || *ptr == '+')
             {
-                // RFC7159 says sign is only for '-', but twitter sometime returns stupid JSON. 
+                // RFC7159 says sign is only for '-', but twitter sometime returns stupid JSON.
                 // So we also check '+' sign.
                 isNegative = *ptr == '-';
                 ptr++;
             }
 
-            // check before reading integer 
+            // check before reading integer
             // only call after - or +
             // otherwise, parent don't call this method.
             AssertDigit(ref ptr, ref end, "number is required after the sign.");
@@ -328,14 +358,25 @@ namespace Cadena.Meteor
             return new JsonNumber(value);
         }
 
-        private JsonString ReadString(ref char* ptr, ref char* end)
+        private JsonString ReadString(ref char* ptr, ref char* end, bool offload = false)
         {
-            // check first letter
-            Debug.Assert(*ptr == '\"');
-            ptr++;
+            if (!offload)
+            {
+                // check first letter
+                Debug.Assert(*ptr == '\"');
+                ptr++;
+            }
 
             // for long string
             StringBuilder builder = null;
+
+            /*
+            for (; !IsEndOfJson(ref ptr, ref end) && *ptr != '\"'; ptr++)
+            {
+            }
+            AssertAndReadNext(ref ptr, '\"');
+            return new JsonString(String.Empty);
+            */
 
             var bufptr = stackalloc char[StringBufferLength];
             var bp = bufptr;
@@ -348,7 +389,7 @@ namespace Cadena.Meteor
                     // buffer is full
                     if (builder == null)
                     {
-                        builder = new StringBuilder(StringBufferLength * 2);
+                        builder = _sharedStringBuilder;
                     }
                     bp = bufptr;
                     builder.Append(bp, StringBufferLength);
@@ -451,6 +492,8 @@ namespace Cadena.Meteor
             }
             // read " and direct to next char
             AssertAndReadNext(ref ptr, '\"');
+
+            // create result string
             if (builder == null)
             {
                 // builder is not used
@@ -458,7 +501,16 @@ namespace Cadena.Meteor
             }
             // return from builder
             builder.Append(bufptr, (int)(bp - bufptr));
-            return new JsonString(builder.ToString());
+            var str = builder.ToString();
+            if (builder.Length > StringBuilderRecycleThreshold)
+            {
+                _sharedStringBuilder = new StringBuilder(StringBufferLength * 2);
+            }
+            else
+            {
+                _sharedStringBuilder.Clear();
+            }
+            return new JsonString(str);
         }
 
         // object key specialization ---------------------
@@ -466,7 +518,140 @@ namespace Cadena.Meteor
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string ReadObjectKey(ref char* ptr, ref char* end)
         {
-            return ReadString(ref ptr, ref end).AsString();
+            // return ReadString(ref ptr, ref end).Value;
+            // check first letter
+            Debug.Assert(*ptr == '\"');
+            ptr++;
+
+            // reset digger
+            _cacheDigger.Initialize();
+
+            var misshit = false;
+            for (; !IsEndOfJson(ref ptr, ref end) && *ptr != '\"'; ptr++)
+            {
+                if (*ptr == '\\')
+                {
+                    // escaped
+                    ptr++;
+                    char bp;
+                    if (!IsEndOfJson(ref ptr, ref end))
+                    {
+                        switch (*ptr)
+                        {
+                            case '"':
+                                bp = '"';
+                                break;
+                            case '\\':
+                                bp = '\\';
+                                break;
+                            case '/':
+                                bp = '/';
+                                break;
+                            case 'b':
+                                bp = '\b';
+                                break;
+                            case 'f':
+                                bp = '\f';
+                                break;
+                            case 'n':
+                                bp = '\n';
+                                break;
+                            case 'r':
+                                bp = '\r';
+                                break;
+                            case 't':
+                                bp = '\t';
+                                break;
+                            case 'u':
+                                // hex unicode
+                                var code = 0;
+                                for (var i = 0; i < 4; i++)
+                                {
+                                    ptr++;
+                                    if (IsEndOfJson(ref ptr, ref end))
+                                    {
+                                        // hitting end of char
+                                        break;
+                                    }
+                                    code <<= 4;
+                                    if (*ptr <= '9' && *ptr >= '0')
+                                    {
+                                        code += *ptr - '0';
+                                    }
+                                    else if (*ptr <= 'F' && *ptr >= 'A')
+                                    {
+                                        // code += *sp - 'A' + 10
+                                        code += *ptr - '7';
+                                    }
+                                    else if (*ptr <= 'f' && *ptr >= 'a')
+                                    {
+                                        // code += *sp - 'a' + 10
+                                        code += *ptr - 'W';
+                                    }
+                                    else
+                                    {
+                                        // invalid code, abort processing
+                                        ptr--;
+                                        break;
+                                    }
+                                }
+                                // we can decode 0x0000~0xffff, so we can't exceed the Char.MaxValue
+                                Debug.Assert(code <= Char.MaxValue);
+                                bp = (char)code;
+                                break;
+
+                            default:
+                                // this is not registered escape code.
+                                ptr--;
+                                bp = '\\';
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        ptr--;
+                        bp = '\\';
+                    }
+                    if (_cacheDigger.DigNextChar(bp)) continue;
+                    goto miss_hit;
+                }
+                if (_cacheDigger.DigNextChar(*ptr)) continue;
+
+                miss_hit:
+                misshit = true;
+                break;
+            }
+            if (IsEndOfJson(ref ptr, ref end))
+            {
+                // end in middle of string
+                throw CreateException(ptr, "string is not closed.");
+            }
+
+            // check cache result and key
+            if (!misshit)
+            {
+                // completed reading string
+                // -> read " and direct to next char
+                AssertAndReadNext(ref ptr, '\"');
+                // completing
+                _cacheDigger.Complete();
+
+                var key = _cacheDigger.PointingItem;
+                var length = _cacheDigger.ItemValidLength;
+                if (key.Length != length)
+                {
+                    // add substring item
+                    var item = key.Substring(0, length);
+                    _cacheTree.Add(item);
+                    return item;
+                }
+                return key;
+            }
+            // offload to original string reader
+            var offload = ReadString(ref ptr, ref end, true).Value;
+            var newkey = _cacheDigger.PointingItem?.Substring(0, _cacheDigger.ItemValidLength) + offload;
+            _cacheTree.Add(newkey);
+            return newkey;
         }
 
         // read values -----------------------------------

@@ -5,11 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Cadena.Api.Streams;
 using Cadena.Data;
 using Cadena.Data.Streams;
 using Cadena.Engine._Internals.Parsers;
 using Cadena.Engine.StreamReceivers;
-using Cadena.Twitter.Streams;
+using Cadena.Meteor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Task = System.Threading.Tasks.Task;
 
@@ -41,6 +42,17 @@ namespace Cadena.Test
         [TestMethod]
         public void UserStreamParserPerformanceTest()
         {
+            var workingset = Environment.WorkingSet;
+            var parser = new JsonStringParser();
+            // pre-work
+            for (var i = 0; i < 100; i++)
+            {
+                foreach (var elem in TweetSamples.GetStreamSampleElements())
+                {
+                    parser.Parse(elem);
+                }
+            }
+
             var source = new CancellationTokenSource();
             var handler = new PseudoStreamHandler();
             var received = 0;
@@ -49,12 +61,14 @@ namespace Cadena.Test
             {
                 if (source.IsCancellationRequested) break;
                 received++;
-                UserStreamParser.ParseStreamLine(content, handler);
+                UserStreamParser.ParseStreamLine(parser, content, handler);
             }
+            var wsa = Environment.WorkingSet;
             TestContext.WriteLine("received: {0}", received);
             TestContext.WriteLine("handler: statuses: {0} / events: {1}", handler.ReceivedStatuses, handler.ReceivedEvents);
+            TestContext.WriteLine("cache: {0} / {1}", parser.CacheCount(), parser.ALQCount());
+            TestContext.WriteLine("workingset delta: {0}", wsa - workingset);
         }
-
 
         [TestMethod]
         public async Task StreamWinderPerformanceTest()

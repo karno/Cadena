@@ -4,28 +4,24 @@
     {
         public static JsonValue Parse(string text)
         {
-            return new JsonStringParser(text).Parse();
+            return new JsonStringParser().Parse(text);
         }
     }
 
     public sealed class JsonStringParser : MeteorJsonParserBase
     {
-        private readonly string _json;
+        private string _json;
         private unsafe char* _begin = null;
 
-        public JsonStringParser(string json)
+        public unsafe JsonValue Parse(string json)
         {
             _json = json;
-        }
-
-        public unsafe JsonValue Parse()
-        {
             try
             {
-                fixed (char* jsonptr = _json)
+                fixed (char* jsonptr = json)
                 {
                     var ptr = _begin = jsonptr;
-                    var end = jsonptr + _json.Length - 1;
+                    var end = jsonptr + json.Length - 1;
                     // read value
                     var value = ReadValue(ref ptr, ref end);
                     // check after object
@@ -40,6 +36,7 @@
             }
             finally
             {
+                _json = null;
                 _begin = null;
             }
         }
