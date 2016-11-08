@@ -23,7 +23,7 @@ namespace Cadena.Api.Rest
                 {"count", count},
                 {"since_id", sinceId},
                 {"max_id", maxId}
-            };
+            }.SetExtended();
             return await accessor.GetAsync("statuses/home_timeline.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -40,13 +40,13 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (targetUser == null) throw new ArgumentNullException(nameof(targetUser));
             var param = new Dictionary<string, object>
-            {
-                {"since_id", sinceId},
-                {"max_id", maxId},
-                {"count", count},
-                {"exclude_replies", excludeReplies},
-                {"include_rts", includeRetweets},
-            }.ApplyParameter(targetUser);
+                {
+                    {"since_id", sinceId},
+                    {"max_id", maxId},
+                    {"count", count},
+                    {"exclude_replies", excludeReplies},
+                    {"include_rts", includeRetweets},
+                }.ApplyParameter(targetUser).SetExtended();
             return await accessor.GetAsync("statuses/user_timeline.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -67,7 +67,7 @@ namespace Cadena.Api.Rest
                 {"since_id", sinceId},
                 {"max_id", maxId},
                 {"include_rts", includeRetweets},
-            };
+            }.SetExtended();
             return await accessor.GetAsync("statuses/mentions_timeline.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -86,7 +86,7 @@ namespace Cadena.Api.Rest
                 {"count", count},
                 {"since_id", sinceId},
                 {"max_id", maxId},
-            };
+            }.SetExtended();
             return await accessor.GetAsync("statuses/retweets_of_me.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }

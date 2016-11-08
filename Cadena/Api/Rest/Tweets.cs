@@ -8,6 +8,7 @@ using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
 using Cadena.Meteor;
+using Cadena.Util;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -32,7 +33,9 @@ namespace Cadena.Api.Rest
                 {
                     var json = await resp.ReadAsStringAsync().ConfigureAwait(false);
                     var graph = MeteorJson.Parse(json);
-                    return graph.ContainsKey("current_user_retweet") ? Int64.Parse(graph["current_user_retweet"]["id_str"].AsString()) : (long?)null;
+                    return graph.ContainsKey("current_user_retweet")
+                        ? graph["current_user_retweet"]["id_str"].AsString().ParseLong()
+                        : (long?)null;
                 }, cancellationToken).ConfigureAwait(false);
         }
 
@@ -80,7 +83,7 @@ namespace Cadena.Api.Rest
             var param = new Dictionary<string, object>
             {
                 {"id", id},
-            };
+            }.SetExtended();
             return await accessor.GetAsync("statuses/show.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -95,7 +98,7 @@ namespace Cadena.Api.Rest
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (status == null) throw new ArgumentNullException(nameof(status));
-            return await accessor.PostAsync("statuses/update.json", status.ToDictionary(),
+            return await accessor.PostAsync("statuses/update.json", status.ToDictionary().SetExtended(),
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
@@ -145,7 +148,8 @@ namespace Cadena.Api.Rest
             [NotNull] this ApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
             int? chunkSize, [CanBeNull] IProgress<int> sentBytesNotification, CancellationToken cancellationToken)
         {
-            return accessor.UploadLargeMediaAsync(media, mimeType, null, chunkSize, sentBytesNotification, cancellationToken);
+            return accessor.UploadLargeMediaAsync(media, mimeType, null, chunkSize, sentBytesNotification,
+                cancellationToken);
         }
 
         public static Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
@@ -174,8 +178,9 @@ namespace Cadena.Api.Rest
             var csize = chunkSize ?? 5 * 1024 * 1024;
             if (media.Length <= csize)
             {
-                // this item is not needed to chunking
-                return await accessor.UploadMediaAsync(media, cancellationToken).ConfigureAwait(false);
+                // this item is not needed to split it into pieces
+                return await accessor.UploadMediaAsync(media, additionalOwners, cancellationToken)
+                                     .ConfigureAwait(false);
             }
             if (csize < 1 || media.Length / csize > 999)
             {
@@ -183,10 +188,10 @@ namespace Cadena.Api.Rest
             }
 
             // chunking media
-            var chunked = media.Select((b, i) => new { Data = b, Index = i / csize })
-                               .GroupBy(b => b.Index)
-                               .Select(g => g.Select(b => b.Data).ToArray())
-                               .ToArray();
+            var chunks = media.Select((b, i) => new { Data = b, Index = i / csize })
+                              .GroupBy(b => b.Index)
+                              .Select(g => g.Select(b => b.Data).ToArray())
+                              .ToArray();
 
             // send INIT request
             var initialContent = new MultipartFormDataContent
@@ -200,7 +205,8 @@ namespace Cadena.Api.Rest
                 initialContent.Add(new StringContent(additionalOwners.Select(id => id.ToString()).JoinString(",")),
                     "additional_owners");
             }
-            var initialResult = await accessor.UploadMediaCoreAsync(initialContent, cancellationToken).ConfigureAwait(false);
+            var initialResult =
+                await accessor.UploadMediaCoreAsync(initialContent, cancellationToken).ConfigureAwait(false);
 
             // read initial result and prepare sending content
             var mediaId = initialResult.Result.MediaId;
@@ -210,7 +216,7 @@ namespace Cadena.Api.Rest
             var sentSize = 0;
 
             // send APPEND request for uploading contents
-            foreach (var part in chunked)
+            foreach (var part in chunks)
             {
                 var content = new MultipartFormDataContent
                 {
@@ -239,11 +245,12 @@ namespace Cadena.Api.Rest
             CancellationToken cancellationToken)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
-            return await accessor.PostAsync("media/upload.json", content, async resp =>
-            {
-                var json = await resp.ReadAsStringAsync().ConfigureAwait(false);
-                return new TwitterUploadedMedia(MeteorJson.Parse(json));
-            }, cancellationToken).ConfigureAwait(false);
+            return await accessor.PostAsync("media/upload.json", content,
+                async resp =>
+                {
+                    var json = await resp.ReadAsStringAsync().ConfigureAwait(false);
+                    return new TwitterUploadedMedia(MeteorJson.Parse(json));
+                }, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -256,8 +263,8 @@ namespace Cadena.Api.Rest
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             return await accessor.PostAsync("statuses/destroy/" + id + ".json",
-                new Dictionary<string, object>(), ResultHandlers.ReadAsStatusAsync, cancellationToken)
-                                   .ConfigureAwait(false);
+                ParameterHelper.CreateEmpty().SetExtended(),
+                ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -270,11 +277,10 @@ namespace Cadena.Api.Rest
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             return await accessor.PostAsync("statuses/retweet/" + id + ".json",
-                new Dictionary<string, object>(), ResultHandlers.ReadAsStatusAsync, cancellationToken)
-                                   .ConfigureAwait(false);
+                ParameterHelper.CreateEmpty().SetExtended(),
+                ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
     }
 }
-

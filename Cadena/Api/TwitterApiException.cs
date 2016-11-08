@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cadena.Meteor;
@@ -68,7 +69,7 @@ namespace Cadena.Api
                                        "Please migrate to API v1.1.";
                         return;
                     case Api.TwitterErrorCode.RateLimitExceeded:
-                        problemType = ProblemType.RateLimitation;
+                        problemType = ProblemType.LimitExceeded;
                         description += "Rate limit exceeded - " +
                                        "The request limit for this resource has been reached for the " +
                                        "current rate limit window.";
@@ -94,12 +95,17 @@ namespace Cadena.Api
                         return;
                     case Api.TwitterErrorCode.InvalidSignature:
                         problemType = ProblemType.AuthorizationError;
+                        description += "You have been blocked - " +
+                                       "The user associated with the action you are performing has blocked you.";
+                        return;
+                    case Api.TwitterErrorCode.YouHaveBeenBlocked:
+                        problemType = ProblemType.InvalidPayload;
                         description += "Could not authenticate you - " +
                                        "it means that your oauth_timestamp is either ahead or behind " +
                                        "our acceptable range. (system time is incorrect?)";
                         return;
                     case Api.TwitterErrorCode.TooManyFollow:
-                        problemType = ProblemType.RateLimitation;
+                        problemType = ProblemType.LimitExceeded;
                         description += "You are unable to follow more people at this time - " +
                                        "thrown when a user cannot follow another user due to some kind of limit.";
                         return;
@@ -110,7 +116,7 @@ namespace Cadena.Api
                                        "usually due to the tweet’s author having protected their tweets.";
                         return;
                     case Api.TwitterErrorCode.StatusUpdateLimit:
-                        problemType = ProblemType.RateLimitation;
+                        problemType = ProblemType.LimitExceeded;
                         description += "User is over daily status update limit - " +
                                        "thrown when a tweet cannot be posted due to the user having no allowance " +
                                        "remaining to post. Despite the text in the error message indicating that " +
@@ -168,7 +174,21 @@ namespace Cadena.Api
                         description += "The text of your direct message is over the max character limit - " +
                                        "the message size exceeds the number of characters permitted in a direct message.";
                         return;
-
+                    case Api.TwitterErrorCode.InvalidAttachmentUrl:
+                        problemType = ProblemType.InvalidPayload;
+                        description += "attachment_url parameter is invalid - " +
+                                       "Attachment URL should be a tweet permalink or DM deep link.";
+                        return;
+                    case Api.TwitterErrorCode.ReplyTargetStatusIsDeleted:
+                        problemType = ProblemType.InvalidPayload;
+                        description += "You attempted to reply to a tweet that is deleted or not visible to you - " +
+                                       "A reply can only be sent with reference to an existing public or visible tweet from you.";
+                        return;
+                    case Api.TwitterErrorCode.AttachmentLimitExceeded:
+                        problemType = ProblemType.LimitExceeded;
+                        description += "The tweet exceeds the number of allowed attachment types - " +
+                                       "A Tweet is limited to a single attachment resource (media, Quote Tweet, etc.)";
+                        return;
                 }
             }
             // check twitter error kinds
@@ -178,7 +198,7 @@ namespace Cadena.Api
                 case HttpStatusCode.NotModified: // 304
                                                  // successfully completed (in TCP/IP protocol)
                     problemType = ProblemType.Unknown;
-                    description += "Request is succeeded, but exception thrown. (bug?)";
+                    description += "Request is succeeded, but the exception was thrown. (bug?)";
                     return;
 
                 case HttpStatusCode.InternalServerError: // 500
@@ -198,7 +218,7 @@ namespace Cadena.Api
 
                 case (HttpStatusCode)420: // Enhance Your Calm (v1 Search API Rate Limit)
                 case (HttpStatusCode)429: // Too Many Requests
-                    problemType = ProblemType.RateLimitation;
+                    problemType = ProblemType.LimitExceeded;
                     description += "Request is up to rate limit.";
                     return;
 
@@ -228,9 +248,26 @@ namespace Cadena.Api
 
         public override string ToString()
         {
-            return TwitterErrorCode.HasValue
-                ? $"HTTP {StatusCode}/Twitter {TwitterErrorCode.Value}: {Message}"
-                : InnerException.ToString();
+            var s = new StringBuilder();
+            s.Append($"HTTP {StatusCode}");
+            if (TwitterErrorCode.HasValue)
+            {
+                s.Append($"/Twitter {TwitterErrorCode.Value}");
+            }
+            if (!String.IsNullOrEmpty(Description))
+            {
+                s.Append($": {Description}");
+            }
+            s.Append(Environment.NewLine);
+            s.Append($"(Analyzed Problem Type: {ProblemType})");
+            s.Append(Environment.NewLine);
+            s.Append(Message);
+            if (InnerException != null)
+            {
+                s.Append(Environment.NewLine);
+                s.Append(InnerException);
+            }
+            return s.ToString();
         }
     }
 

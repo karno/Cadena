@@ -11,39 +11,39 @@
         /// </summary>
         NetworkError,
         /// <summary>
-        /// Network connection is successfully completed, 
+        /// Network connection is successfully completed,
         /// but Twitter does not accept our request.
         /// </summary>
         TwitterInfrastructureError,
         /// <summary>
         /// Network connection is successfully completed,
-        /// Twitter recognizes our request, 
+        /// Twitter recognizes our request,
         /// but deny our request due to invalid signature/authentication/authorization information.
         /// </summary>
         AuthorizationError,
         /// <summary>
         /// Network connection is successfully completed,
-        /// Twitter recognizes our request, 
+        /// Twitter recognizes our request,
         /// but deny our request due to invalid request/endpoint/format.
         /// </summary>
         ProtocolViolation,
         /// <summary>
         /// Network connection is successfully completed,
-        /// Twitter recognizes our request, 
+        /// Twitter recognizes our request,
         /// but deny our request due to invalid request object(user payload) type/format/etc.
         /// </summary>
         InvalidPayload,
         /// <summary>
         /// Network connection is successfully completed,
-        /// Twitter recognizes our request, 
+        /// Twitter recognizes our request,
         /// but deny our request due to hit to some limitations.
         /// </summary>
-        RateLimitation,
+        LimitExceeded,
         /// <summary>
         /// Network connection is successfully completed,
-        /// Twitter accepts our request and returned data,
+        /// Twitter accepts our request and response with some data,
         /// but we can't recognize it, or contains errors on it.
         /// </summary>
-        InvalidReturnedData,
+        InvalidDataReceived,
     }
 }

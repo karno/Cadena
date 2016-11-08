@@ -13,6 +13,11 @@ namespace Cadena._Internals
     /// </summary>
     internal static class ParameterHelper
     {
+        internal static IDictionary<string, object> CreateEmpty()
+        {
+            return new Dictionary<string, object>();
+        }
+
         private const string ParameterAllowedChars =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
@@ -43,6 +48,15 @@ namespace Cadena._Internals
             if (dict == null) throw new ArgumentNullException(nameof(dict));
 
             paramOrNull?.SetDictionary(dict);
+            return dict;
+        }
+
+        internal static IDictionary<string, object> SetExtended(
+            [NotNull] this IDictionary<string, object> dict)
+        {
+            if (dict == null) throw new ArgumentNullException(nameof(dict));
+
+            dict.Add("tweet_mode", "extended");
             return dict;
         }
 

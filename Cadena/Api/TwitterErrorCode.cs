@@ -4,6 +4,7 @@
     {
         AuthenticationFailed = 32,
         PageNotExist = 34,
+        InvalidAttachmentUrl = 44,
         AccountSuspended = 64,
         ApiNoLongerSupported = 68,
         RateLimitExceeded = 88,
@@ -12,6 +13,7 @@
         OverCapacity = 130,
         InternalError = 131,
         InvalidSignature = 135,
+        YouHaveBeenBlocked = 136,
         TooManyFollow = 161,
         AuthorizationRequired = 179,
         StatusUpdateLimit = 185,
@@ -24,5 +26,7 @@
         TryToMuteYourself = 271,
         CouldNotMute = 272,
         DirectMessageTooLong = 354,
+        ReplyTargetStatusIsDeleted = 385,
+        AttachmentLimitExceeded = 386,
     }
 }

@@ -24,7 +24,7 @@ namespace Cadena.Api.Rest
                 {"since_id", sinceId},
                 {"max_id", maxId},
                 {"full_text", true} // full_text mode is always applied
-            };
+            }.SetExtended();
             return await accessor.GetAsync("direct_messages.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -45,7 +45,7 @@ namespace Cadena.Api.Rest
                 {"max_id", maxId},
                 {"page", page},
                 {"full_text", true} // full_text mode is always applied
-            };
+            }.SetExtended();
             return await accessor.GetAsync("direct_messages/sent.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -63,7 +63,7 @@ namespace Cadena.Api.Rest
             {
                 {"id", id},
                 {"full_text", true} // full_text mode is always applied
-            };
+            }.SetExtended();
             return await accessor.GetAsync("direct_messages/show.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -82,7 +82,7 @@ namespace Cadena.Api.Rest
             var param = new Dictionary<string, object>
             {
                 {"text", text}
-            }.ApplyParameter(recipient);
+            }.ApplyParameter(recipient).SetExtended();
             return await accessor.PostAsync("direct_messages/new.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -99,7 +99,7 @@ namespace Cadena.Api.Rest
             var param = new Dictionary<string, object>
             {
                 {"id", id}
-            };
+            }.SetExtended();
             return await accessor.PostAsync("direct_messages/destroy.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }

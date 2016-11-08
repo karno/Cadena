@@ -20,7 +20,7 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (query == null) throw new ArgumentNullException(nameof(query));
 
-            return await accessor.GetAsync("search/tweets.json", query.ToDictionary(),
+            return await accessor.GetAsync("search/tweets.json", query.ToDictionary().SetExtended(),
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
 

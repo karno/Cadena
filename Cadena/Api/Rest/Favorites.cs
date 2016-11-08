@@ -24,7 +24,7 @@ namespace Cadena.Api.Rest
                 {"count", count},
                 {"since_id", sinceId},
                 {"max_id", maxId},
-            }.ApplyParameter(targetUser);
+            }.ApplyParameter(targetUser).SetExtended();
             return await accessor.GetAsync("favorites/list.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -41,7 +41,7 @@ namespace Cadena.Api.Rest
             var param = new Dictionary<string, object>
             {
                 {"id", id}
-            };
+            }.SetExtended();
             return await accessor.PostAsync("favorites/create.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
@@ -58,7 +58,7 @@ namespace Cadena.Api.Rest
             var param = new Dictionary<string, object>
             {
                 {"id", id}
-            };
+            }.SetExtended();
             return await accessor.PostAsync("favorites/destroy.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }

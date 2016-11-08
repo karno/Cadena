@@ -49,7 +49,8 @@ namespace Cadena.Meteor
 
         public override JsonValue GetValue(int index)
         {
-            return _values[index];
+            if (index <= 0) throw new ArgumentOutOfRangeException(nameof(index));
+            return _values.Length <= index ? JsonNull.Null : _values[index];
         }
 
         public override int GetHashCode()

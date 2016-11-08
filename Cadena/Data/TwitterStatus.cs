@@ -16,10 +16,24 @@ namespace Cadena.Data
 
         internal TwitterStatus(JsonValue json)
         {
+            // read numeric id and timestamp
             Id = json["id_str"].AsString().ParseLong();
             CreatedAt = json["created_at"].AsString().ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
-            Text = ParsingExtension.ResolveEntity(json["text"].AsString());
-            if (json.ContainsKey("extended_entities"))
+
+            // check extended_tweet is existed
+            var exjson = json.ContainsKey("extended_tweet") ? json["extended_tweet"] : json;
+
+            // read full_text ?? text
+            var text = exjson.ContainsKey("full_text") ? exjson["full_text"] : exjson["text"];
+            Text = ParsingExtension.ResolveEntity(text.AsString());
+
+            var array = exjson["display_text_range"].AsArray()?.AsLongArray();
+            if (array != null && array.Length >= 2)
+            {
+                DisplayTextRange = new Tuple<long, long>(array[0], array[1]);
+            }
+
+            if (exjson.ContainsKey("extended_entities"))
             {
                 // get correctly typed entities array
                 var orgEntities = TwitterEntity.ParseEntities(json["entities"]).ToArray();
@@ -30,7 +44,7 @@ namespace Cadena.Data
                                            .Concat(extEntities) // extended entities contains media entities only.
                                            .ToArray();
             }
-            else if (json.ContainsKey("entities"))
+            else if (exjson.ContainsKey("entities"))
             {
                 Entities = TwitterEntity.ParseEntities(json["entities"]).ToArray();
             }
@@ -76,7 +90,6 @@ namespace Cadena.Data
                     Latitude = coordinates[1];
                 }
             }
-
         }
 
         /// <summary>
@@ -100,6 +113,12 @@ namespace Cadena.Data
         /// </summary>
         [NotNull]
         public string Text { get; }
+
+        /// <summary>
+        /// Display text range is specified, or null.
+        /// </summary>
+        [CanBeNull]
+        public Tuple<long, long> DisplayTextRange { get; }
 
         /// <summary>
         /// Created timestamp of the status.

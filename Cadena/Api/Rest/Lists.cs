@@ -53,7 +53,7 @@ namespace Cadena.Api.Rest
                 {"max_id", maxId},
                 {"count", count},
                 {"include_rts", includeRts},
-            }.ApplyParameter(listTarget);
+            }.ApplyParameter(listTarget).SetExtended();
             return await accessor.GetAsync("lists/statuses.json", param,
                 ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
         }

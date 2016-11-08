@@ -50,7 +50,8 @@ namespace Cadena.Meteor
         [NotNull]
         public virtual JsonValue GetValue(int index)
         {
-            throw new NotSupportedException();
+            if (index <= 0) throw new ArgumentOutOfRangeException(nameof(index));
+            return JsonNull.Null;
         }
 
         [NotNull]
@@ -72,7 +73,6 @@ namespace Cadena.Meteor
         }
 
         public abstract bool Equals(JsonValue other);
-
 
         [CanBeNull]
         public virtual string AsString()

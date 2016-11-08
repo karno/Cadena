@@ -86,7 +86,7 @@ namespace Cadena.Engine.CyclicReceivers
                 var targIntv = CalculateIntervalTicks(remainTime, rld);
                 return TimeSpan.FromTicks(Math.Max(targIntv, MinimumIntervalTicks));
             }
-            catch (TwitterApiException ex) when (ex.ProblemType == ProblemType.RateLimitation)
+            catch (TwitterApiException ex) when (ex.ProblemType == ProblemType.LimitExceeded)
             {
                 // rate limited. this is not an error but we can't acquire any information...
                 // so, we just wait a minute.
@@ -112,7 +112,7 @@ namespace Cadena.Engine.CyclicReceivers
             }
             catch (TaskCanceledException ex)
             {
-                // timeout? 
+                // timeout?
                 CallExceptionHandler(new ReceiverOperationException(ProblemType.NetworkError,
                     "(Exception handled by ExecuteAsync) timeout? (network problem?)", ex));
                 SetLinearBackoff();
