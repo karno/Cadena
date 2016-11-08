@@ -43,11 +43,6 @@ namespace Cadena.Util
                 return SupportedMediaTypes.AnimatedGif;
             }
 
-            foreach (var b in media)
-            {
-
-            }
-
             foreach (var tuple in table)
             {
                 var mediaType = tuple.Key;

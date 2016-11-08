@@ -48,10 +48,6 @@ namespace Cadena.Util
                     escaped.SurrogatedSubstring(endIndex)));
             }
         }
-
-        // below code from Mystique pull request #53.
-        // Thanks for Hotspring-r
-        // https://github.com/karno/Mystique/commit/a8d174bcfe9292290bd9058ecf7ce2b68dc4162e
     }
 
     public class TextEntityDescription
