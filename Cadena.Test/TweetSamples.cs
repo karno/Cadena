@@ -1169,6 +1169,10 @@ namespace Cadena.Test
   ""lang"": ""ja""
 }";
 
+        private static readonly string _statusJsonEx0 = @"{
+
+}";
+
         private static readonly string _streamDeleteJson = @"{
   ""delete"":{
     ""status"":{

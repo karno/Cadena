@@ -76,7 +76,7 @@ namespace Cadena.Engine._Internals.Parsers
                 //
 
                 // friends lists
-                var friends = graph["friends"].AsArray();
+                var friends = graph["friends"].AsArrayOrNull();
                 if (friends != null)
                 {
                     // friends enumeration
@@ -84,7 +84,7 @@ namespace Cadena.Engine._Internals.Parsers
                     handler.OnMessage(new StreamEnumeration(friendsIds));
                     return;
                 }
-                friends = graph["friends_str"].AsArray();
+                friends = graph["friends_str"].AsArrayOrNull();
                 if (friends != null)
                 {
                     // friends enumeration(stringified)
@@ -101,7 +101,7 @@ namespace Cadena.Engine._Internals.Parsers
                 }
 
                 // too many follows warning
-                var warning = graph["warning"].AsObject();
+                var warning = graph["warning"].AsObjectOrNull();
                 if (warning != null)
                 {
                     var code = warning["code"].AsString();

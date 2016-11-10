@@ -1,17 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Cadena.Data;
+using JetBrains.Annotations;
 
 namespace Cadena.Util
 {
     public static class TextEntityResolver
     {
-        public static IEnumerable<TextEntityDescription> ParseText(TwitterStatus status)
+        public static string GetEntityAidedText(string text, IEnumerable<TwitterEntity> entities,
+            EntityDisplayMode displayMode)
         {
-            if (status == null) throw new ArgumentNullException(nameof(status));
-            var entities = status.Entities ?? new TwitterEntity[0];
-            return ParseText(status.Text, entities);
+            try
+            {
+                var builder = new StringBuilder();
+                // ReSharper disable once PossibleMultipleEnumeration
+                foreach (var description in ParseText(text, entities))
+                {
+                    if (description.Entity != null)
+                    {
+                        builder.Append(displayMode == EntityDisplayMode.DisplayText
+                            ? description.Entity.DisplayText
+                            : description.Entity.FullText);
+                    }
+                    else
+                    {
+                        builder.Append(description.Text);
+                    }
+                }
+                return builder.ToString();
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("Parse Error! : " + text);
+                sb.Append("Entities: ");
+                // ReSharper disable once PossibleMultipleEnumeration
+                foreach (var e in entities.OrderBy(e => e.Indices.Item1))
+                {
+                    sb.AppendLine("    " + e);
+                }
+                throw new ArgumentOutOfRangeException(sb.ToString(), ex);
+            }
         }
 
         public static IEnumerable<TextEntityDescription> ParseText(
@@ -21,20 +52,20 @@ namespace Cadena.Util
             var escaped = ParsingExtension.EscapeEntity(text);
             var endIndex = 0;
 
-            // distinct by startindex ignores extended_entities.
-            foreach (var entity in entities.Distinct(e => e.StartIndex).OrderBy(e => e.StartIndex))
+            // distinct by start_index ignores extended_entities.
+            foreach (var entity in entities.Distinct(e => e.Indices.Item1).OrderBy(e => e.Indices.Item1))
             {
-                if (endIndex < entity.StartIndex)
+                if (endIndex < entity.Indices.Item1)
                 {
                     // return raw string
                     yield return new TextEntityDescription(ParsingExtension.ResolveEntity(
-                        escaped.SurrogatedSubstring(endIndex, entity.StartIndex - endIndex)));
+                        escaped.SurrogatedSubstring(endIndex, entity.Indices.Item1 - endIndex)));
                 }
                 // get entitied text
                 var body = ParsingExtension.ResolveEntity(escaped.SurrogatedSubstring(
-                    entity.StartIndex, entity.EndIndex - entity.StartIndex));
+                    entity.Indices.Item1, entity.Indices.Item2 - entity.Indices.Item1));
                 yield return new TextEntityDescription(body, entity);
-                endIndex = entity.EndIndex;
+                endIndex = entity.Indices.Item2;
             }
             if (endIndex == 0)
             {
@@ -60,11 +91,7 @@ namespace Cadena.Util
 
         public string Text { get; }
 
+        [CanBeNull]
         public TwitterEntity Entity { get; }
-
-        public bool IsEntityAvailable
-        {
-            get { return Entity != null; }
-        }
     }
 }

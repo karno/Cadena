@@ -125,7 +125,7 @@ namespace Cadena._Internals
             {
                 parsed = parsed["statuses"];
             }
-            return parsed.AsArray()?.Select(status => new TwitterStatus(status)) ?? Enumerable.Empty<TwitterStatus>();
+            return parsed.AsArrayOrNull()?.Select(status => new TwitterStatus(status)) ?? Enumerable.Empty<TwitterStatus>();
         }
 
         private static async Task<IEnumerable<T>> ReadAsCollectionAsync<T>(
@@ -136,7 +136,7 @@ namespace Cadena._Internals
 
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
             var parsed = MeteorJson.Parse(json);
-            return parsed.AsArray()?.Select(factory) ?? Enumerable.Empty<T>();
+            return parsed.AsArrayOrNull()?.Select(factory) ?? Enumerable.Empty<T>();
         }
 
         public static Task<ICursorResult<IEnumerable<long>>> ReadAsCursoredIdsAsync(
@@ -144,7 +144,7 @@ namespace Cadena._Internals
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            return ReadAsCursoredAsync(response, json => json["ids"].AsArray(), d => d.AsLong());
+            return ReadAsCursoredAsync(response, json => json["ids"].AsArrayOrNull(), d => d.AsLong());
         }
 
         public static Task<ICursorResult<IEnumerable<TwitterUser>>> ReadAsCursoredUsersAsync(
@@ -152,7 +152,7 @@ namespace Cadena._Internals
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            return ReadAsCursoredAsync(response, json => json["users"].AsArray(), d => new TwitterUser(d));
+            return ReadAsCursoredAsync(response, json => json["users"].AsArrayOrNull(), d => new TwitterUser(d));
         }
 
         public static Task<ICursorResult<IEnumerable<TwitterList>>> ReadAsCursoredListsAsync(
@@ -160,7 +160,7 @@ namespace Cadena._Internals
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            return ReadAsCursoredAsync(response, json => json["lists"].AsArray(), d => new TwitterList(d));
+            return ReadAsCursoredAsync(response, json => json["lists"].AsArrayOrNull(), d => new TwitterList(d));
         }
 
         private static async Task<ICursorResult<IEnumerable<T>>> ReadAsCursoredAsync<T>(

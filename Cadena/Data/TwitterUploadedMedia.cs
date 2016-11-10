@@ -19,8 +19,8 @@ namespace Cadena.Data
             var size = json["size"];
             Size = size.AsLongOrNull();
             ExpireAfterSecs = json["expires_after_secs"].AsLongOrNull();
-            var image = json["image"].AsObject();
-            var video = json["video"].AsObject();
+            var image = json["image"].AsObjectOrNull();
+            var video = json["video"].AsObjectOrNull();
             if (image != null)
             {
                 Payload = new TwitterUploadedPhotoPayload(image);

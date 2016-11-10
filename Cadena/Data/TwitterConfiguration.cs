@@ -10,7 +10,7 @@ namespace Cadena.Data
         {
             CharactersReservedPerMedia = (int)json["characters_reserved_per_media"].AsLong();
             PhotoSizeLimit = (int)json["photo_size_limit"].AsLong();
-            NonUserPaths = json["non_user_paths"].AsArray()?.AsStringArray() ?? new string[0];
+            NonUserPaths = json["non_user_paths"].AsArrayOrNull()?.AsStringArray() ?? new string[0];
             ShortUrlLength = (int)json["short_url_length"].AsLong();
             ShortUrlLengthHttps = (int)json["short_url_length_https"].AsLong();
             // MaxMediaPerUpload = (int)json["max_media_per_upload"].AsLong();

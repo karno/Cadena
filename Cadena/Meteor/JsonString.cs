@@ -15,7 +15,7 @@ namespace Cadena.Meteor
             Value = value;
         }
 
-        public override string AsString()
+        public override string AsStringOrNull()
         {
             return Value;
         }

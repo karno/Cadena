@@ -2,6 +2,21 @@
 
 namespace Cadena.Meteor
 {
+    /*
+     * JsonNull provides simpler parser code.
+     *
+     * before:
+     *     json["text"]?.AsString();
+     *     json["id"]?.AsLong() ?? 0;
+     *     json["foo"]?["bar"]?["bazz"]?.AsArray()?.AsLongArray() ?? new long[0];
+     *
+     * after:
+     *     json["text"].AsString();
+     *     json["id"].AsLong();
+     *     json["foo"]["bar"]["bazz"].AsArray()?.AsLongArray() ?? new long[0];
+     */
+
+
     public sealed class JsonNull : JsonValue, IEquatable<JsonNull>
     {
         public static readonly JsonNull Null = new JsonNull();

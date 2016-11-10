@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
+using Cadena.Data.Entities;
 using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
@@ -9,18 +9,13 @@ namespace Cadena.Data
 {
     public class TwitterUser
     {
-        public TwitterUser()
-        {
-            ScreenName = String.Empty;
-        }
-
         public TwitterUser(JsonValue json)
         {
             Id = json["id_str"].AsString().ParseLong();
             ScreenName = ParsingExtension.ResolveEntity(json["screen_name"].AsString());
-            Name = ParsingExtension.ResolveEntity(json["name"].AsString() ?? String.Empty);
-            Description = ParsingExtension.ResolveEntity(json["description"].AsString() ?? String.Empty);
-            Location = ParsingExtension.ResolveEntity(json["location"].AsString() ?? String.Empty);
+            Name = ParsingExtension.ResolveEntity(json["name"].AsString());
+            Description = ParsingExtension.ResolveEntity(json["description"].AsString());
+            Location = ParsingExtension.ResolveEntity(json["location"].AsString());
             Url = json["url"].AsString();
             IsDefaultProfileImage = json["default_profile_image"].AsBooleanOrNull() ?? true;
             ProfileImageUri = json["profile_image_url"].AsString().ParseUri();
@@ -38,20 +33,17 @@ namespace Cadena.Data
             ListedCount = json["listed_count"].AsLong();
             Language = json["lang"].AsString();
             CreatedAt = json["created_at"].AsString().ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
-            var entities = json["entities"].AsObject();
-            if (entities != null)
-            {
-                var urls = entities["url"];
-                var descs = entities["description"];
-                if (!urls.IsNull)
-                {
-                    UrlEntities = TwitterEntity.ParseEntities(urls).ToArray();
-                }
-                if (!descs.IsNull)
-                {
-                    DescriptionEntities = TwitterEntity.ParseEntities(descs).ToArray();
-                }
-            }
+            var entities = json["entities"];
+            var urls = entities["url"];
+            var descs = entities["description"];
+
+            UrlEntities = !urls.IsNull
+                ? TwitterEntity.ParseEntities(urls).OfType<UrlEntity>().ToArray()
+                : new UrlEntity[0];
+
+            DescriptionEntities = !descs.IsNull
+                ? TwitterEntity.ParseEntities(descs).ToArray()
+                : new TwitterEntity[0];
         }
 
         public const string TwitterUserUrl = "https://twitter.com/{0}";
@@ -180,13 +172,13 @@ namespace Cadena.Data
         /// <summary>
         /// Entities of user url
         /// </summary>
-        [CanBeNull]
-        public TwitterEntity[] UrlEntities { get; }
+        [NotNull]
+        public UrlEntity[] UrlEntities { get; }
 
         /// <summary>
         /// Entities of user description
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         public TwitterEntity[] DescriptionEntities { get; }
 
         [NotNull]
@@ -218,60 +210,17 @@ namespace Cadena.Data
         }
 
         [NotNull]
-        public string GetEntityAidedUrl()
+        public string GetEntityAidedUrl(EntityDisplayMode displayMode = EntityDisplayMode.DisplayText)
         {
-            var ou = UrlEntities?.FirstOrDefault(u => u.EntityType == EntityType.Urls)?.OriginalUrl;
-            return ou ?? Url ?? String.Empty;
+            return TextEntityResolver.GetEntityAidedText(Url ?? String.Empty,
+                UrlEntities, displayMode);
         }
 
         [NotNull]
-        public string GetEntityAidedDescription(bool showFullUrl = false)
+        public string GetEntityAidedDescription(EntityDisplayMode displayMode = EntityDisplayMode.DisplayText)
         {
-            var builder = new StringBuilder();
-            var escaped = Description ?? String.Empty;
-            TwitterEntity prevEntity = null;
-            var de = DescriptionEntities ?? new TwitterEntity[0];
-            foreach (var entity in de.OrderBy(e => e.StartIndex))
-            {
-                var pidx = 0;
-                if (prevEntity != null)
-                    pidx = prevEntity.EndIndex;
-                if (pidx < entity.StartIndex)
-                {
-                    // output raw
-                    builder.Append(ParsingExtension.ResolveEntity(escaped.Substring(pidx, entity.StartIndex - pidx)));
-                }
-                switch (entity.EntityType)
-                {
-                    case EntityType.Hashtags:
-                        builder.Append("#" + entity.DisplayText);
-                        break;
-                    case EntityType.Urls:
-                        builder.Append(showFullUrl && !String.IsNullOrEmpty(entity.OriginalUrl)
-                                           ? ParsingExtension.ResolveEntity(entity.OriginalUrl)
-                                           : ParsingExtension.ResolveEntity(entity.DisplayText));
-                        break;
-                    case EntityType.Media:
-                        builder.Append(showFullUrl && !String.IsNullOrEmpty(entity.MediaUrl)
-                                           ? ParsingExtension.ResolveEntity(entity.MediaUrl)
-                                           : ParsingExtension.ResolveEntity(entity.DisplayText));
-                        break;
-                    case EntityType.UserMentions:
-                        builder.Append("@" + entity.DisplayText);
-                        break;
-                }
-                prevEntity = entity;
-            }
-            if (prevEntity == null)
-            {
-                builder.Append(ParsingExtension.ResolveEntity(escaped));
-            }
-            else if (prevEntity.EndIndex < escaped.Length)
-            {
-                builder.Append(ParsingExtension.ResolveEntity(
-                    escaped.Substring(prevEntity.EndIndex, escaped.Length - prevEntity.EndIndex)));
-            }
-            return builder.ToString();
+            return TextEntityResolver.GetEntityAidedText(Description ?? String.Empty,
+                DescriptionEntities, displayMode);
         }
 
         // override object.GetHashCode

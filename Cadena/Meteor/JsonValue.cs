@@ -74,63 +74,69 @@ namespace Cadena.Meteor
 
         public abstract bool Equals(JsonValue other);
 
-        [CanBeNull]
-        public virtual string AsString()
+        [NotNull]
+        public string AsString()
         {
-            return null;
+            return AsStringOrNull() ?? String.Empty;
         }
 
-        public virtual long AsLong()
+        public long AsLong()
         {
-            return default(long);
+            return AsLongOrNull() ?? default(long);
         }
 
-        public virtual double AsDouble()
+        public int AsInteger()
         {
-            return default(double);
+            return AsIntegerOrNull() ?? default(int);
+        }
+
+        public double AsDouble()
+        {
+            return AsDoubleOrNull() ?? default(double);
         }
 
         public virtual bool AsBoolean()
         {
-            return default(bool);
+            return AsBooleanOrNull() ?? default(bool);
         }
 
         [CanBeNull]
-        public JsonArray AsArray()
+        public JsonArray AsArrayOrNull()
         {
             return this as JsonArray;
         }
 
         [CanBeNull]
-        public JsonObject AsObject()
+        public JsonObject AsObjectOrNull()
         {
             return this as JsonObject;
         }
 
-        public int AsInteger()
+        [CanBeNull]
+        public virtual string AsStringOrNull()
         {
-            return (int)AsLong();
+            return null;
         }
 
-        public long? AsLongOrNull()
+        public virtual long? AsLongOrNull()
         {
-            return IsNumber ? (long?)AsLong() : null;
+            return null;
         }
 
-        public int? AsIntegerOrNull()
+        public virtual int? AsIntegerOrNull()
         {
-            return IsNumber ? (int?)AsInteger() : null;
+            return (int?)AsLongOrNull();
         }
 
 
-        public double? AsDoubleOrNull()
+        public virtual double? AsDoubleOrNull()
         {
-            return IsNumber ? (double?)AsDouble() : null;
+            return null;
         }
 
-        public bool? AsBooleanOrNull()
+        public virtual bool? AsBooleanOrNull()
         {
-            return IsBoolean ? (bool?)AsBoolean() : null;
+            return null;
         }
 
 

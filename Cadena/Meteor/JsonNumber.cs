@@ -24,12 +24,12 @@ namespace Cadena.Meteor
 
         public override bool IsNumber { get; } = true;
 
-        public override long AsLong()
+        public override long? AsLongOrNull()
         {
             return IsInteger ? LongValue : (long)DoubleValue;
         }
 
-        public override double AsDouble()
+        public override double? AsDoubleOrNull()
         {
             return IsInteger ? LongValue : DoubleValue;
         }

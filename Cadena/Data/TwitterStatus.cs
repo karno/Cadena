@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
+using Cadena.Data.Entities;
 using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
@@ -27,10 +27,10 @@ namespace Cadena.Data
             var text = exjson.ContainsKey("full_text") ? exjson["full_text"] : exjson["text"];
             Text = ParsingExtension.ResolveEntity(text.AsString());
 
-            var array = exjson["display_text_range"].AsArray()?.AsLongArray();
+            var array = exjson["display_text_range"].AsArrayOrNull()?.AsLongArray();
             if (array != null && array.Length >= 2)
             {
-                DisplayTextRange = new Tuple<long, long>(array[0], array[1]);
+                DisplayTextRange = new Tuple<int, int>((int)array[0], (int)array[1]);
             }
 
             if (exjson.ContainsKey("extended_entities"))
@@ -40,13 +40,13 @@ namespace Cadena.Data
                 var extEntities = TwitterEntity.ParseEntities(json["extended_entities"]).ToArray();
 
                 // merge entities
-                Entities = orgEntities.Where(e => e.EntityType != EntityType.Media)
-                                           .Concat(extEntities) // extended entities contains media entities only.
-                                           .ToArray();
+                Entities = orgEntities.Where(e => !(e is MediaEntity))
+                                      .Concat(extEntities) // extended entities contains media entities only.
+                                      .ToArray();
             }
             else if (exjson.ContainsKey("entities"))
             {
-                Entities = TwitterEntity.ParseEntities(json["entities"]).ToArray();
+                Entities = TwitterEntity.ParseEntities(exjson["entities"]).ToArray();
             }
             else
             {
@@ -83,7 +83,7 @@ namespace Cadena.Data
                     QuotedStatus = quoted;
                     QuotedStatusId = quoted.Id;
                 }
-                var coordinates = json["coordinates"].AsArray()?.AsDoubleArray();
+                var coordinates = json["coordinates"].AsArrayOrNull()?.AsDoubleArray();
                 if (coordinates != null)
                 {
                     Longitude = coordinates[0];
@@ -118,7 +118,7 @@ namespace Cadena.Data
         /// Display text range is specified, or null.
         /// </summary>
         [CanBeNull]
-        public Tuple<long, long> DisplayTextRange { get; }
+        public Tuple<int, int> DisplayTextRange { get; }
 
         /// <summary>
         /// Created timestamp of the status.
@@ -195,7 +195,7 @@ namespace Cadena.Data
         /// <summary>
         /// Entity objects of the status
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         public TwitterEntity[] Entities { get; }
 
         /// <summary>
@@ -226,75 +226,8 @@ namespace Cadena.Data
         [NotNull]
         public string GetEntityAidedText(EntityDisplayMode displayMode = EntityDisplayMode.DisplayText)
         {
-            try
-            {
-                var builder = new StringBuilder();
-                var status = this;
-                if (status.RetweetedStatus != null)
-                {
-                    // change target
-                    status = status.RetweetedStatus;
-                }
-                foreach (var description in TextEntityResolver.ParseText(status))
-                {
-                    if (!description.IsEntityAvailable)
-                    {
-                        builder.Append(description.Text);
-                    }
-                    else
-                    {
-                        var entity = description.Entity;
-                        switch (entity.EntityType)
-                        {
-                            case EntityType.Hashtags:
-                                builder.Append("#" + entity.DisplayText);
-                                break;
-                            case EntityType.Urls:
-                                // url entity:
-                                // display_url: example.com/CUTTED OFF...
-                                // original_url => expanded_url: example.com/full_original_url
-                                builder.Append(displayMode != EntityDisplayMode.DisplayText
-                                               && entity.OriginalUrl != null
-                                    ? ParsingExtension.ResolveEntity(entity.OriginalUrl)
-                                    : ParsingExtension.ResolveEntity(entity.DisplayText));
-                                break;
-                            case EntityType.Media:
-                                // media entity:
-                                // display_url: pic.twitter.com/IMAGE_ID
-                                // media_url: pbs.twimg.com/media/ACTUAL_IMAGE_RESOURCE_ID
-                                // url: t.co/IMAGE_ID
-                                builder.Append(
-                                    displayMode == EntityDisplayMode.LinkUri &&
-                                    entity.MediaUrl != null
-                                        ? ParsingExtension.ResolveEntity(entity.MediaUrl)
-                                        : ParsingExtension.ResolveEntity(entity.DisplayText));
-                                break;
-                            case EntityType.UserMentions:
-                                builder.Append("@" + entity.DisplayText);
-                                break;
-                        }
-                    }
-                }
-                return builder.ToString();
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("Parse Error! : " + Text);
-                if (Entities == null)
-                {
-                    sb.AppendLine("Entities: null");
-                }
-                else
-                {
-                    sb.Append("Entities: ");
-                    foreach (var e in Entities.OrderBy(e => e.StartIndex))
-                    {
-                        sb.AppendLine("    " + e.StartIndex + "- " + e.EndIndex + " : " + e.DisplayText);
-                    }
-                }
-                throw new ArgumentOutOfRangeException(sb.ToString(), ex);
-            }
+            var status = RetweetedStatus ?? this;
+            return TextEntityResolver.GetEntityAidedText(status.Text, status.Entities, displayMode);
         }
 
         /// <summary>
@@ -341,6 +274,5 @@ namespace Cadena.Data
     {
         DisplayText,
         LinkUri,
-        MediaUri
     }
 }
