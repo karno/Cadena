@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Api.Rest;
 using Cadena.Data;
@@ -29,7 +29,7 @@ namespace Cadena.Engine.CyclicReceivers
             {
                 var result = await _accessor.GetListsAsync(new UserParameter(_accessor.Credential.Id), token)
                                             .ConfigureAwait(false);
-                result.Result?.ForEach(i => _handler(i));
+                result.CallForEachItems(_handler);
                 return result.RateLimit;
             }
             catch (Exception ex)

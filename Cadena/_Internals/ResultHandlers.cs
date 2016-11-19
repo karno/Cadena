@@ -23,6 +23,16 @@ namespace Cadena._Internals
             return ApiResult.Create(await result.ConfigureAwait(false), msg);
         }
 
+        internal static void CallForEachItems<T>(this IApiResult<IEnumerable<T>> result, Action<T> callee)
+        {
+            var items = result.Result;
+            if (items == null) return;
+            foreach (var item in items)
+            {
+                callee(item);
+            }
+        }
+
         public static async Task<string> ReadAsStringAsync([NotNull] this HttpResponseMessage response)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
@@ -178,5 +188,6 @@ namespace Cadena._Internals
             var nextCursor = parsed["next_cursor_str"].AsLongOrNull() ?? -1;
             return CursorResult.Create(converteds, prevCursor, nextCursor);
         }
+
     }
 }

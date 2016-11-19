@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Cadena._Internals;
 using Cadena.Api.Rest;
 using Cadena.Data;
 using JetBrains.Annotations;
@@ -27,7 +27,7 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
             {
                 var result = await _accessor.GetHomeTimelineAsync(_receiveCount,
                     LastSinceId, null, token).ConfigureAwait(false);
-                result.Result?.ForEach(CallHandler);
+                result.CallForEachItems(CallHandler);
                 return result.RateLimit;
             }
             catch (Exception ex)

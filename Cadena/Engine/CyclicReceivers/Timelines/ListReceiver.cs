@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Api.Rest;
 using Cadena.Data;
@@ -83,7 +83,7 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
             {
                 var result = await _accessor.GetListTimelineAsync(target,
                     null, null, _receiveCount, _includeRetweets, token).ConfigureAwait(false);
-                result.Result?.ForEach(i => _handler(i));
+                result.CallForEachItems(_handler);
                 return result.RateLimit;
             }
             catch (Exception ex)

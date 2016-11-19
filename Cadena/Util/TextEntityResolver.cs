@@ -53,8 +53,13 @@ namespace Cadena.Util
             var endIndex = 0;
 
             // distinct by start_index ignores extended_entities.
-            foreach (var entity in entities.Distinct(e => e.Indices.Item1).OrderBy(e => e.Indices.Item1))
+            var lastIndex = -1;
+            foreach (var entity in entities.OrderBy(e => e.Indices.Item1))
             {
+                // the entity that has same start-index of previous entity should be ignored.
+                if (entity.Indices.Item1 == lastIndex) continue;
+                lastIndex = entity.Indices.Item1;
+
                 if (endIndex < entity.Indices.Item1)
                 {
                     // return raw string

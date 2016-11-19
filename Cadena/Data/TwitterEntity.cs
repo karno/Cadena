@@ -17,7 +17,7 @@ namespace Cadena.Data
             var urls = ParseSubEntities(json, "urls", u => new UrlEntity(u));
             var mentions = ParseSubEntities(json, "user_mentions", m => new UserMentionEntity(m));
             var media = ParseSubEntities(json, "media", m => new MediaEntity(m));
-            return EnumerableEx.Concat(tags, symbols, urls, mentions, media);
+            return new[] { tags, symbols, urls, mentions, media }.SelectMany(e => e);
         }
 
         [NotNull]

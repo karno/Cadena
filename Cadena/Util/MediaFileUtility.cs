@@ -1,11 +1,7 @@
-﻿// Twitter has not supported WebP currently.
-// but, their document indicates WebP is supported.
-// https://dev.twitter.com/rest/reference/post/media/upload-chunked
-// so, we suppress this feature currently but still can be activated it easily if supported.
-// #define WEBP_SUPPORTED
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -22,7 +18,10 @@ namespace Cadena.Util
         public const string MimeTypeWebP = "image/webp";
 #endif
 
-        public static SupportedMediaTypes GetMediaType(IEnumerable<byte> media)
+        private static readonly IReadOnlyDictionary<SupportedMediaTypes, byte[]> MediaHeaderTable;
+        private static readonly int MediaHeaderLength;
+
+        static MediaFileUtility()
         {
             var table = new Dictionary<SupportedMediaTypes, byte[]>
             {
@@ -30,20 +29,29 @@ namespace Cadena.Util
                 {SupportedMediaTypes.Gif, Encoding.ASCII.GetBytes("GIF")},
                 {SupportedMediaTypes.Jpeg, new byte[] {255, 216, 255, 224}},
                 {SupportedMediaTypes.Png, new byte[] {137, 80, 78, 71}},
-#if WEBP_SUPPORTED
                 {SupportedMediaTypes.WebP, Encoding.ASCII.GetBytes("RIFF\0\0\0\0WEBP")},
-#endif
                 {SupportedMediaTypes.Mp4, Encoding.ASCII.GetBytes("\0\0\0\0ftyp")} // optimistic determination
             };
+            MediaHeaderLength = MediaHeaderTable.Select(kvp => kvp.Value.Length).Max();
+            MediaHeaderTable = new ReadOnlyDictionary<SupportedMediaTypes, byte[]>(table);
+        }
 
-            var memoedMedia = media.Memoize();
-            var headBytes = memoedMedia.Take(12).ToArray();
-            if (CheckMediaIsAnimatedGif(memoedMedia))
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public static SupportedMediaTypes GetMediaType(IEnumerable<byte> media)
+        {
+            var type = GetMediaTypeCore(media);
+            if (type == SupportedMediaTypes.AnimatedGif)
             {
-                return SupportedMediaTypes.AnimatedGif;
+                return CheckMediaIsAnimatedGif(media) ? SupportedMediaTypes.AnimatedGif : SupportedMediaTypes.Gif;
             }
+            return type;
+        }
 
-            foreach (var tuple in table)
+        private static SupportedMediaTypes GetMediaTypeCore(IEnumerable<byte> media)
+        {
+            var headBytes = media.Take(MediaHeaderLength).ToArray();
+
+            foreach (var tuple in MediaHeaderTable)
             {
                 var mediaType = tuple.Key;
                 if (headBytes.Length < tuple.Value.Length)
@@ -164,9 +172,7 @@ namespace Cadena.Util
         Jpeg,
         Png,
         AnimatedGif,
-#if WEBP_SUPPORTED
         WebP,
-#endif
         Mp4,
     }
 }
