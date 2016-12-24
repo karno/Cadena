@@ -1,5 +1,6 @@
 ﻿using Cadena.Meteor;
 using Cadena.Util;
+using JetBrains.Annotations;
 
 namespace Cadena.Data
 {
@@ -13,7 +14,7 @@ namespace Cadena.Data
 
         public TwitterUploadedMediaPayload Payload { get; }
 
-        public TwitterUploadedMedia(JsonValue json)
+        internal TwitterUploadedMedia(JsonValue json)
         {
             MediaId = json["media_id_string"].AsString().ParseLong();
             var size = json["size"];
@@ -30,9 +31,21 @@ namespace Cadena.Data
                 Payload = new TwitterUploadedVideoPayload(video);
             }
         }
+
+        public TwitterUploadedMedia(
+            long mediaId, long? expireAfterSecs, long? size,
+            TwitterUploadedMediaPayload payload)
+        {
+            MediaId = mediaId;
+            ExpireAfterSecs = expireAfterSecs;
+            Size = size;
+            Payload = payload;
+        }
     }
 
-    public abstract class TwitterUploadedMediaPayload { }
+    public abstract class TwitterUploadedMediaPayload
+    {
+    }
 
     public class TwitterUploadedPhotoPayload : TwitterUploadedMediaPayload
     {
@@ -40,23 +53,36 @@ namespace Cadena.Data
 
         public int Height { get; }
 
+        [CanBeNull]
         public string ImageType { get; }
 
-        public TwitterUploadedPhotoPayload(JsonValue image)
+        internal TwitterUploadedPhotoPayload(JsonValue image)
         {
             Width = image["w"].AsInteger();
             Height = image["h"].AsInteger();
-            ImageType = image["image_type"].AsString();
+            ImageType = image["image_type"].AsStringOrNull();
+        }
+        public TwitterUploadedPhotoPayload(int width, int height, [CanBeNull] string imageType)
+        {
+            Width = width;
+            Height = height;
+            ImageType = imageType;
         }
     }
 
     public class TwitterUploadedVideoPayload : TwitterUploadedMediaPayload
     {
+        [CanBeNull]
         public string VideoType { get; }
 
-        public TwitterUploadedVideoPayload(JsonValue video)
+        internal TwitterUploadedVideoPayload(JsonValue video)
         {
             VideoType = video["video_type"].AsString();
+        }
+
+        public TwitterUploadedVideoPayload([CanBeNull] string videoType)
+        {
+            VideoType = videoType;
         }
     }
 }

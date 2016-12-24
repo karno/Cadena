@@ -10,7 +10,7 @@ namespace Cadena.Data
     /// </summary>
     public class TwitterFriendship
     {
-        public TwitterFriendship(JsonValue json)
+        internal TwitterFriendship(JsonValue json)
         {
             var rel = json["relationship"];
             var src = rel["source"];
@@ -25,6 +25,25 @@ namespace Cadena.Data
             IsMuting = src["muting"].AsBoolean();
             // if source is not following target, twitter always returns false.
             IsWantRetweets = IsSourceFollowingTarget ? (bool?)src["want_retweets"].AsBoolean() : null;
+        }
+
+        public TwitterFriendship(
+            long sourceId, [NotNull] string sourceScreenName,
+            long targetId, [NotNull] string targetScreenName,
+            bool isSourceFollowingTarget, bool isTargetFollowingSource,
+            bool isBlocking, bool isMuting, bool isWantRetweets)
+        {
+            if (sourceScreenName == null) throw new ArgumentNullException(nameof(sourceScreenName));
+            if (targetScreenName == null) throw new ArgumentNullException(nameof(targetScreenName));
+            SourceId = sourceId;
+            SourceScreenName = sourceScreenName;
+            TargetId = targetId;
+            TargetScreenName = targetScreenName;
+            IsSourceFollowingTarget = isSourceFollowingTarget;
+            IsTargetFollowingSource = isTargetFollowingSource;
+            IsBlocking = isBlocking;
+            IsMuting = isMuting;
+            IsWantRetweets = isWantRetweets;
         }
 
         /// <summary>

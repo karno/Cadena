@@ -9,7 +9,7 @@ namespace Cadena.Data
 {
     public abstract class TwitterEntity
     {
-        public static IEnumerable<TwitterEntity> ParseEntities([CanBeNull] JsonValue json)
+        internal static IEnumerable<TwitterEntity> ParseEntities([CanBeNull] JsonValue json)
         {
             if (json == null) return Enumerable.Empty<TwitterEntity>();
             var tags = ParseSubEntities(json, "hashtags", t => new HashtagEntity(t));
@@ -39,7 +39,11 @@ namespace Cadena.Data
                 throw new ArgumentException("this entity object not contains indices element or too short.");
             }
             Indices = Tuple.Create((int)indices[0], (int)indices[1]);
+        }
 
+        protected TwitterEntity(Tuple<int, int> indices)
+        {
+            Indices = indices;
         }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace Cadena.Data
         public Tuple<int, int> Indices { get; }
 
         [NotNull]
-        public abstract string DisplayText { get; }
+        public virtual string DisplayText => FullText;
 
         [NotNull]
         public abstract string FullText { get; }

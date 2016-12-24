@@ -72,7 +72,6 @@ namespace Cadena.Data
                 {
                     var retweeted = new TwitterStatus(json["retweeted_status"]);
                     RetweetedStatus = retweeted;
-                    RetweetedStatusId = retweeted.Id;
                     // merge text and entities
                     Text = retweeted.Text;
                     Entities = retweeted.Entities;
@@ -81,7 +80,6 @@ namespace Cadena.Data
                 {
                     var quoted = new TwitterStatus(json["quoted_status"]);
                     QuotedStatus = quoted;
-                    QuotedStatusId = quoted.Id;
                 }
                 var coordinates = json["coordinates"].AsArrayOrNull()?.AsDoubleArray();
                 if (coordinates != null)
@@ -90,6 +88,50 @@ namespace Cadena.Data
                     Latitude = coordinates[1];
                 }
             }
+        }
+
+        public TwitterStatus(
+            long id, [NotNull] TwitterUser user, [NotNull] string text,
+            [CanBeNull] Tuple<int, int> displayTextRange, DateTime createdAt, [NotNull] TwitterEntity[] entities,
+            [CanBeNull] string source, long? inReplyToStatusId, long? inReplyToUserId,
+            [CanBeNull] string inReplyToScreenName, double? latitude, double? longitude,
+            [CanBeNull] TwitterStatus retweetedStatus, [CanBeNull] TwitterStatus quotedStatus)
+            : this(id, StatusType.Tweet, user, text, displayTextRange, createdAt, entities)
+        {
+            Source = source;
+            InReplyToStatusId = inReplyToStatusId;
+            InReplyToScreenName = inReplyToScreenName;
+            InReplyToUserId = inReplyToUserId;
+            Latitude = latitude;
+            Longitude = longitude;
+            RetweetedStatus = retweetedStatus;
+            QuotedStatus = quotedStatus;
+        }
+
+        public TwitterStatus(
+            long id, [NotNull] TwitterUser user, [NotNull] TwitterUser recipient,
+            [NotNull] string text, [CanBeNull] Tuple<int, int> displayTextRange, DateTime createdAt,
+            [NotNull] TwitterEntity[] entities)
+            : this(id, StatusType.DirectMessage, user, text, displayTextRange, createdAt, entities)
+        {
+            Recipient = recipient;
+        }
+
+        private TwitterStatus(
+            long id, StatusType statusType, [NotNull] TwitterUser user, [NotNull] string text,
+            [CanBeNull] Tuple<int, int> displayTextRange, DateTime createdAt, [NotNull] TwitterEntity[] entities)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (text == null) throw new ArgumentNullException(nameof(text));
+            if (entities == null) throw new ArgumentNullException(nameof(entities));
+            Id = id;
+            StatusType = statusType;
+            User = user;
+            User = user;
+            Text = text;
+            DisplayTextRange = displayTextRange;
+            CreatedAt = createdAt;
+            Entities = entities;
         }
 
         /// <summary>
@@ -160,26 +202,17 @@ namespace Cadena.Data
         public double? Longitude { get; }
 
         /// <summary>
-        /// The id of the status that is retweeted by this status
-        /// </summary>
-        public long? RetweetedStatusId { get; }
-
-        /// <summary>
         /// The status that is retweeted by this status
         /// </summary>
         [CanBeNull]
         public TwitterStatus RetweetedStatus { get; }
 
         /// <summary>
-        /// The id of the status that is quoted by this status
-        /// </summary>
-        public long? QuotedStatusId { get; }
-
-        /// <summary>
         /// The status that is quoted by status
         /// </summary>
         [CanBeNull]
         public TwitterStatus QuotedStatus { get; }
+
         #endregion
 
         #region Properties for direct messages
@@ -211,11 +244,9 @@ namespace Cadena.Data
         [NotNull]
         public string STOTString
         {
-            get
-            {
-                return "@" + User.ScreenName + ": " + Text + " [" + Permalink + "]";
-            }
+            get { return "@" + User.ScreenName + ": " + Text + " [" + Permalink + "]"; }
         }
+
         // ReSharper restore InconsistentNaming
 
         /// <summary>
@@ -264,6 +295,7 @@ namespace Cadena.Data
         /// Status is normal tweet.
         /// </summary>
         Tweet,
+
         /// <summary>
         /// Status is direct message.
         /// </summary>

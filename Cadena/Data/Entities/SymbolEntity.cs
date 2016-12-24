@@ -1,25 +1,25 @@
-﻿using Cadena.Meteor;
+﻿using System;
+using Cadena.Meteor;
 using JetBrains.Annotations;
 
 namespace Cadena.Data.Entities
 {
     public sealed class SymbolEntity : TwitterEntity
     {
-        public SymbolEntity(JsonValue json) : base(json)
+        internal SymbolEntity(JsonValue json) : base(json)
         {
             Text = json["text"].AsStringOrNull();
-            FullText = DisplayText = "$" + Text;
         }
 
-        /// <summary>
-        /// Represents display text, $symbol
-        /// </summary>
-        public override string DisplayText { get; }
+        public SymbolEntity(Tuple<int, int> indices, [CanBeNull] string text) : base(indices)
+        {
+            Text = text;
+        }
 
         /// <summary>
         /// Represents full text, equals to display text, $symbol
         /// </summary>
-        public override string FullText { get; }
+        public override string FullText => "$" + Text;
 
         /// <summary>
         /// Symbol text

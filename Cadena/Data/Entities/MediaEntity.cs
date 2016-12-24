@@ -49,11 +49,31 @@ namespace Cadena.Data.Entities
             MediaSizes = new ReadOnlyDictionary<string, MediaSize>(medias);
         }
 
+        public MediaEntity(
+            Tuple<int, int> indices, long id, [CanBeNull] string mediaUrl, [CanBeNull] string mediaUrlHttps,
+            [CanBeNull] string url, [CanBeNull] string displayUrl, [CanBeNull] string expandedUrl,
+            MediaType mediaType, [NotNull] IReadOnlyDictionary<string, MediaSize> mediaSizes,
+            [CanBeNull] VideoInfo videoInfo)
+            : base(indices)
+        {
+            if (mediaSizes == null) throw new ArgumentNullException(nameof(mediaSizes));
+            Id = id;
+            MediaUrl = mediaUrl;
+            MediaUrlHttps = mediaUrlHttps;
+            Url = url;
+            DisplayUrl = displayUrl;
+            ExpandedUrl = expandedUrl;
+            MediaType = mediaType;
+            MediaSizes = new ReadOnlyDictionary<string, MediaSize>(
+                mediaSizes.Keys.ToDictionary(key => key, key => mediaSizes[key]));
+            VideoInfo = videoInfo;
+        }
+
+        public long Id { get; }
+
         public override string DisplayText { get; }
 
         public override string FullText { get; }
-
-        public long Id { get; }
 
         [CanBeNull]
         public string MediaUrl { get; }
@@ -121,7 +141,7 @@ namespace Cadena.Data.Entities
 
     public sealed class VideoInfo
     {
-        public VideoInfo(JsonValue videoInfoNode)
+        internal VideoInfo(JsonValue videoInfoNode)
         {
             var aspect = videoInfoNode["aspect_ratio"].AsArrayOrNull()?.AsLongArray();
             AspectRatio = aspect == null
@@ -133,7 +153,13 @@ namespace Cadena.Data.Entities
             Variants = variants != null
                 ? variants.Select(vnode => new VideoVariant(vnode)).ToArray()
                 : new VideoVariant[0];
+        }
 
+        public VideoInfo(Tuple<int, int> aspectRatio, long durationMillis, VideoVariant[] variants)
+        {
+            AspectRatio = aspectRatio;
+            DurationMillis = durationMillis;
+            Variants = variants;
         }
 
         [NotNull]
@@ -150,12 +176,12 @@ namespace Cadena.Data.Entities
         private static readonly ReadOnlyDictionary<string, VideoContentType> _videoContentTypes =
             new ReadOnlyDictionary<string, VideoContentType>(new Dictionary<string, VideoContentType>
             {
-                {"video/mp4", VideoContentType.Mp4 },
-                {"video/webm", VideoContentType.WebM },
-                {"application/x-mpegURL", VideoContentType.M3U8 },
+                {"video/mp4", VideoContentType.Mp4},
+                {"video/webm", VideoContentType.WebM},
+                {"application/x-mpegURL", VideoContentType.M3U8},
             });
 
-        public VideoVariant(JsonValue variantNode)
+        internal VideoVariant(JsonValue variantNode)
         {
             BitRate = variantNode["bitrate"].AsLong();
             ContentType = variantNode["content_type"].AsString();
@@ -168,12 +194,23 @@ namespace Cadena.Data.Entities
                 : VideoContentType.Unknown;
         }
 
+        public VideoVariant(long bitRate, string contentType, string url,
+            VideoContentType recognizedContentType)
+        {
+            BitRate = bitRate;
+            ContentType = contentType;
+            Url = url;
+            RecognizedContentType = recognizedContentType;
+        }
+
         public long BitRate { get; }
 
+        [NotNull]
         public string ContentType { get; }
 
         public VideoContentType RecognizedContentType { get; }
 
+        [NotNull]
         public string Url { get; }
 
     }

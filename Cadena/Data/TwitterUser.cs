@@ -46,6 +46,45 @@ namespace Cadena.Data
                 : new TwitterEntity[0];
         }
 
+        public TwitterUser(
+            long id, [NotNull] string screenName, [CanBeNull] string name,
+            [CanBeNull] string description, [CanBeNull] string location, [CanBeNull] string url,
+            bool isDefaultProfileImage, [CanBeNull] Uri profileImageUri,
+            [CanBeNull] Uri profileBackgroundImageUri, [CanBeNull] Uri profileBannerUri,
+            bool isProtected, bool isVerified, bool isTranslator, bool isContributorsEnabled, bool isGeoEnabled,
+            long statusesCount, long followingsCount, long followersCount, long favoritesCount, long listedCount,
+            string language, DateTime createdAt, [NotNull] UrlEntity[] urlEntities,
+            [NotNull] TwitterEntity[] descriptionEntities)
+        {
+            if (screenName == null) throw new ArgumentNullException(nameof(screenName));
+            if (urlEntities == null) throw new ArgumentNullException(nameof(urlEntities));
+            if (descriptionEntities == null) throw new ArgumentNullException(nameof(descriptionEntities));
+            Id = id;
+            ScreenName = screenName;
+            Name = name;
+            Description = description;
+            Location = location;
+            Url = url;
+            IsDefaultProfileImage = isDefaultProfileImage;
+            ProfileImageUri = profileImageUri;
+            ProfileBackgroundImageUri = profileBackgroundImageUri;
+            ProfileBannerUri = profileBannerUri;
+            IsProtected = isProtected;
+            IsVerified = isVerified;
+            IsTranslator = isTranslator;
+            IsContributorsEnabled = isContributorsEnabled;
+            IsGeoEnabled = isGeoEnabled;
+            StatusesCount = statusesCount;
+            FollowingsCount = followingsCount;
+            FollowersCount = followersCount;
+            FavoritesCount = favoritesCount;
+            ListedCount = listedCount;
+            Language = language;
+            CreatedAt = createdAt;
+            UrlEntities = urlEntities;
+            DescriptionEntities = descriptionEntities;
+        }
+
         public const string TwitterUserUrl = "https://twitter.com/{0}";
         public const string FavstarUserUrl = "http://favstar.fm/users/{0}";
         public const string TwilogUserUrl = "http://twilog.org/{0}";

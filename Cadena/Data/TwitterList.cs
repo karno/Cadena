@@ -13,17 +13,40 @@ namespace Cadena.Data
         {
             Id = json["id_str"].AsString().ParseLong();
             User = new TwitterUser(json["user"]);
-            Name = json["name"].AsString() ?? String.Empty;
-            FullName = json["full_name"].AsString() ?? String.Empty;
+            Name = json["name"].AsString();
+            FullName = json["full_name"].AsString();
             Uri = new Uri(TwitterListUriPrefix + json["uri"].AsString());
-            Slug = json["slug"].AsString().AssertNotNull("json.slug could not be null.");
+            Slug = json["slug"].AsString();
             ListMode = json["mode"].AsString() == "public"
                 ? ListMode.Public
                 : ListMode.Private;
-            Description = json["description"].AsString() ?? String.Empty;
+            Description = json["description"].AsStringOrNull() ?? String.Empty;
             MemberCount = json["member_count"].AsLong();
             SubscriberCount = json["subscriber_count"].AsLong();
             CreatedAt = json["created_at"].AsString().ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
+        }
+
+        public TwitterList(
+            long id, [NotNull] TwitterUser user, [NotNull] string name, [NotNull] string fullName,
+            [NotNull] Uri uri, [NotNull] string slug, ListMode mode, [CanBeNull] string description,
+            long memberCount, long subscriberCount, DateTime createdAt)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (fullName == null) throw new ArgumentNullException(nameof(fullName));
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+            if (slug == null) throw new ArgumentNullException(nameof(slug));
+            Id = id;
+            User = user;
+            Name = name;
+            FullName = fullName;
+            Uri = uri;
+            Slug = slug;
+            ListMode = mode;
+            Description = description ?? String.Empty;
+            MemberCount = memberCount;
+            SubscriberCount = subscriberCount;
+            CreatedAt = createdAt;
         }
 
         /// <summary>

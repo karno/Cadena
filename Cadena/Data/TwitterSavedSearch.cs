@@ -19,6 +19,17 @@ namespace Cadena.Data
             Name = json["name"].AsString() ?? Query;
         }
 
+        public TwitterSavedSearch(
+            long id, DateTime createdAt, [NotNull] string query, [NotNull] string name)
+        {
+            if (query == null) throw new ArgumentNullException(nameof(query));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            Id = id;
+            CreatedAt = createdAt;
+            Query = query;
+            Name = name;
+        }
+
         /// <summary>
         /// Saved user id
         /// </summary>

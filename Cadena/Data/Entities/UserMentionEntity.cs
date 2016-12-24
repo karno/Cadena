@@ -1,27 +1,31 @@
-﻿using Cadena.Meteor;
+﻿using System;
+using Cadena.Meteor;
 using JetBrains.Annotations;
 
 namespace Cadena.Data.Entities
 {
     public class UserMentionEntity : TwitterEntity
     {
-        public UserMentionEntity(JsonValue json) : base(json)
+        internal UserMentionEntity(JsonValue json) : base(json)
         {
             Id = json["id"].AsLong();
             ScreenName = json["screen_name"].AsStringOrNull();
             Name = json["name"].AsStringOrNull();
-            FullText = DisplayText = "@" + ScreenName;
         }
 
-        /// <summary>
-        /// Display text, contains @screen_name
-        /// </summary>
-        public override string DisplayText { get; }
+        public UserMentionEntity(
+            Tuple<int, int> indices, long id, [CanBeNull] string screenName, [CanBeNull] string name)
+            : base(indices)
+        {
+            Id = id;
+            ScreenName = screenName;
+            Name = name;
+        }
 
         /// <summary>
         /// Full text, equals to display text, contains @screen_name
         /// </summary>
-        public override string FullText { get; }
+        public override string FullText => "@" + ScreenName;
 
         /// <summary>
         /// Target user ID

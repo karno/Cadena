@@ -9,8 +9,8 @@ namespace Cadena.Data
         internal TwitterConfiguration(JsonValue json)
         {
             CharactersReservedPerMedia = (int)json["characters_reserved_per_media"].AsLong();
-            PhotoSizeLimit = (int)json["photo_size_limit"].AsLong();
             NonUserPaths = json["non_user_paths"].AsArrayOrNull()?.AsStringArray() ?? new string[0];
+            PhotoSizeLimit = (int)json["photo_size_limit"].AsLong();
             ShortUrlLength = (int)json["short_url_length"].AsLong();
             ShortUrlLengthHttps = (int)json["short_url_length_https"].AsLong();
             // MaxMediaPerUpload = (int)json["max_media_per_upload"].AsLong();
@@ -18,6 +18,18 @@ namespace Cadena.Data
             {
                 throw new ArgumentException("json.non_user_paths could not be null.");
             }
+        }
+
+        public TwitterConfiguration(
+            int charactersReservedPerMedia, [NotNull] string[] nonUserPaths,
+            int photoSizeLimit, int shortUrlLength, int shortUrlLengthHttps)
+        {
+            if (nonUserPaths == null) throw new ArgumentNullException(nameof(nonUserPaths));
+            CharactersReservedPerMedia = charactersReservedPerMedia;
+            NonUserPaths = nonUserPaths;
+            PhotoSizeLimit = photoSizeLimit;
+            ShortUrlLength = shortUrlLength;
+            ShortUrlLengthHttps = shortUrlLengthHttps;
         }
 
         /// <summary>

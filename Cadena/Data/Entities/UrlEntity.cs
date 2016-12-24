@@ -6,18 +6,25 @@ namespace Cadena.Data.Entities
 {
     public sealed class UrlEntity : TwitterEntity
     {
-        public UrlEntity(JsonValue json) : base(json)
+        internal UrlEntity(JsonValue json) : base(json)
         {
             Url = json["url"].AsStringOrNull();
             DisplayUrl = json["display_url"].AsStringOrNull();
             ExpandedUrl = json["expanded_url"].AsStringOrNull();
-            DisplayText = DisplayUrl ?? String.Empty;
-            FullText = ExpandedUrl ?? DisplayText;
         }
 
-        public override string DisplayText { get; }
+        public UrlEntity(
+            Tuple<int, int> indices, [CanBeNull] string url, [CanBeNull] string displayUrl, [CanBeNull] string expandUrl)
+            : base(indices)
+        {
+            Url = url;
+            DisplayUrl = displayUrl;
+            ExpandedUrl = expandUrl;
+        }
 
-        public override string FullText { get; }
+        public override string DisplayText => DisplayUrl ?? String.Empty;
+
+        public override string FullText => ExpandedUrl ?? DisplayText;
 
         /// <summary>
         /// Represents t.co url
