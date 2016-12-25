@@ -81,11 +81,10 @@ namespace Cadena.Data
                     var quoted = new TwitterStatus(json["quoted_status"]);
                     QuotedStatus = quoted;
                 }
-                var coordinates = json["coordinates"].AsArrayOrNull()?.AsDoubleArray();
-                if (coordinates != null)
+                var coordinates = json["coordinates"]["coordinates"].AsArrayOrNull()?.AsDoubleArray();
+                if (coordinates != null && coordinates.Length >= 2)
                 {
-                    Longitude = coordinates[0];
-                    Latitude = coordinates[1];
+                    Coordinates = Tuple.Create(coordinates[0], coordinates[1]);
                 }
             }
         }
@@ -94,7 +93,7 @@ namespace Cadena.Data
             long id, [NotNull] TwitterUser user, [NotNull] string text,
             [CanBeNull] Tuple<int, int> displayTextRange, DateTime createdAt, [NotNull] TwitterEntity[] entities,
             [CanBeNull] string source, long? inReplyToStatusId, long? inReplyToUserId,
-            [CanBeNull] string inReplyToScreenName, double? latitude, double? longitude,
+            [CanBeNull] string inReplyToScreenName, [CanBeNull] Tuple<double, double> coordinates,
             [CanBeNull] TwitterStatus retweetedStatus, [CanBeNull] TwitterStatus quotedStatus)
             : this(id, StatusType.Tweet, user, text, displayTextRange, createdAt, entities)
         {
@@ -102,8 +101,7 @@ namespace Cadena.Data
             InReplyToStatusId = inReplyToStatusId;
             InReplyToScreenName = inReplyToScreenName;
             InReplyToUserId = inReplyToUserId;
-            Latitude = latitude;
-            Longitude = longitude;
+            Coordinates = coordinates;
             RetweetedStatus = retweetedStatus;
             QuotedStatus = quotedStatus;
         }
@@ -192,14 +190,10 @@ namespace Cadena.Data
         public string InReplyToScreenName { get; }
 
         /// <summary>
-        /// Latitude of geographic point that is associated with this status.
+        /// Geographic point that is associated with this status, [Latitude, Longitude].
         /// </summary>
-        public double? Latitude { get; }
-
-        /// <summary>
-        /// Longitude of geographic point that is associated with this status.
-        /// </summary>
-        public double? Longitude { get; }
+        [CanBeNull]
+        public Tuple<double, double> Coordinates { get; }
 
         /// <summary>
         /// The status that is retweeted by this status
