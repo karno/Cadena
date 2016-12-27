@@ -9,7 +9,7 @@ namespace Cadena.Data
     {
         private const string TwitterListUriPrefix = "http://twitter.com";
 
-        internal TwitterList(JsonValue json)
+        public TwitterList(JsonValue json)
         {
             Id = json["id_str"].AsString().ParseLong();
             User = new TwitterUser(json["user"]);

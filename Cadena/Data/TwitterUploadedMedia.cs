@@ -6,15 +6,7 @@ namespace Cadena.Data
 {
     public class TwitterUploadedMedia
     {
-        public long MediaId { get; }
-
-        public long? ExpireAfterSecs { get; }
-
-        public long? Size { get; }
-
-        public TwitterUploadedMediaPayload Payload { get; }
-
-        internal TwitterUploadedMedia(JsonValue json)
+        public TwitterUploadedMedia(JsonValue json)
         {
             MediaId = json["media_id_string"].AsString().ParseLong();
             var size = json["size"];
@@ -32,8 +24,7 @@ namespace Cadena.Data
             }
         }
 
-        public TwitterUploadedMedia(
-            long mediaId, long? expireAfterSecs, long? size,
+        public TwitterUploadedMedia(long mediaId, long? expireAfterSecs, long? size,
             TwitterUploadedMediaPayload payload)
         {
             MediaId = mediaId;
@@ -41,41 +32,45 @@ namespace Cadena.Data
             Size = size;
             Payload = payload;
         }
+
+        public long MediaId { get; }
+
+        public long? ExpireAfterSecs { get; }
+
+        public long? Size { get; }
+
+        public TwitterUploadedMediaPayload Payload { get; }
     }
 
-    public abstract class TwitterUploadedMediaPayload
-    {
-    }
+    public abstract class TwitterUploadedMediaPayload { }
 
     public class TwitterUploadedPhotoPayload : TwitterUploadedMediaPayload
     {
-        public int Width { get; }
-
-        public int Height { get; }
-
-        [CanBeNull]
-        public string ImageType { get; }
-
-        internal TwitterUploadedPhotoPayload(JsonValue image)
+        public TwitterUploadedPhotoPayload(JsonValue image)
         {
             Width = image["w"].AsInteger();
             Height = image["h"].AsInteger();
             ImageType = image["image_type"].AsStringOrNull();
         }
+
         public TwitterUploadedPhotoPayload(int width, int height, [CanBeNull] string imageType)
         {
             Width = width;
             Height = height;
             ImageType = imageType;
         }
+
+        public int Width { get; }
+
+        public int Height { get; }
+
+        [CanBeNull]
+        public string ImageType { get; }
     }
 
     public class TwitterUploadedVideoPayload : TwitterUploadedMediaPayload
     {
-        [CanBeNull]
-        public string VideoType { get; }
-
-        internal TwitterUploadedVideoPayload(JsonValue video)
+        public TwitterUploadedVideoPayload(JsonValue video)
         {
             VideoType = video["video_type"].AsString();
         }
@@ -84,5 +79,8 @@ namespace Cadena.Data
         {
             VideoType = videoType;
         }
+
+        [CanBeNull]
+        public string VideoType { get; }
     }
 }

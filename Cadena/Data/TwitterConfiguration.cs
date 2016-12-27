@@ -6,7 +6,7 @@ namespace Cadena.Data
 {
     public class TwitterConfiguration
     {
-        internal TwitterConfiguration(JsonValue json)
+        public TwitterConfiguration(JsonValue json)
         {
             CharactersReservedPerMedia = (int)json["characters_reserved_per_media"].AsLong();
             NonUserPaths = json["non_user_paths"].AsArrayOrNull()?.AsStringArray() ?? new string[0];

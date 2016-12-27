@@ -6,7 +6,7 @@ namespace Cadena.Data.Entities
 {
     public sealed class HashtagEntity : TwitterEntity
     {
-        internal HashtagEntity(JsonValue json) : base(json)
+        public HashtagEntity(JsonValue json) : base(json)
         {
             Text = json["text"].AsStringOrNull();
         }

@@ -10,7 +10,7 @@ namespace Cadena.Data
     /// </summary>
     public class TwitterFriendship
     {
-        internal TwitterFriendship(JsonValue json)
+        public TwitterFriendship(JsonValue json)
         {
             var rel = json["relationship"];
             var src = rel["source"];

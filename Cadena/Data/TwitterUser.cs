@@ -46,8 +46,7 @@ namespace Cadena.Data
                 : new TwitterEntity[0];
         }
 
-        public TwitterUser(
-            long id, [NotNull] string screenName, [CanBeNull] string name,
+        public TwitterUser(long id, [NotNull] string screenName, [CanBeNull] string name,
             [CanBeNull] string description, [CanBeNull] string location, [CanBeNull] string url,
             bool isDefaultProfileImage, [CanBeNull] Uri profileImageUri,
             [CanBeNull] Uri profileBackgroundImageUri, [CanBeNull] Uri profileBannerUri,

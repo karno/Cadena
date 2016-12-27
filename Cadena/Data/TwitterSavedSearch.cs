@@ -10,7 +10,7 @@ namespace Cadena.Data
     /// </summary>
     public class TwitterSavedSearch
     {
-        internal TwitterSavedSearch(JsonValue json)
+        public TwitterSavedSearch(JsonValue json)
         {
             Id = json["id_str"].AsString().ParseLong();
             CreatedAt = json["created_at"].AsString()

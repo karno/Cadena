@@ -14,7 +14,7 @@ namespace Cadena.Data
     {
         public const string TwitterStatusUrl = "https://twitter.com/{0}/status/{1}";
 
-        internal TwitterStatus(JsonValue json)
+        public TwitterStatus(JsonValue json)
         {
             // read numeric id and timestamp
             Id = json["id_str"].AsString().ParseLong();

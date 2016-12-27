@@ -6,7 +6,7 @@ namespace Cadena.Data.Entities
 {
     public sealed class SymbolEntity : TwitterEntity
     {
-        internal SymbolEntity(JsonValue json) : base(json)
+        public SymbolEntity(JsonValue json) : base(json)
         {
             Text = json["text"].AsStringOrNull();
         }

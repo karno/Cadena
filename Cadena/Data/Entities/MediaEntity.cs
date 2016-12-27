@@ -23,13 +23,16 @@ namespace Cadena.Data.Entities
                 case "photo":
                     MediaType = MediaType.Photo;
                     break;
+                case "video":
+                    MediaType = MediaType.Video;
+                    break;
+                case "animated_gif":
+                    MediaType = MediaType.AnimatedGif;
+                    break;
                 default:
                     MediaType = MediaType.Unknown;
                     break;
             }
-
-            DisplayText = DisplayUrl ?? String.Empty;
-            FullText = ExpandedUrl ?? String.Empty;
 
             // read video info, if existed
 
@@ -49,8 +52,8 @@ namespace Cadena.Data.Entities
             MediaSizes = new ReadOnlyDictionary<string, MediaSize>(medias);
         }
 
-        public MediaEntity(
-            Tuple<int, int> indices, long id, [CanBeNull] string mediaUrl, [CanBeNull] string mediaUrlHttps,
+        public MediaEntity(Tuple<int, int> indices,
+            long id, [CanBeNull] string mediaUrl, [CanBeNull] string mediaUrlHttps,
             [CanBeNull] string url, [CanBeNull] string displayUrl, [CanBeNull] string expandedUrl,
             MediaType mediaType, [NotNull] IReadOnlyDictionary<string, MediaSize> mediaSizes,
             [CanBeNull] VideoInfo videoInfo)
@@ -64,16 +67,15 @@ namespace Cadena.Data.Entities
             DisplayUrl = displayUrl;
             ExpandedUrl = expandedUrl;
             MediaType = mediaType;
-            MediaSizes = new ReadOnlyDictionary<string, MediaSize>(
-                mediaSizes.Keys.ToDictionary(key => key, key => mediaSizes[key]));
+            MediaSizes = mediaSizes;
             VideoInfo = videoInfo;
         }
 
         public long Id { get; }
 
-        public override string DisplayText { get; }
+        public override string DisplayText => DisplayUrl ?? String.Empty;
 
-        public override string FullText { get; }
+        public override string FullText => ExpandedUrl ?? String.Empty;
 
         [CanBeNull]
         public string MediaUrl { get; }
@@ -102,16 +104,18 @@ namespace Cadena.Data.Entities
     public enum MediaType
     {
         Unknown = -1,
-        Photo
+        Photo,
+        Video,
+        AnimatedGif,
     }
 
     public struct MediaSize
     {
-        public MediaSize(JsonValue json)
+        private MediaSize(string resizeString)
         {
-            Width = json["w"].AsInteger();
-            Height = json["h"].AsInteger();
-            switch (json["resize"].AsString())
+            Width = 0;
+            Height = 0;
+            switch (resizeString)
             {
                 case "crop":
                     Resize = MediaResizeMode.Crop;
@@ -123,11 +127,35 @@ namespace Cadena.Data.Entities
                     Resize = MediaResizeMode.Unknown;
                     break;
             }
+            ResizeString = resizeString;
+        }
+
+        public MediaSize(JsonValue json) : this(json["resize"].AsString())
+        {
+            Width = json["w"].AsInteger();
+            Height = json["h"].AsInteger();
+        }
+
+        public MediaSize(int width, int height, string resizeString) : this(resizeString)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public MediaSize(int width, int height, MediaResizeMode resize)
+        {
+            Width = width;
+            Height = height;
+            ResizeString = resize.ToString();
+            Resize = resize;
         }
 
         public int Width { get; }
 
         public int Height { get; }
+
+        [NotNull]
+        public string ResizeString { get; }
 
         public MediaResizeMode Resize { get; }
     }
@@ -141,7 +169,7 @@ namespace Cadena.Data.Entities
 
     public sealed class VideoInfo
     {
-        internal VideoInfo(JsonValue videoInfoNode)
+        public VideoInfo(JsonValue videoInfoNode)
         {
             var aspect = videoInfoNode["aspect_ratio"].AsArrayOrNull()?.AsLongArray();
             AspectRatio = aspect == null
@@ -181,7 +209,7 @@ namespace Cadena.Data.Entities
                 {"application/x-mpegURL", VideoContentType.M3U8},
             });
 
-        internal VideoVariant(JsonValue variantNode)
+        public VideoVariant(JsonValue variantNode)
         {
             BitRate = variantNode["bitrate"].AsLong();
             ContentType = variantNode["content_type"].AsString();

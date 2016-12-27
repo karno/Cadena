@@ -9,7 +9,7 @@ namespace Cadena.Data
 {
     public abstract class TwitterEntity
     {
-        internal static IEnumerable<TwitterEntity> ParseEntities([CanBeNull] JsonValue json)
+        public static IEnumerable<TwitterEntity> ParseEntities([CanBeNull] JsonValue json)
         {
             if (json == null) return Enumerable.Empty<TwitterEntity>();
             var tags = ParseSubEntities(json, "hashtags", t => new HashtagEntity(t));
