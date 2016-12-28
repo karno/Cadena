@@ -1,6 +1,6 @@
 # Cadena, the Alchemic Twitter Library
 
-This library is built for project Krile Asterisk, but you can use this library for your own project.
+This library is built for the "Krile Altair": next generation of Krile, but you can use this library for your own project.
 
 # Contains
 
