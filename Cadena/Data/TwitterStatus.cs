@@ -40,7 +40,7 @@ namespace Cadena.Data
                 var extEntities = TwitterEntity.ParseEntities(json["extended_entities"]).ToArray();
 
                 // merge entities
-                Entities = orgEntities.Where(e => !(e is MediaEntity))
+                Entities = orgEntities.Where(e => !(e is TwitterMediaEntity))
                                       .Concat(extEntities) // extended entities contains media entities only.
                                       .ToArray();
             }
@@ -66,6 +66,8 @@ namespace Cadena.Data
                 Source = json["source"].AsString();
                 InReplyToStatusId = json["in_reply_to_status_id_str"].AsString().ParseNullableId();
                 InReplyToUserId = json["in_reply_to_user_id_str"].AsString().ParseNullableId();
+                FavoriteCount = json["favorite_count"].AsLongOrNull();
+                RetweetCount = json["retweet_count"].AsLongOrNull();
                 InReplyToScreenName = json["in_reply_to_screen_name"].AsString();
 
                 if (json.ContainsKey("retweeted_status"))
@@ -93,6 +95,7 @@ namespace Cadena.Data
             long id, [NotNull] TwitterUser user, [NotNull] string text,
             [CanBeNull] Tuple<int, int> displayTextRange, DateTime createdAt, [NotNull] TwitterEntity[] entities,
             [CanBeNull] string source, long? inReplyToStatusId, long? inReplyToUserId,
+            long? favoritedCount, long? retweetedCount,
             [CanBeNull] string inReplyToScreenName, [CanBeNull] Tuple<double, double> coordinates,
             [CanBeNull] TwitterStatus retweetedStatus, [CanBeNull] TwitterStatus quotedStatus)
             : this(id, StatusType.Tweet, user, text, displayTextRange, createdAt, entities)
@@ -101,6 +104,8 @@ namespace Cadena.Data
             InReplyToStatusId = inReplyToStatusId;
             InReplyToScreenName = inReplyToScreenName;
             InReplyToUserId = inReplyToUserId;
+            FavoriteCount = favoritedCount;
+            RetweetCount = retweetedCount;
             Coordinates = coordinates;
             RetweetedStatus = retweetedStatus;
             QuotedStatus = quotedStatus;
@@ -188,6 +193,16 @@ namespace Cadena.Data
         /// </summary>
         [CanBeNull]
         public string InReplyToScreenName { get; }
+
+        /// <summary>
+        /// Count of how many times this status has favorited.
+        /// </summary>
+        public long? FavoriteCount { get; }
+
+        /// <summary>
+        /// Count of how many times this status has retweeted.
+        /// </summary>
+        public long? RetweetCount { get; }
 
         /// <summary>
         /// Geographic point that is associated with this status, [Latitude, Longitude].

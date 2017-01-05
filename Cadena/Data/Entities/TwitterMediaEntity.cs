@@ -7,9 +7,9 @@ using JetBrains.Annotations;
 
 namespace Cadena.Data.Entities
 {
-    public sealed class MediaEntity : TwitterEntity
+    public sealed class TwitterMediaEntity : TwitterEntity
     {
-        public MediaEntity(JsonValue json) : base(json)
+        public TwitterMediaEntity(JsonValue json) : base(json)
         {
             Id = json["id"].AsLong();
             MediaUrl = json["media_url"].AsStringOrNull();
@@ -52,7 +52,7 @@ namespace Cadena.Data.Entities
             MediaSizes = new ReadOnlyDictionary<string, MediaSize>(medias);
         }
 
-        public MediaEntity(Tuple<int, int> indices,
+        public TwitterMediaEntity(Tuple<int, int> indices,
             long id, [CanBeNull] string mediaUrl, [CanBeNull] string mediaUrlHttps,
             [CanBeNull] string url, [CanBeNull] string displayUrl, [CanBeNull] string expandedUrl,
             MediaType mediaType, [NotNull] IReadOnlyDictionary<string, MediaSize> mediaSizes,

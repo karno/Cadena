@@ -61,8 +61,8 @@ namespace Cadena
             Credential = credential;
             Endpoint = endpoint;
             _proxy = proxy;
-            UserAgent = userAgent;
-            _client = new Lazy<HttpClient>(() => new TwitterApiHttpClient(credential, proxy, userAgent, useGzip),
+            UserAgent = userAgent ?? DefaultUserAgent;
+            _client = new Lazy<HttpClient>(() => new TwitterApiHttpClient(credential, proxy, UserAgent, useGzip),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
 

@@ -1,22 +1,21 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cadena.Data.Entities;
 using Cadena.Meteor;
 using JetBrains.Annotations;
 
-namespace Cadena.Data
+namespace Cadena.Data.Entities
 {
     public abstract class TwitterEntity
     {
         public static IEnumerable<TwitterEntity> ParseEntities([CanBeNull] JsonValue json)
         {
             if (json == null) return Enumerable.Empty<TwitterEntity>();
-            var tags = ParseSubEntities(json, "hashtags", t => new HashtagEntity(t));
-            var symbols = ParseSubEntities(json, "symbols", s => new SymbolEntity(s));
-            var urls = ParseSubEntities(json, "urls", u => new UrlEntity(u));
-            var mentions = ParseSubEntities(json, "user_mentions", m => new UserMentionEntity(m));
-            var media = ParseSubEntities(json, "media", m => new MediaEntity(m));
+            var tags = ParseSubEntities(json, "hashtags", t => new TwitterHashtagEntity(t));
+            var symbols = ParseSubEntities(json, "symbols", s => new TwitterSymbolEntity(s));
+            var urls = ParseSubEntities(json, "urls", u => new TwitterUrlEntity(u));
+            var mentions = ParseSubEntities(json, "user_mentions", m => new TwitterUserMentionEntity(m));
+            var media = ParseSubEntities(json, "media", m => new TwitterMediaEntity(m));
             return new[] { tags, symbols, urls, mentions, media }.SelectMany(e => e);
         }
 

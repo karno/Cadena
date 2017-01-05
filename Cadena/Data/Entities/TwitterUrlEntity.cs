@@ -4,16 +4,16 @@ using JetBrains.Annotations;
 
 namespace Cadena.Data.Entities
 {
-    public sealed class UrlEntity : TwitterEntity
+    public sealed class TwitterUrlEntity : TwitterEntity
     {
-        public UrlEntity(JsonValue json) : base(json)
+        public TwitterUrlEntity(JsonValue json) : base(json)
         {
             Url = json["url"].AsStringOrNull();
             DisplayUrl = json["display_url"].AsStringOrNull();
             ExpandedUrl = json["expanded_url"].AsStringOrNull();
         }
 
-        public UrlEntity(Tuple<int, int> indices,
+        public TwitterUrlEntity(Tuple<int, int> indices,
             [CanBeNull] string url, [CanBeNull] string displayUrl, [CanBeNull] string expandUrl)
             : base(indices)
         {

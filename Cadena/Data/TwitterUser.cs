@@ -38,8 +38,8 @@ namespace Cadena.Data
             var descs = entities["description"];
 
             UrlEntities = !urls.IsNull
-                ? TwitterEntity.ParseEntities(urls).OfType<UrlEntity>().ToArray()
-                : new UrlEntity[0];
+                ? TwitterEntity.ParseEntities(urls).OfType<TwitterUrlEntity>().ToArray()
+                : new TwitterUrlEntity[0];
 
             DescriptionEntities = !descs.IsNull
                 ? TwitterEntity.ParseEntities(descs).ToArray()
@@ -52,7 +52,7 @@ namespace Cadena.Data
             [CanBeNull] Uri profileBackgroundImageUri, [CanBeNull] Uri profileBannerUri,
             bool isProtected, bool isVerified, bool isTranslator, bool isContributorsEnabled, bool isGeoEnabled,
             long statusesCount, long followingsCount, long followersCount, long favoritesCount, long listedCount,
-            string language, DateTime createdAt, [NotNull] UrlEntity[] urlEntities,
+            string language, DateTime createdAt, [NotNull] TwitterUrlEntity[] urlEntities,
             [NotNull] TwitterEntity[] descriptionEntities)
         {
             if (screenName == null) throw new ArgumentNullException(nameof(screenName));
@@ -211,7 +211,7 @@ namespace Cadena.Data
         /// Entities of user url
         /// </summary>
         [NotNull]
-        public UrlEntity[] UrlEntities { get; }
+        public TwitterUrlEntity[] UrlEntities { get; }
 
         /// <summary>
         /// Entities of user description

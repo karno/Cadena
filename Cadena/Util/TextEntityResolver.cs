@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cadena.Data;
+using Cadena.Data.Entities;
 using JetBrains.Annotations;
 
 namespace Cadena.Util

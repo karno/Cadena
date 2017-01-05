@@ -54,11 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CadenaInitializer.cs" />
-    <Compile Include="Data\Entities\HashtagEntity.cs" />
-    <Compile Include="Data\Entities\MediaEntity.cs" />
-    <Compile Include="Data\Entities\SymbolEntity.cs" />
-    <Compile Include="Data\Entities\UrlEntity.cs" />
-    <Compile Include="Data\Entities\UserMentionEntity.cs" />
+    <Compile Include="Data\Entities\TwitterHashtagEntity.cs" />
+    <Compile Include="Data\Entities\TwitterMediaEntity.cs" />
+    <Compile Include="Data\Entities\TwitterSymbolEntity.cs" />
+    <Compile Include="Data\Entities\TwitterUrlEntity.cs" />
+    <Compile Include="Data\Entities\TwitterUserMentionEntity.cs" />
     <Compile Include="Data\Streams\Events\StreamAccessInformationEvent.cs" />
     <Compile Include="Data\Streams\Events\StreamEvent.cs" />
     <Compile Include="Data\Streams\Events\StreamListEvent.cs" />
@@ -79,7 +79,7 @@
     <Compile Include="Data\Streams\Warnings\StreamStallWarning.cs" />
     <Compile Include="Data\Streams\Warnings\StreamTooManyFollowsWarning.cs" />
     <Compile Include="Data\Streams\Warnings\StreamWarning.cs" />
-    <Compile Include="Data\TwitterEntity.cs" />
+    <Compile Include="Data\Entities\TwitterEntity.cs" />
     <Compile Include="Data\TwitterUploadedMedia.cs" />
     <Compile Include="Engine\CyclicReceivers\Infrastructures\HelpReceiver.cs" />
     <Compile Include="Engine\CyclicReceivers\Infrastructures\SavedSearchesReceiver.cs" />
@@ -195,11 +195,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AsyncOAuth\AsyncOAuth.csproj">
-      <Project>{1d12b0d3-5959-43d8-baa3-3b4f5e099326}</Project>
+      <Project>{1D12B0D3-5959-43D8-BAA3-3B4F5E099326}</Project>
       <Name>AsyncOAuth</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

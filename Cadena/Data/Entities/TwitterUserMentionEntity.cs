@@ -4,16 +4,16 @@ using JetBrains.Annotations;
 
 namespace Cadena.Data.Entities
 {
-    public sealed class UserMentionEntity : TwitterEntity
+    public sealed class TwitterUserMentionEntity : TwitterEntity
     {
-        public UserMentionEntity(JsonValue json) : base(json)
+        public TwitterUserMentionEntity(JsonValue json) : base(json)
         {
             Id = json["id"].AsLong();
             ScreenName = json["screen_name"].AsStringOrNull();
             Name = json["name"].AsStringOrNull();
         }
 
-        public UserMentionEntity(Tuple<int, int> indices,
+        public TwitterUserMentionEntity(Tuple<int, int> indices,
             long id, [CanBeNull] string screenName, [CanBeNull] string name)
             : base(indices)
         {

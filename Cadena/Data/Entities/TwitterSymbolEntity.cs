@@ -4,14 +4,14 @@ using JetBrains.Annotations;
 
 namespace Cadena.Data.Entities
 {
-    public sealed class SymbolEntity : TwitterEntity
+    public sealed class TwitterSymbolEntity : TwitterEntity
     {
-        public SymbolEntity(JsonValue json) : base(json)
+        public TwitterSymbolEntity(JsonValue json) : base(json)
         {
             Text = json["text"].AsStringOrNull();
         }
 
-        public SymbolEntity(Tuple<int, int> indices, [CanBeNull] string text) : base(indices)
+        public TwitterSymbolEntity(Tuple<int, int> indices, [CanBeNull] string text) : base(indices)
         {
             Text = text;
         }
