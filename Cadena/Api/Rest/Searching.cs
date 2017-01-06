@@ -70,11 +70,4 @@ namespace Cadena.Api.Rest
 
         #endregion
     }
-
-    public enum SearchResultType
-    {
-        Mixed,
-        Recent,
-        Popular,
-    }
 }
