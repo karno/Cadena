@@ -10,12 +10,12 @@ namespace Cadena.Engine.Requests
     public class SaveSearchQueryRequest : RequestBase<IApiResult<TwitterSavedSearch>>
     {
         [NotNull]
-        public ApiAccessor Accessor { get; }
+        public IApiAccessor Accessor { get; }
 
         [NotNull]
         public string Query { get; }
 
-        public SaveSearchQueryRequest([NotNull] ApiAccessor accessor, [NotNull] string query)
+        public SaveSearchQueryRequest([NotNull] IApiAccessor accessor, [NotNull] string query)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (query == null) throw new ArgumentNullException(nameof(query));

@@ -12,23 +12,23 @@ namespace Cadena.Util
         public delegate Task<Tuple<IApiResult<T>, ApiContinuationReader<T>>> ApiContinuationReader<T>();
 
         public static Task<Tuple<IApiResult<IEnumerable<T>>, ApiContinuationReader<IEnumerable<T>>>> ReadCursorApi<T>(
-            this ApiAccessor accessor,
-            Func<ApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<T>>>>> reader)
+            this IApiAccessor accessor,
+            Func<IApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<T>>>>> reader)
         {
             return ReadCursorApi(accessor, -1, reader, CancellationToken.None);
         }
 
         public static Task<Tuple<IApiResult<IEnumerable<T>>, ApiContinuationReader<IEnumerable<T>>>> ReadCursorApi<T>(
-            this ApiAccessor accessor,
-            Func<ApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<T>>>>> reader,
+            this IApiAccessor accessor,
+            Func<IApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<T>>>>> reader,
             CancellationToken cancellationToken)
         {
             return ReadCursorApi(accessor, -1, reader, cancellationToken);
         }
 
         private static async Task<Tuple<IApiResult<IEnumerable<T>>, ApiContinuationReader<IEnumerable<T>>>> ReadCursorApi<T>(
-            this ApiAccessor accessor, long cursor,
-            Func<ApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<T>>>>> reader,
+            this IApiAccessor accessor, long cursor,
+            Func<IApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<T>>>>> reader,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();

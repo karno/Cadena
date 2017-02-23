@@ -10,9 +10,9 @@ namespace Cadena.Engine.CyclicReceivers.Relations
 {
     public class MutesReceiver : CyclicRelationInfoReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
 
-        public MutesReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
+        public MutesReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(handler, exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

@@ -10,10 +10,10 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
 {
     public class DirectMessagesReceiver : CyclicTimelineReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly int _receiveCount;
 
-        public DirectMessagesReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
+        public DirectMessagesReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
             [CanBeNull] Action<Exception> exceptionHandler, int receiveCount = 100) : base(handler, exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

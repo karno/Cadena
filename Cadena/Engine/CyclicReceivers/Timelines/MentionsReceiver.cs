@@ -10,11 +10,11 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
 {
     public class MentionsReceiver : CyclicTimelineReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly int _receiveCount;
         private readonly bool _includeRetweets;
 
-        public MentionsReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
+        public MentionsReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
             [CanBeNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)
             : base(handler, exceptionHandler)
         {

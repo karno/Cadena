@@ -10,9 +10,9 @@ namespace Cadena.Engine.CyclicReceivers.Relations
 {
     public class NoRetweetsReceiver : CyclicRelationInfoReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
 
-        public NoRetweetsReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
+        public NoRetweetsReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(handler, exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

@@ -14,7 +14,7 @@ namespace Cadena.Api.Rest
         #region statuses/home_timeline
 
         public static async Task<IApiResult<IEnumerable<TwitterStatus>>> GetHomeTimelineAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             int? count, long? sinceId, long? maxId, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -33,7 +33,7 @@ namespace Cadena.Api.Rest
         #region statuses/user_timeline
 
         public static async Task<IApiResult<IEnumerable<TwitterStatus>>> GetUserTimelineAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] UserParameter targetUser, int? count, long? sinceId, long? maxId,
             bool? excludeReplies, bool? includeRetweets, CancellationToken cancellationToken)
         {
@@ -56,7 +56,7 @@ namespace Cadena.Api.Rest
         #region statuses/mentions_timeline
 
         public static async Task<IApiResult<IEnumerable<TwitterStatus>>> GetMentionsAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             int? count, long? sinceId, long? maxId, bool? includeRetweets,
             CancellationToken cancellationToken)
         {
@@ -77,7 +77,7 @@ namespace Cadena.Api.Rest
         #region statuses/retweets_of_me
 
         public static async Task<IApiResult<IEnumerable<TwitterStatus>>> GetRetweetsOfMeAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             int? count, long? sinceId, long? maxId, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

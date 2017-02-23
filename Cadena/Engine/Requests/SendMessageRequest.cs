@@ -11,7 +11,7 @@ namespace Cadena.Engine.Requests
     public class SendMessageRequest : RequestBase<IApiResult<TwitterStatus>>
     {
         [NotNull]
-        public ApiAccessor Accessor { get; }
+        public IApiAccessor Accessor { get; }
 
         [NotNull]
         public UserParameter Recipient { get; }
@@ -19,7 +19,7 @@ namespace Cadena.Engine.Requests
         [NotNull]
         public string Text { get; }
 
-        public SendMessageRequest([NotNull] ApiAccessor accessor, [NotNull] UserParameter recipient, [NotNull] string text)
+        public SendMessageRequest([NotNull] IApiAccessor accessor, [NotNull] UserParameter recipient, [NotNull] string text)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (recipient == null) throw new ArgumentNullException(nameof(recipient));

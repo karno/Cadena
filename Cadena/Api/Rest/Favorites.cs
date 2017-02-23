@@ -14,7 +14,7 @@ namespace Cadena.Api.Rest
         #region favorites/list
 
         public static async Task<IApiResult<IEnumerable<TwitterStatus>>> GetFavoritesAsync(
-            [NotNull] this ApiAccessor accessor, [CanBeNull] UserParameter targetUser,
+            [NotNull] this IApiAccessor accessor, [CanBeNull] UserParameter targetUser,
             int? count, long? sinceId, long? maxId,
             CancellationToken cancellationToken)
         {
@@ -34,7 +34,7 @@ namespace Cadena.Api.Rest
         #region favorites/create
 
         public static async Task<IApiResult<TwitterStatus>> CreateFavoriteAsync(
-            [NotNull] this ApiAccessor accessor, long id,
+            [NotNull] this IApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -51,7 +51,7 @@ namespace Cadena.Api.Rest
         #region favorites/destroy
 
         public static async Task<IApiResult<TwitterStatus>> DestroyFavoriteAsync(
-            [NotNull] this ApiAccessor accessor, long id,
+            [NotNull] this IApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

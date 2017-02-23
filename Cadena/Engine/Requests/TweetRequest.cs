@@ -13,7 +13,7 @@ namespace Cadena.Engine.Requests
     public class TweetRequest : RequestBase<IApiResult<TwitterStatus>>
     {
         [NotNull]
-        public ApiAccessor Accessor { get; }
+        public IApiAccessor Accessor { get; }
 
         [NotNull]
         public string Text { get; }
@@ -28,7 +28,7 @@ namespace Cadena.Engine.Requests
 
         public bool? DisplayCoordinates { get; }
 
-        protected TweetRequest([NotNull] ApiAccessor accessor, [NotNull] string text,
+        protected TweetRequest([NotNull] IApiAccessor accessor, [NotNull] string text,
             long? inReplyToStatusId = null, [CanBeNull] Tuple<double, double> geoLatLong = null,
             [CanBeNull] string placeId = null, bool? displayCoordinates = null)
         {
@@ -56,7 +56,7 @@ namespace Cadena.Engine.Requests
 
         public bool PossiblySensitive { get; }
 
-        public TweetWithMediaRequest([NotNull] ApiAccessor accessor, [NotNull] string text,
+        public TweetWithMediaRequest([NotNull] IApiAccessor accessor, [NotNull] string text,
             IEnumerable<long> mediaIds, bool possiblySensitive, long? inReplyToStatusId = null,
             [CanBeNull] Tuple<double, double> geoLatLong = null, [CanBeNull] string placeId = null,
             bool? displayCoordinates = null)

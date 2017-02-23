@@ -17,7 +17,7 @@ namespace Cadena.Api.Rest
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>object represents current configration state of twitter.</returns>
         public static async Task<IApiResult<TwitterConfiguration>> GetConfigurationAsync(
-            [NotNull] this ApiAccessor accessor, CancellationToken cancellationToken)
+            [NotNull] this IApiAccessor accessor, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             return await accessor.GetAsync("help/configuration.json",

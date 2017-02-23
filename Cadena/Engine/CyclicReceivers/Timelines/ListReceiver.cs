@@ -17,7 +17,7 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
         /// </summary>
         private const int BaseAccessIntervalSec = 30;
 
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly Action<TwitterStatus> _handler;
         private readonly int _receiveCount;
         private readonly bool _includeRetweets;
@@ -29,7 +29,7 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
         // normally allows 180 access / 15 min => 5sec intv.
         protected override long MinimumIntervalTicks => TimeSpan.FromSeconds(5).Ticks;
 
-        public ListReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
+        public ListReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
             [CanBeNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)
             : base(exceptionHandler)
         {

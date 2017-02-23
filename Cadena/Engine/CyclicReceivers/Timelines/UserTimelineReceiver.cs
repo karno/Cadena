@@ -11,13 +11,13 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
 {
     public class UserTimelineReceiver : CyclicTimelineReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly UserParameter _target;
         private readonly int _receiveCount;
         private readonly bool _excludeReplies;
         private readonly bool _includeRetweets;
 
-        public UserTimelineReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
+        public UserTimelineReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<TwitterStatus> handler,
             [CanBeNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target, int receiveCount = 100,
             bool excludeReplies = false, bool includeRetweets = true) : base(handler, exceptionHandler)
         {

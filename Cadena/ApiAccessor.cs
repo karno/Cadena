@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -15,7 +16,7 @@ using JetBrains.Annotations;
 
 namespace Cadena
 {
-    public sealed class ApiAccessor : IDisposable
+    public sealed class ApiAccessor : IApiAccessor
     {
         #region Provide default configuration
 
@@ -38,6 +39,8 @@ namespace Cadena
 
         #endregion
 
+        public long Id { get { return Credential.Id; } }
+
         /// <summary>
         /// Credential information of this accessor.
         /// </summary>
@@ -47,7 +50,7 @@ namespace Cadena
 
         public string UserAgent { get; }
 
-        private readonly IWebProxy _proxy;
+        public IWebProxy Proxy { get; }
 
         private readonly Lazy<HttpClient> _client;
 
@@ -60,14 +63,14 @@ namespace Cadena
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             Credential = credential;
             Endpoint = endpoint;
-            _proxy = proxy;
+            Proxy = proxy;
             UserAgent = userAgent ?? DefaultUserAgent;
             _client = new Lazy<HttpClient>(() => new TwitterApiHttpClient(credential, proxy, UserAgent, useGzip),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
-        public async Task<IApiResult<T>> PostAsync<T>([NotNull] string path, [NotNull] HttpContent content,
-            [NotNull] Func<HttpResponseMessage, Task<T>> converter, CancellationToken cancellationToken)
+        public async Task<IApiResult<T>> PostAsync<T>(string path, HttpContent content,
+            Func<HttpResponseMessage, Task<T>> converter, CancellationToken cancellationToken)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (content == null) throw new ArgumentNullException(nameof(content));
@@ -79,8 +82,8 @@ namespace Cadena
             }
         }
 
-        public async Task<IApiResult<T>> PostAsync<T>([NotNull] string path,
-            [NotNull] IDictionary<string, object> parameter, [NotNull] Func<HttpResponseMessage, Task<T>> converter,
+        public async Task<IApiResult<T>> PostAsync<T>(string path,
+            IDictionary<string, object> parameter, Func<HttpResponseMessage, Task<T>> converter,
             CancellationToken cancellationToken)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
@@ -93,8 +96,8 @@ namespace Cadena
             }
         }
 
-        public async Task<IApiResult<T>> GetAsync<T>([NotNull] string path,
-            [NotNull] IDictionary<string, object> parameter, [NotNull] Func<HttpResponseMessage, Task<T>> converter,
+        public async Task<IApiResult<T>> GetAsync<T>(string path,
+            IDictionary<string, object> parameter, Func<HttpResponseMessage, Task<T>> converter,
             CancellationToken cancellationToken)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
@@ -138,14 +141,40 @@ namespace Cadena
             return _client.Value.PostAsync(url, content, cancellationToken);
         }
 
-        /// <summary>
-        /// Spawn new HttpClient to connect the Stream API.
-        /// </summary>
-        /// <returns>spawned HttpClient</returns>
-        internal HttpClient GetClientForStreaming()
+        public async Task ConnectStreamAsync(string path, IDictionary<string, object> parameter,
+            Func<Stream, Task> streamReader, CancellationToken cancellationToken)
         {
-            // we should not use GZip for preventing delay of delivering elements.
-            return new TwitterApiHttpClient(Credential, _proxy, UserAgent, false);
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+            if (streamReader == null) throw new ArgumentNullException(nameof(streamReader));
+            HttpClient client = null;
+            try
+            {
+                var endpoint = HttpUtility.ConcatUrl(Endpoint, path);
+                var query = parameter.ParametalizeForGet();
+                if (!String.IsNullOrEmpty(query))
+                {
+                    endpoint += "?" + query;
+                }
+                client = new TwitterApiHttpClient(Credential, Proxy, UserAgent, false);
+                client.Timeout = Timeout.InfiniteTimeSpan;
+                using (var resp = await client.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead,
+                    cancellationToken).ConfigureAwait(false))
+                using (var stream = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                {
+                    // winding data from user stream
+                    await streamReader(stream).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                if (client != null)
+                {
+                    client.CancelPendingRequests();
+                    client.Dispose();
+                }
+            }
+
         }
 
         private string FormatUrl([NotNull] string endpoint, [NotNull] string path)
@@ -213,5 +242,7 @@ namespace Cadena
             }
             _disposed = true;
         }
+
+
     }
 }

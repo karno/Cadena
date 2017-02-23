@@ -14,7 +14,7 @@ namespace Cadena.Api.Rest
         #region account/verify_accesss
 
         public static async Task<IApiResult<TwitterUser>> VerifyCredentialAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -32,7 +32,7 @@ namespace Cadena.Api.Rest
         #region account/update_profile
 
         public static async Task<IApiResult<TwitterUser>> UpdateProfileAsync(
-            [NotNull] this ApiAccessor accessor, [CanBeNull] string name, [CanBeNull] string url,
+            [NotNull] this IApiAccessor accessor, [CanBeNull] string name, [CanBeNull] string url,
             [CanBeNull] string location, [CanBeNull] string description,
             CancellationToken cancellationToken)
         {
@@ -54,7 +54,7 @@ namespace Cadena.Api.Rest
         #region account/update_profile_image
 
         public static async Task<IApiResult<TwitterUser>> UpdateProfileImageAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] byte[] image, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

@@ -115,6 +115,7 @@
     <Compile Include="Engine\_Internals\Parsers\TwitterStreamParser.cs" />
     <Compile Include="Engine\_Internals\Parsers\UserStreamParser.cs" />
     <Compile Include="Engine\_Internals\TaskFactoryDistrict.cs" />
+    <Compile Include="IApiAccessor.cs" />
     <Compile Include="Meteor\JsonArray.cs" />
     <Compile Include="Meteor\JsonBoolean.cs" />
     <Compile Include="Meteor\JsonNull.cs" />

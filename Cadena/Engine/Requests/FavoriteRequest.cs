@@ -10,13 +10,13 @@ namespace Cadena.Engine.Requests
     public class FavoriteRequest : RequestBase<IApiResult<TwitterStatus>>
     {
         [NotNull]
-        public ApiAccessor Accessor { get; }
+        public IApiAccessor Accessor { get; }
 
         public long TargetTweetId { get; }
 
         public bool CreateFavorite { get; }
 
-        public FavoriteRequest([NotNull] ApiAccessor accessor, long targetTweetId, bool createFavorite)
+        public FavoriteRequest([NotNull] IApiAccessor accessor, long targetTweetId, bool createFavorite)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             Accessor = accessor;

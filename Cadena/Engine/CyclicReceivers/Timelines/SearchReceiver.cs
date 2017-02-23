@@ -11,10 +11,10 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
 {
     public class SearchReceiver : CyclicTimelineReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly SearchParameter _parameter;
 
-        public SearchReceiver([NotNull] ApiAccessor accessor, Action<TwitterStatus> handler,
+        public SearchReceiver([NotNull] IApiAccessor accessor, Action<TwitterStatus> handler,
             [CanBeNull] Action<Exception> exceptionHandler, [NotNull] SearchParameter parameter) : base(handler, exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

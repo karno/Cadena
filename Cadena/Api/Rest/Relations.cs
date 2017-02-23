@@ -14,7 +14,7 @@ namespace Cadena.Api.Rest
         #region friends/ids
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetFriendsIdsAsync(
-            [NotNull] this ApiAccessor accessor, [CanBeNull] UserParameter nullableTargetUser,
+            [NotNull] this IApiAccessor accessor, [CanBeNull] UserParameter nullableTargetUser,
             long? cursor, int? count, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -32,7 +32,7 @@ namespace Cadena.Api.Rest
         #region followers/ids
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetFollowersIdsAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [CanBeNull] UserParameter nullableTargetUser, long? cursor, int? count, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -50,7 +50,7 @@ namespace Cadena.Api.Rest
         #region friendships/no_retweets/ids
 
         public static async Task<IApiResult<IEnumerable<long>>> GetNoRetweetsIdsAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -63,7 +63,7 @@ namespace Cadena.Api.Rest
         #region mutes/users/ids
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetMuteIdsAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             long? cursor, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -80,7 +80,7 @@ namespace Cadena.Api.Rest
         #region friendships/create
 
         public static async Task<IApiResult<TwitterUser>> CreateFriendshipAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] UserParameter targetUser, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -94,7 +94,7 @@ namespace Cadena.Api.Rest
         #region friendships/destroy
 
         public static async Task<IApiResult<TwitterUser>> DestroyFriendshipAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] UserParameter targetUser, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -108,7 +108,7 @@ namespace Cadena.Api.Rest
         #region friendships/show 
 
         public static async Task<IApiResult<TwitterFriendship>> ShowFriendshipAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] UserParameter sourceUser, [NotNull] UserParameter targetUser, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -126,7 +126,7 @@ namespace Cadena.Api.Rest
         #region friendships/update
 
         public static async Task<IApiResult<TwitterFriendship>> UpdateFriendshipAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] UserParameter screenName, bool? enableDeviceNotifications, bool? showRetweet,
             CancellationToken cancellationToken)
         {
@@ -147,7 +147,7 @@ namespace Cadena.Api.Rest
         #region mutes/users/[create|destroy]
 
         public static async Task<IApiResult<TwitterUser>> UpdateMuteAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] UserParameter targetUser, bool mute, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

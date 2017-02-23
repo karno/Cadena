@@ -11,9 +11,9 @@ namespace Cadena.Engine.CyclicReceivers.Relations
 {
     public class FriendsReceiver : CyclicRelationInfoReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
 
-        public FriendsReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
+        public FriendsReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
             [CanBeNull] Action<Exception> exceptionHandler)
             : base(handler, exceptionHandler)
         {
@@ -23,7 +23,7 @@ namespace Cadena.Engine.CyclicReceivers.Relations
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)
         {
-            var param = new UserParameter(_accessor.Credential.Id);
+            var param = new UserParameter(_accessor.Id);
             var result = await RetrieveCursoredResult(_accessor,
                 (a, i) => a.GetFriendsIdsAsync(param, i, null, token), CallExceptionHandler, token)
                 .ConfigureAwait(false);

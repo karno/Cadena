@@ -16,7 +16,7 @@ namespace Cadena.Api.Rest
         #region users/lookup
 
         public static Task<IApiResult<IEnumerable<TwitterUser>>> LookupUserAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] IEnumerable<long> userIds,
+            [NotNull] this IApiAccessor accessor, [NotNull] IEnumerable<long> userIds,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -25,7 +25,7 @@ namespace Cadena.Api.Rest
         }
 
         public static Task<IApiResult<IEnumerable<TwitterUser>>> LookupUserAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] IEnumerable<string> screenNames,
+            [NotNull] this IApiAccessor accessor, [NotNull] IEnumerable<string> screenNames,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -34,7 +34,7 @@ namespace Cadena.Api.Rest
         }
 
         private static async Task<IApiResult<IEnumerable<TwitterUser>>> LookupUserCoreAsync(
-            [NotNull] ApiAccessor accessor, IEnumerable<long> userIds, IEnumerable<string> screenNames,
+            [NotNull] IApiAccessor accessor, IEnumerable<long> userIds, IEnumerable<string> screenNames,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -55,7 +55,7 @@ namespace Cadena.Api.Rest
         #region users/search
 
         public static async Task<IApiResult<IEnumerable<TwitterUser>>> SearchUserAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] string query, int? page, int? count,
+            [NotNull] this IApiAccessor accessor, [NotNull] string query, int? page, int? count,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -75,7 +75,7 @@ namespace Cadena.Api.Rest
         #region users/show
 
         public static async Task<IApiResult<TwitterUser>> ShowUserAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter parameter,
+            [NotNull] this IApiAccessor accessor, [NotNull] UserParameter parameter,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

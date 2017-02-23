@@ -14,7 +14,7 @@ namespace Cadena.Api.Rest
         #region lists/show
 
         public static async Task<IApiResult<TwitterList>> ShowListAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] ListParameter targetList, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -27,7 +27,7 @@ namespace Cadena.Api.Rest
         #region lists/list
 
         public static async Task<IApiResult<IEnumerable<TwitterList>>> GetListsAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter targetUser,
+            [NotNull] this IApiAccessor accessor, [NotNull] UserParameter targetUser,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -42,7 +42,7 @@ namespace Cadena.Api.Rest
         #region lists/statuses
 
         public static async Task<IApiResult<IEnumerable<TwitterStatus>>> GetListTimelineAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] ListParameter listTarget, long? sinceId, long? maxId, int? count, bool? includeRts,
             CancellationToken cancellationToken)
         {
@@ -63,7 +63,7 @@ namespace Cadena.Api.Rest
         #region lists/members
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<TwitterUser>>>> GetListMembersAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] ListParameter targetList, long? cursor, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -82,7 +82,7 @@ namespace Cadena.Api.Rest
         #region lists/memberships
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<TwitterList>>>> GetListMembershipsAsync(
-            [NotNull] this ApiAccessor accessor,
+            [NotNull] this IApiAccessor accessor,
             [NotNull] ListParameter targetList, long? cursor, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

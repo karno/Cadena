@@ -13,7 +13,7 @@ namespace Cadena.Engine.Requests
     public class UploadMediaRequest : RequestBase<IApiResult<TwitterUploadedMedia>>
     {
         [NotNull]
-        public ApiAccessor Accessor { get; }
+        public IApiAccessor Accessor { get; }
 
         [NotNull]
         public byte[] Media { get; }
@@ -24,15 +24,15 @@ namespace Cadena.Engine.Requests
         [CanBeNull]
         public IProgress<double> SentPercentageCallback { get; }
 
-        public UploadMediaRequest([NotNull] ApiAccessor accessor, [NotNull] IEnumerable<byte> media,
-            [CanBeNull] IEnumerable<ApiAccessor> additionalOwners = null,
+        public UploadMediaRequest([NotNull] IApiAccessor accessor, [NotNull] IEnumerable<byte> media,
+            [CanBeNull] IEnumerable<IApiAccessor> additionalOwners = null,
             [CanBeNull] IProgress<double> sentPercentageCallback = null)
-            : this(accessor, media, additionalOwners?.Select(a => a.Credential.Id), sentPercentageCallback)
+            : this(accessor, media, additionalOwners?.Select(a => a.Id), sentPercentageCallback)
         {
         }
 
 
-        public UploadMediaRequest([NotNull] ApiAccessor accessor, [NotNull] IEnumerable<byte> media,
+        public UploadMediaRequest([NotNull] IApiAccessor accessor, [NotNull] IEnumerable<byte> media,
             [CanBeNull] IEnumerable<long> additionalOwnerIds = null,
             [CanBeNull] IProgress<double> sentPercentageCallback = null)
         {

@@ -31,7 +31,7 @@ namespace Cadena.Engine.StreamReceivers
 
         #endregion
 
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly IStreamHandler _handler;
 
         private StreamState _currentState;
@@ -72,7 +72,7 @@ namespace Cadena.Engine.StreamReceivers
 
         #endregion
 
-        public UserStreamReceiver(ApiAccessor accessor, IStreamHandler handler)
+        public UserStreamReceiver(IApiAccessor accessor, IStreamHandler handler)
         {
             _accessor = accessor;
             _handler = handler;

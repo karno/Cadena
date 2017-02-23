@@ -10,10 +10,10 @@ namespace Cadena.Engine.CyclicReceivers.Infrastructures
 {
     public class SavedSearchesReceiver : CyclicReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly Action<IEnumerable<TwitterSavedSearch>> _handler;
 
-        public SavedSearchesReceiver([NotNull] ApiAccessor accessor,
+        public SavedSearchesReceiver([NotNull] IApiAccessor accessor,
             [NotNull] Action<IEnumerable<TwitterSavedSearch>> handler, [CanBeNull] Action<Exception> exceptionHandler)
             : base(exceptionHandler)
         {

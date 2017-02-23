@@ -9,12 +9,12 @@ namespace Cadena.Engine.CyclicReceivers.Infrastructures
 {
     public class HelpReceiver : CyclicReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly Action<TwitterConfiguration> _handler;
 
         protected override long MinimumIntervalTicks => TimeSpan.FromHours(6).Ticks;
 
-        public HelpReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<TwitterConfiguration> handler,
+        public HelpReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<TwitterConfiguration> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(exceptionHandler)
         {
             _accessor = accessor;

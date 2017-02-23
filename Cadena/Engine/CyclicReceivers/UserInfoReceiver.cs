@@ -10,11 +10,11 @@ namespace Cadena.Engine.CyclicReceivers
 {
     public class UserInfoReceiver : CyclicReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
         private readonly Action<TwitterUser> _handler;
         private readonly UserParameter _target;
 
-        public UserInfoReceiver(ApiAccessor accessor, [NotNull] Action<TwitterUser> handler,
+        public UserInfoReceiver(IApiAccessor accessor, [NotNull] Action<TwitterUser> handler,
             [CanBeNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target)
             : base(exceptionHandler)
         {

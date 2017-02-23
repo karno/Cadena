@@ -14,7 +14,7 @@ namespace Cadena.Api.Rest
         #region blocks/ids
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetBlocksIdsAsync(
-            [NotNull] this ApiAccessor accessor, long cursor, CancellationToken cancellationToken)
+            [NotNull] this IApiAccessor accessor, long cursor, CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object> { { "cursor", cursor } };
@@ -27,7 +27,7 @@ namespace Cadena.Api.Rest
         #region blocks/create
 
         public static async Task<IApiResult<TwitterUser>> CreateBlockAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter targetUser,
+            [NotNull] this IApiAccessor accessor, [NotNull] UserParameter targetUser,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -41,7 +41,7 @@ namespace Cadena.Api.Rest
         #region blocks/destroy
 
         public static async Task<IApiResult<TwitterUser>> DestroyBlockAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter targetUser,
+            [NotNull] this IApiAccessor accessor, [NotNull] UserParameter targetUser,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -55,7 +55,7 @@ namespace Cadena.Api.Rest
         #region users/report_spam
 
         public static async Task<IApiResult<TwitterUser>> ReportSpamAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] UserParameter targetUser,
+            [NotNull] this IApiAccessor accessor, [NotNull] UserParameter targetUser,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

@@ -11,9 +11,9 @@ namespace Cadena.Engine.CyclicReceivers.Relations
 {
     public class FollowersReceiver : CyclicRelationInfoReceiverBase
     {
-        private readonly ApiAccessor _accessor;
+        private readonly IApiAccessor _accessor;
 
-        public FollowersReceiver([NotNull] ApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
+        public FollowersReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(handler, exceptionHandler)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -22,7 +22,7 @@ namespace Cadena.Engine.CyclicReceivers.Relations
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)
         {
-            var param = new UserParameter(_accessor.Credential.Id);
+            var param = new UserParameter(_accessor.Id);
             var result = await RetrieveCursoredResult(_accessor,
                 (a, i) => a.GetFollowersIdsAsync(param, i, null, token), CallExceptionHandler, token)
                 .ConfigureAwait(false);

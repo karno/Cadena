@@ -11,14 +11,14 @@ namespace Cadena.Engine.Requests
     public class UpdateRelationRequest : RequestBase<IApiResult<TwitterUser>>
     {
         [NotNull]
-        public ApiAccessor Accessor { get; }
+        public IApiAccessor Accessor { get; }
 
         [NotNull]
         public UserParameter Target { get; }
 
         public Relations Relation { get; }
 
-        public UpdateRelationRequest([NotNull] ApiAccessor accessor,
+        public UpdateRelationRequest([NotNull] IApiAccessor accessor,
             [NotNull] UserParameter target, Relations relation)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

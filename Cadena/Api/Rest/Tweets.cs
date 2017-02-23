@@ -19,7 +19,7 @@ namespace Cadena.Api.Rest
 
 
         public static async Task<IApiResult<long?>> GetMyRetweetIdOfStatusAsync(
-            [NotNull] this ApiAccessor accessor, long id,
+            [NotNull] this IApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -44,7 +44,7 @@ namespace Cadena.Api.Rest
         #region statuses/retweets/:id
 
         public static async Task<IApiResult<IEnumerable<TwitterUser>>> GetRetweetsAsync(
-            [NotNull] this ApiAccessor accessor, long id, int? count,
+            [NotNull] this IApiAccessor accessor, long id, int? count,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -58,7 +58,7 @@ namespace Cadena.Api.Rest
         #region retweeter/ids
 
         public static async Task<IApiResult<ICursorResult<IEnumerable<long>>>> GetRetweeterIdsAsync(
-            this ApiAccessor accessor, long id, long cursor,
+            this IApiAccessor accessor, long id, long cursor,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -76,7 +76,7 @@ namespace Cadena.Api.Rest
         #region statuses/show
 
         public static async Task<IApiResult<TwitterStatus>> ShowTweetAsync(
-            [NotNull] this ApiAccessor accessor, long id,
+            [NotNull] this IApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -93,7 +93,7 @@ namespace Cadena.Api.Rest
         #region statuses/update
 
         public static async Task<IApiResult<TwitterStatus>> UpdateAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] StatusParameter status,
+            [NotNull] this IApiAccessor accessor, [NotNull] StatusParameter status,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -107,14 +107,14 @@ namespace Cadena.Api.Rest
         #region media/upload
 
         public static Task<IApiResult<TwitterUploadedMedia>> UploadMediaAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] byte[] image,
+            [NotNull] this IApiAccessor accessor, [NotNull] byte[] image,
             CancellationToken cancellationToken)
         {
             return accessor.UploadMediaAsync(image, null, cancellationToken);
         }
 
         public static Task<IApiResult<TwitterUploadedMedia>> UploadMediaAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] byte[] image, [CanBeNull] long[] additionalOwners,
+            [NotNull] this IApiAccessor accessor, [NotNull] byte[] image, [CanBeNull] long[] additionalOwners,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -138,14 +138,14 @@ namespace Cadena.Api.Rest
         }
 
         public static Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
+            [NotNull] this IApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
             CancellationToken cancellationToken)
         {
             return accessor.UploadLargeMediaAsync(media, mimeType, null, null, null, cancellationToken);
         }
 
         public static Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
+            [NotNull] this IApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
             int? chunkSize, [CanBeNull] IProgress<int> sentBytesNotification, CancellationToken cancellationToken)
         {
             return accessor.UploadLargeMediaAsync(media, mimeType, null, chunkSize, sentBytesNotification,
@@ -153,14 +153,14 @@ namespace Cadena.Api.Rest
         }
 
         public static Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
+            [NotNull] this IApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
             [CanBeNull] long[] additionalOwners, CancellationToken cancellationToken)
         {
             return accessor.UploadLargeMediaAsync(media, mimeType, additionalOwners, null, null, cancellationToken);
         }
 
         public static async Task<IApiResult<TwitterUploadedMedia>> UploadLargeMediaAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
+            [NotNull] this IApiAccessor accessor, [NotNull] byte[] media, [NotNull] string mimeType,
             [CanBeNull] long[] additionalOwners, int? chunkSize, [CanBeNull] IProgress<int> sentBytesCallback,
             CancellationToken cancellationToken)
         {
@@ -241,7 +241,7 @@ namespace Cadena.Api.Rest
         }
 
         private static async Task<IApiResult<TwitterUploadedMedia>> UploadMediaCoreAsync(
-            [NotNull] this ApiAccessor accessor, [NotNull] HttpContent content,
+            [NotNull] this IApiAccessor accessor, [NotNull] HttpContent content,
             CancellationToken cancellationToken)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
@@ -258,7 +258,7 @@ namespace Cadena.Api.Rest
         #region statuses/destroy/:id
 
         public static async Task<IApiResult<TwitterStatus>> DestroyAsync(
-            [NotNull] this ApiAccessor accessor, long id,
+            [NotNull] this IApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
@@ -272,7 +272,7 @@ namespace Cadena.Api.Rest
         #region statuses/retweet/:id
 
         public static async Task<IApiResult<TwitterStatus>> RetweetAsync(
-            [NotNull] this ApiAccessor accessor, long id,
+            [NotNull] this IApiAccessor accessor, long id,
             CancellationToken cancellationToken)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

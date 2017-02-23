@@ -11,7 +11,7 @@ namespace Cadena.Engine.Requests
     public class UpdateFriendshipRequest : RequestBase<IApiResult<TwitterFriendship>>
     {
         [NotNull]
-        public ApiAccessor Accessor { get; }
+        public IApiAccessor Accessor { get; }
 
         [NotNull]
         public UserParameter TargetUser { get; }
@@ -20,7 +20,7 @@ namespace Cadena.Engine.Requests
 
         public bool? ShowRetweets { get; }
 
-        public UpdateFriendshipRequest([NotNull] ApiAccessor accessor, [NotNull] UserParameter param,
+        public UpdateFriendshipRequest([NotNull] IApiAccessor accessor, [NotNull] UserParameter param,
             bool? deviceNotifications, bool? showRetweets)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));

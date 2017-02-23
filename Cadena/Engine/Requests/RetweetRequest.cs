@@ -10,11 +10,11 @@ namespace Cadena.Engine.Requests
     public class RetweetRequest : RequestBase<IApiResult<TwitterStatus>>
     {
         [NotNull]
-        public ApiAccessor Accessor { get; }
+        public IApiAccessor Accessor { get; }
 
         public long TargetId { get; }
 
-        public RetweetRequest([NotNull] ApiAccessor accessor, long targetId)
+        public RetweetRequest([NotNull] IApiAccessor accessor, long targetId)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             Accessor = accessor;
