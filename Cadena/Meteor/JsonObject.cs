@@ -52,8 +52,7 @@ namespace Cadena.Meteor
         public override JsonValue GetValue(string key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            JsonValue value;
-            return _dictionary.TryGetValue(key, out value) ? value : JsonNull.Null;
+            return _dictionary.TryGetValue(key, out var value) ? value : JsonNull.Null;
         }
 
         public IEnumerator<KeyValuePair<string, JsonValue>> GetEnumerator()

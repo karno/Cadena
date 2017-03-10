@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using Cadena.Data;
@@ -55,8 +54,7 @@ namespace Cadena._Internals
             if (message == null) throw new ArgumentNullException(nameof(message));
             if (key == null) throw new ArgumentNullException(nameof(key));
 
-            IEnumerable<string> values;
-            return message.Headers.TryGetValues(key, out values) ? values.FirstOrDefault() : null;
+            return message.Headers.TryGetValues(key, out var values) ? values.FirstOrDefault() : null;
         }
 
         /// <summary>

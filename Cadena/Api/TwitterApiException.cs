@@ -17,9 +17,7 @@ namespace Cadena.Api
             TwitterErrorCode = twitterCode;
 
             // analyze error
-            ProblemType problemType;
-            string description;
-            AnalyzeError(out problemType, out description);
+            AnalyzeError(out var problemType, out var description);
             ProblemType = problemType;
             Description = description;
 
@@ -31,9 +29,7 @@ namespace Cadena.Api
             StatusCode = statusCode;
 
             // analyze error
-            ProblemType problemType;
-            string description;
-            AnalyzeError(out problemType, out description);
+            AnalyzeError(out ProblemType problemType, out string description);
             ProblemType = problemType;
             Description = description;
         }

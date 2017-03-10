@@ -59,40 +59,36 @@ namespace Cadena.Engine._Internals.Parsers
                 // element.foo() -> element.IsDefined("foo")
 
                 // direct message
-                JsonValue directMessage;
-                if (graph.TryGetValue("direct_message", out directMessage))
+                if (graph.TryGetValue("direct_message", out var directMessage))
                 {
-                    handler.OnStatus(new TwitterStatus(graph["direct_message"]));
+                    handler.OnStatus(new TwitterStatus(directMessage));
                     return;
                 }
 
                 // delete
-                JsonValue delete;
-                if (graph.TryGetValue("delete", out delete))
+                if (graph.TryGetValue("delete", out var delete))
                 {
                     var timestamp = GetTimestamp(delete);
-                    JsonValue status;
-                    if (delete.TryGetValue("status", out status))
+                    if (delete.TryGetValue("status", out var delstatus))
                     {
                         handler.OnMessage(new StreamDelete(
-                            Int64.Parse(status["id_str"].AsString()),
-                            Int64.Parse(status["user_id_str"].AsString()),
+                            Int64.Parse(delstatus["id_str"].AsString()),
+                            Int64.Parse(delstatus["user_id_str"].AsString()),
                             timestamp));
                         return;
                     }
-                    if (delete.TryGetValue("direct_message", out directMessage))
+                    if (delete.TryGetValue("direct_message", out var delmsg))
                     {
                         handler.OnMessage(new StreamDelete(
-                            Int64.Parse(directMessage["id_str"].AsString()),
-                            Int64.Parse(directMessage["user_id"].AsString()),
+                            Int64.Parse(delmsg["id_str"].AsString()),
+                            Int64.Parse(delmsg["user_id"].AsString()),
                             timestamp));
                         return;
                     }
                 }
 
                 // scrub_geo
-                JsonValue scrubGeo;
-                if (graph.TryGetValue("scrub_geo", out scrubGeo))
+                if (graph.TryGetValue("scrub_geo", out var scrubGeo))
                 {
                     handler.OnMessage(new StreamScrubGeo(
                         Int64.Parse(scrubGeo["user_id_str"].AsString()),
@@ -102,8 +98,7 @@ namespace Cadena.Engine._Internals.Parsers
                 }
 
                 // limit
-                JsonValue limit;
-                if (graph.TryGetValue("limit", out limit))
+                if (graph.TryGetValue("limit", out var limit))
                 {
                     handler.OnMessage(new StreamLimit(
                         limit["track"].AsLong(),
@@ -112,8 +107,7 @@ namespace Cadena.Engine._Internals.Parsers
                 }
 
                 // withheld
-                JsonValue statusWithheld;
-                if (graph.TryGetValue("status_withheld", out statusWithheld))
+                if (graph.TryGetValue("status_withheld", out var statusWithheld))
                 {
                     handler.OnMessage(new StreamWithheld(
                         statusWithheld["user_id"].AsLong(),
@@ -122,8 +116,7 @@ namespace Cadena.Engine._Internals.Parsers
                         GetTimestamp(statusWithheld)));
                     return;
                 }
-                JsonValue userWithheld;
-                if (graph.TryGetValue("user_withheld", out userWithheld))
+                if (graph.TryGetValue("user_withheld", out var userWithheld))
                 {
                     handler.OnMessage(new StreamWithheld(
                         userWithheld["id"].AsLong(),
@@ -133,8 +126,7 @@ namespace Cadena.Engine._Internals.Parsers
                 }
 
                 // disconnect
-                JsonValue disconnect;
-                if (graph.TryGetValue("disconnect", out disconnect))
+                if (graph.TryGetValue("disconnect", out var disconnect))
                 {
                     handler.OnMessage(new StreamDisconnect(
                         (DisconnectCode)disconnect["code"].AsLong(),
@@ -145,8 +137,7 @@ namespace Cadena.Engine._Internals.Parsers
                 }
 
                 // stall warning
-                JsonValue warning;
-                if (graph.TryGetValue("warning", out warning))
+                if (graph.TryGetValue("warning", out var warning))
                 {
                     var timestamp = GetTimestamp(warning);
                     var code = warning["code"].AsString();
@@ -162,8 +153,7 @@ namespace Cadena.Engine._Internals.Parsers
                 }
 
                 // user update
-                JsonValue @event;
-                if (graph.TryGetValue("event", out @event))
+                if (graph.TryGetValue("event", out var @event))
                 {
                     var ev = @event.AsString().ToLower();
                     if (ev == "user_update")
@@ -194,7 +184,7 @@ namespace Cadena.Engine._Internals.Parsers
         /// Get timestamp_ms field or pseudo timestamp string.
         /// </summary>
         /// <param name="graph">json object graph</param>
-        /// <returns>timestamp code(millisec)</returns>
+        /// <returns>timestamp code(millisecond)</returns>
         internal static string GetTimestamp(JsonValue graph)
         {
             return graph.ContainsKey("timestamp_ms")

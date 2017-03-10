@@ -34,8 +34,7 @@ namespace Cadena.Engine._Internals
         {
             lock (_factories)
             {
-                TaskFactory factory;
-                if (!_factories.TryGetValue(priority, out factory))
+                if (!_factories.TryGetValue(priority, out var factory))
                 {
                     lock (_shadowSchedulers)
                     {
@@ -47,7 +46,7 @@ namespace Cadena.Engine._Internals
             }
         }
 
-        #region Task runner util
+        #region Task runner utilities
 
         public Task Run(Action task, int priority, CancellationToken token = new CancellationToken())
         {
@@ -92,9 +91,10 @@ namespace Cadena.Engine._Internals
                             return;
                         }
                     }
-                    var wrappedTask = executor() as Task<Task>;
-                    if (wrappedTask != null)
+                    if (executor() is Task<Task> wrappedTask)
+                    {
                         await wrappedTask.Unwrap().ConfigureAwait(false);
+                    }
                 }
             });
         }

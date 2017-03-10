@@ -130,8 +130,7 @@ namespace Cadena.Engine.StreamReceivers
         private async Task<bool> HandleException(Exception ex)
         {
             Log("Exception on User Stream Receiver: " + Environment.NewLine + ex);
-            var tx = ex as TwitterApiException;
-            if (tx != null)
+            if (ex is TwitterApiException tx)
             {
                 // protocol error
                 Log($"Twitter API Exception: [status-code: {tx.StatusCode} twitter-code: {tx.TwitterErrorCode}]");
@@ -158,7 +157,7 @@ namespace Cadena.Engine.StreamReceivers
                         Log("Specified argument could not be accepted.");
                         return false;
                     case HttpStatusCode.RequestedRangeNotSatisfiable:
-                        Log("Permission denied / Parameter out of range");
+                        Log("Permission denied / Parameter out var of range");
                         return false;
                     case (HttpStatusCode)420: // Too many connections
                         Log("Too many connections are established.");

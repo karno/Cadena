@@ -26,7 +26,7 @@ namespace Cadena.Util
         /// Parse text as bool
         /// </summary>
         /// <param name="s">convert value</param>
-        /// <param name="@default">default value if string is null or unacceptable value</param>
+        /// <param name="default">default value if string is null or unacceptable value</param>
         /// <returns>converted value</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ParseBool([CanBeNull] this string s, bool @default = false)
@@ -44,8 +44,7 @@ namespace Cadena.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long ParseLong([CanBeNull] this string s)
         {
-            long v;
-            return long.TryParse(s, out v) ? v : 0;
+            return long.TryParse(s, out var v) ? v : 0;
         }
 
         /// <summary>
@@ -54,12 +53,7 @@ namespace Cadena.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long? ParseNullableId([CanBeNull] this string s)
         {
-            long v;
-            if (s != null && Int64.TryParse(s, out v) && v != 0)
-            {
-                return v;
-            }
-            return null;
+            return s != null && Int64.TryParse(s, out var v) && v != 0 ? (long?)v : null;
         }
 
         /// <summary>
@@ -77,12 +71,7 @@ namespace Cadena.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime ParseDateTime([CanBeNull] this string s, DateTime @default)
         {
-            DateTime dt;
-            if (s != null && DateTime.TryParse(s, out dt))
-            {
-                return dt;
-            }
-            return @default;
+            return s != null && DateTime.TryParse(s, out var dt) ? dt : @default;
         }
 
         /// <summary>
@@ -105,11 +94,10 @@ namespace Cadena.Util
         {
             if (format == null) throw new ArgumentNullException(nameof(format));
 
-            DateTime dt;
             if (s != null &&
                 DateTime.TryParseExact(s, format,
                     System.Globalization.DateTimeFormatInfo.InvariantInfo,
-                    System.Globalization.DateTimeStyles.None, out dt))
+                    System.Globalization.DateTimeStyles.None, out var dt))
             {
                 return dt;
             }
@@ -141,12 +129,7 @@ namespace Cadena.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Uri ParseUri([CanBeNull] this string s)
         {
-            Uri ret;
-            if (s != null && Uri.TryCreate(s, UriKind.RelativeOrAbsolute, out ret))
-            {
-                return ret;
-            }
-            return null;
+            return s != null && Uri.TryCreate(s, UriKind.RelativeOrAbsolute, out var ret) ? ret : null;
         }
 
         /// <summary>

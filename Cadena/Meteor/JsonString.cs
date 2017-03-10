@@ -27,8 +27,7 @@ namespace Cadena.Meteor
 
         public override bool Equals(object obj)
         {
-            string str;
-            if ((str = obj as string) != null)
+            if (obj is string str) // str should be not null
             {
                 return str == Value;
             }

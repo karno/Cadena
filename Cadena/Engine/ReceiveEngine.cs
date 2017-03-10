@@ -62,12 +62,7 @@ namespace Cadena.Engine
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
             AssertNotDisposed();
-            RequestPriority _;
-            if (UnregisterReceiver(receiver, out _))
-            {
-                return true;
-            }
-            return false;
+            return UnregisterReceiver(receiver, out var _);
         }
 
         private bool UnregisterReceiver([NotNull] IReceiver receiver, out RequestPriority priority)
@@ -162,8 +157,7 @@ namespace Cadena.Engine
         {
             if (receiver == null) throw new ArgumentNullException(nameof(receiver));
             AssertNotDisposed();
-            RequestPriority priority;
-            if (!UnregisterReceiver(receiver, out priority))
+            if (!UnregisterReceiver(receiver, out var priority))
             {
                 // receiver not found
                 throw new ArgumentException("Specified receiver is not contained in this receive engine.");

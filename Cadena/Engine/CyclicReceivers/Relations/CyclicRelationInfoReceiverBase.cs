@@ -51,10 +51,8 @@ namespace Cadena.Engine.CyclicReceivers.Relations
         protected void CallHandler([CanBeNull] IEnumerable<long> result)
         {
             if (result == null) return;
-            var array = result as long[];
-            if (array != null && array.Length == 0) return;
-            var collection = result as ICollection;
-            if (collection != null && collection.Count == 0) return;
+            if (result is long[] array && array.Length == 0) return;
+            if (result is ICollection collection && collection.Count == 0) return;
             _handler(result);
         }
     }

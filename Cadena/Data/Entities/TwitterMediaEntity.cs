@@ -216,8 +216,7 @@ namespace Cadena.Data.Entities
             Url = variantNode["url"].AsString();
 
             // check video content type
-            VideoContentType vctype;
-            RecognizedContentType = _videoContentTypes.TryGetValue(ContentType, out vctype)
+            RecognizedContentType = _videoContentTypes.TryGetValue(ContentType, out var vctype)
                 ? vctype
                 : VideoContentType.Unknown;
         }
