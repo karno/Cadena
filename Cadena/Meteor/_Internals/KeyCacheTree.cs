@@ -120,7 +120,7 @@ namespace Cadena.Meteor._Internals
             Count = 0;
         }
 
-        class KeyCacheTreeDigger : IKeyCacheTreeDigger
+        sealed class KeyCacheTreeDigger : IKeyCacheTreeDigger
         {
             private readonly KeyCacheTree _parent;
 

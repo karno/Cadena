@@ -174,7 +174,7 @@ namespace Cadena.Api.Rest
                 throw new ArgumentOutOfRangeException(nameof(media), "media file must be smaller than 5MB.");
             }
 
-            // check chunkability
+            // check the bit array could be chunked 
             var csize = chunkSize ?? 5 * 1024 * 1024;
             if (media.Length <= csize)
             {

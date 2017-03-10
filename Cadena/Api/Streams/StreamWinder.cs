@@ -32,7 +32,7 @@ namespace Cadena.Api.Streams
 
                     while (true)
                     {
-                        // set read timeout(add epsilon time to timeout (100 msec))
+                        // set read timeout(add epsilon time to timeout (100ms))
                         tokenSource.CancelAfter(readTimeout + TimeSpan.FromTicks(10000 * 100));
 
                         // execute reading next line and await completion

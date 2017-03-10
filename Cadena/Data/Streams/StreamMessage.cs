@@ -13,7 +13,7 @@ namespace Cadena.Data.Streams
         /// <summary>
         /// Initialize stream message.
         /// </summary>
-        /// <param name="timestampMs">serial timestamp (millisec, from 1970/01/01 00:00:00)</param>
+        /// <param name="timestampMs">serial timestamp (millisecond, from 1970/01/01 00:00:00)</param>
         protected StreamMessage(string timestampMs)
             : this(timestampMs.ParseLong())
         {
@@ -22,7 +22,7 @@ namespace Cadena.Data.Streams
         /// <summary>
         /// Initialize stream message.
         /// </summary>
-        /// <param name="timestampMs">serial timestamp (millisec, from 1970/01/01 00:00:00)</param>
+        /// <param name="timestampMs">serial timestamp (millisecond, from 1970/01/01 00:00:00)</param>
         protected StreamMessage(long timestampMs)
         {
             Timestamp = SerialTime.AddMilliseconds(timestampMs).ToLocalTime();
@@ -31,7 +31,7 @@ namespace Cadena.Data.Streams
         /// <summary>
         /// Initialize stream message.
         /// </summary>
-        /// <param name="timestamp">timestamp</param>
+        /// <param name="timestamp">the timestamp for this message</param>
         protected StreamMessage(DateTime timestamp)
         {
             Timestamp = timestamp;

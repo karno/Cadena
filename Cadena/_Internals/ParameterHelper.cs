@@ -83,11 +83,6 @@ namespace Cadena._Internals
             return result.ToString();
         }
 
-        private static string DecodeParameters(string value)
-        {
-            return Uri.UnescapeDataString(value.Replace('+', ' '));
-        }
-
         internal static string JoinString(
             [NotNull] this IEnumerable<string> strings, [NotNull] string separator)
         {

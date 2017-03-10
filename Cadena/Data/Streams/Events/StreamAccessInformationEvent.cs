@@ -36,7 +36,7 @@ namespace Cadena.Data.Streams.Events
 
         public AccessInformation(JsonValue json)
         {
-            Token = json["token"].AsString() ?? String.Empty;
+            Token = json["token"].AsString();
             ClientApplication = new ClientApplication(json["client_application"]);
         }
     }
@@ -57,9 +57,9 @@ namespace Cadena.Data.Streams.Events
         public ClientApplication(JsonValue json)
         {
             Id = json["id"].AsLong();
-            Name = json["name"].AsString() ?? String.Empty;
-            Url = json["url"].AsString() ?? String.Empty;
-            ConsumerKey = json["consumer_key"].AsString() ?? String.Empty;
+            Name = json["name"].AsString();
+            Url = json["url"].AsString();
+            ConsumerKey = json["consumer_key"].AsString();
         }
     }
 

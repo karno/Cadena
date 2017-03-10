@@ -15,7 +15,7 @@ namespace Cadena.Api.Rest
         /// </summary>
         /// <param name="accessor">current configuration of Twitter</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>object represents current configration state of twitter.</returns>
+        /// <returns>object represents current configuration state of twitter.</returns>
         public static async Task<IApiResult<TwitterConfiguration>> GetConfigurationAsync(
             [NotNull] this IApiAccessor accessor, CancellationToken cancellationToken)
         {

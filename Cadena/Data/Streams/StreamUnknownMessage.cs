@@ -13,7 +13,7 @@ namespace Cadena.Data.Streams
     public sealed class StreamUnknownMessage : StreamMessage
     {
         public StreamUnknownMessage(string eventName, string json)
-            : base(DateTime.Now) // Unknown element may not have a timestamp.
+            : base(DateTime.Now) // Unknown element may not have a timestamps.
         {
             EventName = eventName;
             Json = json;

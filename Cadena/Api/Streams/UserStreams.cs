@@ -32,12 +32,12 @@ namespace Cadena.Api.Streams
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (parser == null) throw new ArgumentNullException(nameof(parser));
 
-            // remove empty string and remove duplicates, concat strings
+            // remove empty string and remove duplicates, concatenate strings
             var filteredTracks = tracksOrNull?.Select(t => t?.Trim())
                                               .Where(t => !String.IsNullOrEmpty(t))
                                               .Distinct()
                                               .JoinString(",");
-            // bulid parameter
+            // build parameter
             var param = new Dictionary<string, object>
             {
                 {"track", String.IsNullOrEmpty(filteredTracks) ? null : filteredTracks},

@@ -17,7 +17,7 @@ namespace Cadena.Api.Streams
         Low,
         /// <summary>
         /// Higher filter is applied. This option is suitable for displaying
-        /// tweets for public(e.g. signage, live feeds, conferences, etc.)
+        /// tweets for public(e.g. signages, live feeds, conferences, etc.)
         /// </summary>
         Middle
     }

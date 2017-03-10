@@ -1,7 +1,7 @@
-﻿using System;
-using Cadena.Meteor;
+﻿using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
+using System;
 
 namespace Cadena.Data
 {
@@ -16,9 +16,9 @@ namespace Cadena.Data
             var src = rel["source"];
             var tgt = rel["target"];
             SourceId = src["id_str"].AsString().ParseLong();
-            SourceScreenName = src["screen_name"].AsString() ?? String.Empty;
+            SourceScreenName = src["screen_name"].AsString();
             TargetId = tgt["id_str"].AsString().ParseLong();
-            TargetScreenName = tgt["screen_name"].AsString() ?? String.Empty;
+            TargetScreenName = tgt["screen_name"].AsString();
             IsSourceFollowingTarget = src["following"].AsBoolean();
             IsTargetFollowingSource = src["followed_by"].AsBoolean();
             IsBlocking = src["blocking"].AsBoolean();

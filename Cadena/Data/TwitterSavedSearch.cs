@@ -16,7 +16,7 @@ namespace Cadena.Data
             CreatedAt = json["created_at"].AsString()
                 .ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
             Query = json["query"].AsString().AssertNotNull("json.query could not be null.");
-            Name = json["name"].AsString() ?? Query;
+            Name = json["name"].AsString();
         }
 
         public TwitterSavedSearch(
