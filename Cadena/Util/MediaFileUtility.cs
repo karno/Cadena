@@ -32,15 +32,15 @@ namespace Cadena.Util
                 {SupportedMediaTypes.WebP, Encoding.ASCII.GetBytes("RIFF\0\0\0\0WEBP")},
                 {SupportedMediaTypes.Mp4, Encoding.ASCII.GetBytes("\0\0\0\0ftyp")} // optimistic determination
             };
-            MediaHeaderLength = MediaHeaderTable.Select(kvp => kvp.Value.Length).Max();
             MediaHeaderTable = new ReadOnlyDictionary<SupportedMediaTypes, byte[]>(table);
+            MediaHeaderLength = MediaHeaderTable.Select(kvp => kvp.Value.Length).Max();
         }
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public static SupportedMediaTypes GetMediaType(IEnumerable<byte> media)
         {
             var type = GetMediaTypeCore(media);
-            if (type == SupportedMediaTypes.AnimatedGif)
+            if (type == SupportedMediaTypes.Gif)
             {
                 return CheckMediaIsAnimatedGif(media) ? SupportedMediaTypes.AnimatedGif : SupportedMediaTypes.Gif;
             }
@@ -108,11 +108,14 @@ namespace Cadena.Util
             {
                 case SupportedMediaTypes.Bmp:
                     return MimeTypeBmp;
+
                 case SupportedMediaTypes.Gif:
                 case SupportedMediaTypes.AnimatedGif:
                     return MimeTypeGif;
+
                 case SupportedMediaTypes.Jpeg:
                     return MimeTypeJpeg;
+
                 case SupportedMediaTypes.Png:
                     return MimeTypePng;
 #if WEBP_SUPPORTED
@@ -121,6 +124,7 @@ namespace Cadena.Util
 #endif
                 case SupportedMediaTypes.Mp4:
                     return MimeTypeMp4;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

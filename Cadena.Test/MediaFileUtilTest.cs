@@ -16,11 +16,11 @@ namespace Cadena.Test
             var png = File.ReadAllBytes(dir + "test.png");
             var agif = File.ReadAllBytes(dir + "test_animated.gif");
             var mp4 = File.ReadAllBytes(dir + "test.mp4");
-            Assert.AreEqual(MediaFileUtility.GetMediaType(gif), SupportedMediaTypes.Gif);
-            Assert.AreEqual(MediaFileUtility.GetMediaType(bmp), SupportedMediaTypes.Bmp);
-            Assert.AreEqual(MediaFileUtility.GetMediaType(png), SupportedMediaTypes.Png);
-            Assert.AreEqual(MediaFileUtility.GetMediaType(agif), SupportedMediaTypes.AnimatedGif);
-            Assert.AreEqual(MediaFileUtility.GetMediaType(mp4), SupportedMediaTypes.Mp4);
+            Assert.AreEqual(SupportedMediaTypes.Gif, MediaFileUtility.GetMediaType(gif));
+            Assert.AreEqual(SupportedMediaTypes.Bmp, MediaFileUtility.GetMediaType(bmp));
+            Assert.AreEqual(SupportedMediaTypes.Png, MediaFileUtility.GetMediaType(png));
+            Assert.AreEqual(SupportedMediaTypes.AnimatedGif, MediaFileUtility.GetMediaType(agif));
+            Assert.AreEqual(SupportedMediaTypes.Mp4, MediaFileUtility.GetMediaType(mp4));
         }
     }
 }
