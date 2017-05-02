@@ -17,7 +17,7 @@ namespace Cadena.Meteor
         private readonly KeyCacheTree _cacheTree;
         private readonly IKeyCacheTreeDigger _cacheDigger;
 
-        private JsonValue[] _sharedArray = new JsonValue[16];
+        private readonly JsonValue[] _sharedArray = new JsonValue[16];
         private StringBuilder _sharedStringBuilder = new StringBuilder(StringBufferLength * 4);
 
         protected MeteorJsonParserBase() : this(new KeyCacheTree())
@@ -123,8 +123,38 @@ namespace Cadena.Meteor
                 return JsonArray.Empty;
             }
 
-            // read array content
-            List<JsonValue> items = new List<JsonValue>();
+            // first stage: for smaller arrays
+
+            for (var itemCount = 0; itemCount < SmallArrayLength; itemCount++)
+            {
+                _sharedArray[itemCount] = ReadValue(ref ptr, ref end);
+
+                // read close bracket or comma
+                SkipWhitespaces(ref ptr, ref end);
+
+                if (IsEndOfJson(ref ptr, ref end))
+                {
+                    // not completed
+                    throw CreateException(ptr, "array is not closed.");
+                }
+
+                // if end of array, next letter should be ']'.
+                if (*ptr == ']')
+                {
+                    // end of array
+                    ptr++;
+                    return new JsonArray(_sharedArray, itemCount);
+                }
+
+                // otherwise, next letter should be ','.
+                AssertAndReadNext(ref ptr, ',');
+            }
+
+            // second stage: for longer arrays
+
+            // initialize with contents already read
+            List<JsonValue> items = new List<JsonValue>(_sharedArray);
+
             while (true)
             {
                 items.Add(ReadValue(ref ptr, ref end));
@@ -143,13 +173,12 @@ namespace Cadena.Meteor
                 {
                     // end of array
                     ptr++;
-                    break;
+                    return new JsonArray(items.ToArray());
                 }
 
                 // otherwise, next letter should be ','.
                 AssertAndReadNext(ref ptr, ',');
             }
-            return new JsonArray(items.ToArray());
         }
 
         private JsonObject ReadObject(ref char* ptr, ref char* end)
@@ -406,27 +435,35 @@ namespace Cadena.Meteor
                             case '"':
                                 *bp = '"';
                                 break;
+
                             case '\\':
                                 *bp = '\\';
                                 break;
+
                             case '/':
                                 *bp = '/';
                                 break;
+
                             case 'b':
                                 *bp = '\b';
                                 break;
+
                             case 'f':
                                 *bp = '\f';
                                 break;
+
                             case 'n':
                                 *bp = '\n';
                                 break;
+
                             case 'r':
                                 *bp = '\r';
                                 break;
+
                             case 't':
                                 *bp = '\t';
                                 break;
+
                             case 'u':
                                 // hex unicode
                                 var code = 0;
@@ -541,27 +578,35 @@ namespace Cadena.Meteor
                             case '"':
                                 bp = '"';
                                 break;
+
                             case '\\':
                                 bp = '\\';
                                 break;
+
                             case '/':
                                 bp = '/';
                                 break;
+
                             case 'b':
                                 bp = '\b';
                                 break;
+
                             case 'f':
                                 bp = '\f';
                                 break;
+
                             case 'n':
                                 bp = '\n';
                                 break;
+
                             case 'r':
                                 bp = '\r';
                                 break;
+
                             case 't':
                                 bp = '\t';
                                 break;
+
                             case 'u':
                                 // hex unicode
                                 var code = 0;
@@ -780,6 +825,5 @@ namespace Cadena.Meteor
         protected abstract bool ReadMore(ref char* ptr, ref char* end);
 
         protected abstract JsonParseException CreateException(char* ptr, string message);
-
     }
 }

@@ -22,9 +22,20 @@ namespace Cadena.Meteor
             _values = new JsonValue[0];
         }
 
+        public JsonArray(JsonValue[] values, int counts)
+        {
+            _values = new JsonValue[counts];
+            Array.Copy(values, _values, counts);
+        }
+
         public JsonArray(JsonValue[] values)
         {
             _values = values;
+        }
+
+        public JsonArray(IEnumerable<JsonValue> values)
+        {
+            _values = values.ToArray();
         }
 
         public string[] AsStringArray()
