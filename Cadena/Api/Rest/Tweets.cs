@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
 using Cadena.Meteor;
 using Cadena.Util;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -16,7 +16,6 @@ namespace Cadena.Api.Rest
     public static class Tweets
     {
         #region statuses/show
-
 
         public static async Task<IApiResult<long?>> GetMyRetweetIdOfStatusAsync(
             [NotNull] this IApiAccessor accessor, long id,
@@ -39,7 +38,7 @@ namespace Cadena.Api.Rest
                 }, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/show
 
         #region statuses/retweets/:id
 
@@ -50,10 +49,11 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object> { { "count", count } };
             return await accessor.GetAsync("statuses/retweets/" + id + ".json", param,
-                ResultHandlers.ReadAsUserCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsUserCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/retweets/:id
 
         #region retweeter/ids
 
@@ -71,7 +71,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion retweeter/ids
 
         #region statuses/show
 
@@ -88,7 +88,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/show
 
         #region statuses/update
 
@@ -102,7 +102,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/update
 
         #region media/upload
 
@@ -174,7 +174,7 @@ namespace Cadena.Api.Rest
                 throw new ArgumentOutOfRangeException(nameof(media), "media file must be smaller than 5MB.");
             }
 
-            // check the bit array could be chunked 
+            // check the bit array could be chunked
             var csize = chunkSize ?? 5 * 1024 * 1024;
             if (media.Length <= csize)
             {
@@ -253,7 +253,7 @@ namespace Cadena.Api.Rest
                 }, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion media/upload
 
         #region statuses/destroy/:id
 
@@ -267,7 +267,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/destroy/:id
 
         #region statuses/retweet/:id
 
@@ -281,6 +281,6 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/retweet/:id
     }
 }

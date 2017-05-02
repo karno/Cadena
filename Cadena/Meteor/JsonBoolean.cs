@@ -44,7 +44,6 @@ namespace Cadena.Meteor
         public bool Equals(JsonBoolean other)
         {
             return other?.Value == Value;
-
         }
 
         public override string ToString()

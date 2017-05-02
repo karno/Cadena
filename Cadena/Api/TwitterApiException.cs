@@ -20,7 +20,6 @@ namespace Cadena.Api
             AnalyzeError(out var problemType, out var description);
             ProblemType = problemType;
             Description = description;
-
         }
 
         public TwitterApiException(HttpStatusCode statusCode, string message)
@@ -48,69 +47,82 @@ namespace Cadena.Api
                         description += "Could not authenticate you - " +
                                        "Your call could not be completed as dialed.";
                         return;
+
                     case Api.TwitterErrorCode.PageNotExist:
                         problemType = ProblemType.ProtocolViolation;
                         description += "Sorry, that page does not exist - " +
                                        "the specified resource was not found.";
                         return;
+
                     case Api.TwitterErrorCode.AccountSuspended:
                         problemType = ProblemType.AuthorizationError;
                         description += "Your account is suspended and is not permitted to access this feature - " +
                                        "Corresponds with an HTTP 403 / the access token being used belongs to a suspended user " +
                                        "and they can’t complete the action you’re trying to take";
                         return;
+
                     case Api.TwitterErrorCode.ApiNoLongerSupported:
                         problemType = ProblemType.ProtocolViolation;
                         description += "The Twitter REST API v1 is no longer active - " +
                                        "Please migrate to API v1.1.";
                         return;
+
                     case Api.TwitterErrorCode.RateLimitExceeded:
                         problemType = ProblemType.LimitExceeded;
                         description += "Rate limit exceeded - " +
                                        "The request limit for this resource has been reached for the " +
                                        "current rate limit window.";
                         return;
+
                     case Api.TwitterErrorCode.InvalidOrExpiredToken:
                         problemType = ProblemType.AuthorizationError;
                         description += "Invalid or expired token - " +
                                        "The access token used in the request is incorrect or has expired.";
                         return;
+
                     case Api.TwitterErrorCode.SslRequired:
                         problemType = ProblemType.ProtocolViolation;
                         description += "SSL is required - " +
                                        "Only SSL connections are allowed in the API, you should update your " +
                                        "request to a secure connection.";
                         return;
+
                     case Api.TwitterErrorCode.OverCapacity:
                         problemType = ProblemType.TwitterInfrastructureError;
                         description += "Over capacity - Twitter is temporarily over capacity.";
                         return;
+
                     case Api.TwitterErrorCode.InternalError:
                         problemType = ProblemType.TwitterInfrastructureError;
                         description += "Internal Error - An unknown internal error occurred on Twitter.";
                         return;
+
                     case Api.TwitterErrorCode.InvalidSignature:
                         problemType = ProblemType.AuthorizationError;
                         description += "You have been blocked - " +
                                        "The user associated with the action you are performing has blocked you.";
                         return;
+
                     case Api.TwitterErrorCode.YouHaveBeenBlocked:
                         problemType = ProblemType.InvalidPayload;
                         description += "Could not authenticate you - " +
                                        "it means that your oauth_timestamp is either ahead or behind " +
                                        "our acceptable range. (system time is incorrect?)";
                         return;
+
                     case Api.TwitterErrorCode.TooManyFollow:
                         problemType = ProblemType.LimitExceeded;
                         description += "You are unable to follow more people at this time - " +
                                        "thrown when a user cannot follow another user due to some kind of limit.";
                         return;
+
                     case Api.TwitterErrorCode.AuthorizationRequired:
                         problemType = ProblemType.AuthorizationError;
                         description += "Sorry, you are not authorized to see this status - " +
                                        "thrown when a Tweet cannot be viewed by the authenticating user, " +
                                        "usually due to the tweet’s author having protected their tweets.";
                         return;
+
                     case Api.TwitterErrorCode.StatusUpdateLimit:
                         problemType = ProblemType.LimitExceeded;
                         description += "User is over daily status update limit - " +
@@ -120,23 +132,27 @@ namespace Cadena.Api
                                        "thrown whenever a posting limitation has been reached. Posting allowances " +
                                        "have roaming windows of time of unspecified duration.";
                         return;
+
                     case Api.TwitterErrorCode.StatusDuplicated:
                         problemType = ProblemType.InvalidPayload;
                         description += "Status is a duplicate - " +
                                        "the status text has been Tweeted already by the authenticated account.";
                         return;
+
                     case Api.TwitterErrorCode.BadAuthenticationData:
                         problemType = ProblemType.AuthorizationError;
                         description += "Bad authentication data - " +
                                        "the method requires authentication but it was not presented or was " +
                                        "wholly invalid.";
                         return;
+
                     case Api.TwitterErrorCode.SuspiciousRequest:
                         problemType = ProblemType.AuthorizationError;
                         description += "This request looks like it might be automated - " +
                                        "to protect our users from spam and other malicious activity, we can’t " +
                                        "complete this action right now.";
                         return;
+
                     case Api.TwitterErrorCode.LoginVerificationNeeded:
                         problemType = ProblemType.AuthorizationError;
                         description += "User must verify login - " +
@@ -144,42 +160,50 @@ namespace Cadena.Api
                                        "enabled on their account and needs to be directed to twitter.com to generate " +
                                        "a temporary password.";
                         return;
+
                     case Api.TwitterErrorCode.EndpointGone:
                         problemType = ProblemType.ProtocolViolation;
                         description += "This endpoint has been retired and should not be used - " +
                                        "corresponds to a HTTP request to a retired URL.";
                         return;
+
                     case Api.TwitterErrorCode.ApiPermissionDenined:
                         problemType = ProblemType.AuthorizationError;
                         description += "Application cannot perform write actions - " +
                                        "thrown when the application is restricted from POST, PUT, or DELETE actions.";
                         return;
+
                     case Api.TwitterErrorCode.TryToMuteYourself:
                         problemType = ProblemType.AuthorizationError;
                         description += "You can’t mute yourself - " +
                                        "the authenticated user account cannot mute itself.";
                         return;
+
                     case Api.TwitterErrorCode.CouldNotMute:
                         problemType = ProblemType.AuthorizationError;
                         description += "You are not muting the specified user - " +
                                        "the authenticated user account is not muting the account a call is " +
                                        "attempting to unmute.";
                         return;
+
                     case Api.TwitterErrorCode.DirectMessageTooLong:
                         problemType = ProblemType.AuthorizationError;
                         description += "The text of your direct message is over the max character limit - " +
                                        "the message size exceeds the number of characters permitted in a direct message.";
                         return;
+
                     case Api.TwitterErrorCode.InvalidAttachmentUrl:
                         problemType = ProblemType.InvalidPayload;
                         description += "attachment_url parameter is invalid - " +
                                        "Attachment URL should be a tweet permalink or DM deep link.";
                         return;
+
                     case Api.TwitterErrorCode.ReplyTargetStatusIsDeleted:
                         problemType = ProblemType.InvalidPayload;
                         description += "You attempted to reply to a tweet that is deleted or not visible to you - " +
                                        "A reply can only be sent with reference to an existing public or visible tweet from you.";
                         return;
+
                     case Api.TwitterErrorCode.AttachmentLimitExceeded:
                         problemType = ProblemType.LimitExceeded;
                         description += "The tweet exceeds the number of allowed attachment types - " +
@@ -192,7 +216,7 @@ namespace Cadena.Api
             {
                 case HttpStatusCode.OK: // 200
                 case HttpStatusCode.NotModified: // 304
-                                                 // successfully completed (in TCP/IP protocol)
+                    // successfully completed (in TCP/IP protocol)
                     problemType = ProblemType.Unknown;
                     description += "Request is succeeded, but the exception was thrown. (bug?)";
                     return;
@@ -285,7 +309,8 @@ namespace Cadena.Api
                 var ex = new TwitterApiException(resp.StatusCode, rstr);
                 try
                 {
-                    if (json.ContainsKey("errors") && json["errors"][0].ContainsKey("code") && json["errors"][0].ContainsKey("message"))
+                    if (json.ContainsKey("errors") && json["errors"][0].ContainsKey("code") &&
+                        json["errors"][0].ContainsKey("message"))
                     {
                         ex = new TwitterApiException(resp.StatusCode,
                             json["errors"][0]["message"].AsString(),

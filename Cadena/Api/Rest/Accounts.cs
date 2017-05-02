@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -27,7 +27,7 @@ namespace Cadena.Api.Rest
                 param, ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion account/verify_accesss
 
         #region account/update_profile
 
@@ -49,7 +49,7 @@ namespace Cadena.Api.Rest
                 param, ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion account/update_profile
 
         #region account/update_profile_image
 
@@ -68,6 +68,6 @@ namespace Cadena.Api.Rest
                 content, ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion account/update_profile_image
     }
 }

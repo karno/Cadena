@@ -18,11 +18,9 @@ namespace Cadena.Engine.CyclicReceivers
             [CanBeNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target)
             : base(exceptionHandler)
         {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-            if (target == null) throw new ArgumentNullException(nameof(target));
             _accessor = accessor;
-            _handler = handler;
-            _target = target;
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+            _target = target ?? throw new ArgumentNullException(nameof(target));
         }
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)

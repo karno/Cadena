@@ -58,7 +58,7 @@ namespace Cadena.Util
             return rt.ToString();
         }
 
-        const string AllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+        private const string AllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
         /// <summary>
         /// Encode URL (with OAuth format)
@@ -121,9 +121,11 @@ namespace Cadena.Util
                             int.Parse(
                                 s[++i].ToString() + s[++i], NumberStyles.HexNumber));
                         break;
+
                     case '+':
                         bytes.Add(0x20);
                         break;
+
                     default:
                         bytes.Add((byte)c);
                         break;
@@ -159,9 +161,11 @@ namespace Cadena.Util
                 case ImageSize.Normal:
                     body += "_normal";
                     break;
+
                 case ImageSize.Bigger:
                     body += "_bigger";
                     break;
+
                 case ImageSize.Mini:
                     body += "_mini";
                     break;
@@ -200,14 +204,17 @@ namespace Cadena.Util
         /// normal size, 48x48
         /// </summary>
         Normal,
+
         /// <summary>
         /// larger size, 73x73
         /// </summary>
         Bigger,
+
         /// <summary>
         /// Mini size, 24x24
         /// </summary>
         Mini,
+
         /// <summary>
         /// Original size, high resolution
         /// </summary>

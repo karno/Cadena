@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest

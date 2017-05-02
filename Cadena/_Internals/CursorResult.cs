@@ -36,15 +36,9 @@ namespace Cadena._Internals
 
             public long NextCursor { get; }
 
-            public bool CanReadPrevious
-            {
-                get { return PreviousCursor != 0; }
-            }
+            public bool CanReadPrevious => PreviousCursor != 0;
 
-            public bool CanReadNext
-            {
-                get { return NextCursor != 0; }
-            }
+            public bool CanReadNext => NextCursor != 0;
         }
     }
 }

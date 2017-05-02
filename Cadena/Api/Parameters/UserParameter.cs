@@ -3,7 +3,7 @@
 namespace Cadena.Api.Parameters
 {
     /// <summary>
-    /// Describes parameter of twitter user 
+    /// Describes parameter of twitter user
     /// </summary>
     public sealed class UserParameter : ParameterBase
     {

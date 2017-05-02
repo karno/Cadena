@@ -14,7 +14,7 @@ namespace Cadena.Data
         {
             Id = json["id_str"].AsString().ParseLong();
             CreatedAt = json["created_at"].AsString()
-                .ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
+                                          .ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
             Query = json["query"].AsString().AssertNotNull("json.query could not be null.");
             Name = json["name"].AsString();
         }
@@ -22,12 +22,10 @@ namespace Cadena.Data
         public TwitterSavedSearch(
             long id, DateTime createdAt, [NotNull] string query, [NotNull] string name)
         {
-            if (query == null) throw new ArgumentNullException(nameof(query));
-            if (name == null) throw new ArgumentNullException(nameof(name));
             Id = id;
             CreatedAt = createdAt;
-            Query = query;
-            Name = name;
+            Query = query ?? throw new ArgumentNullException(nameof(query));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         /// <summary>

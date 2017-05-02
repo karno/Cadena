@@ -18,8 +18,7 @@ namespace Cadena.Engine.Requests
 
         public FavoriteRequest([NotNull] IApiAccessor accessor, long targetTweetId, bool createFavorite)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            Accessor = accessor;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             TargetTweetId = targetTweetId;
             CreateFavorite = createFavorite;
         }

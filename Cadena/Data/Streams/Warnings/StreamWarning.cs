@@ -1,5 +1,4 @@
-﻿
-namespace Cadena.Data.Streams.Warnings
+﻿namespace Cadena.Data.Streams.Warnings
 {
     /// <summary>
     /// Describes general twitter stream warning.

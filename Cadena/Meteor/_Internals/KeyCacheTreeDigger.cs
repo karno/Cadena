@@ -2,7 +2,6 @@
 {
     internal interface IKeyCacheTreeDigger
     {
-
         int ItemValidLength { get; }
 
         string PointingItem { get; }

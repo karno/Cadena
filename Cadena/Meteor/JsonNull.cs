@@ -16,7 +16,6 @@ namespace Cadena.Meteor
      *     json["foo"]["bar"]["bazz"].AsArray()?.AsLongArray() ?? new long[0];
      */
 
-
     public sealed class JsonNull : JsonValue, IEquatable<JsonNull>
     {
         public static readonly JsonNull Null = new JsonNull();

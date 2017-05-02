@@ -7,7 +7,7 @@ namespace Cadena.Data.Streams
     /// </summary>
     /// <remarks>
     /// This message indicates: Anomaly could not handle this event.
-    /// 
+    ///
     /// This element is supported by: (generic) streams, user streams, site streams
     /// </remarks>
     public sealed class StreamUnknownMessage : StreamMessage

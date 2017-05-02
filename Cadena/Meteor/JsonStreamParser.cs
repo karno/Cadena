@@ -6,7 +6,7 @@ namespace Cadena.Meteor
 {
     public sealed class JsonStreamParser : MeteorJsonParserBase, IDisposable
     {
-        const int BufferSize = 2048;
+        private const int BufferSize = 2048;
 
         private readonly StreamReader _reader;
 
@@ -21,7 +21,6 @@ namespace Cadena.Meteor
         public JsonStreamParser(Stream stream, Encoding encoding)
             : this(new StreamReader(stream, encoding))
         {
-
         }
 
         public JsonStreamParser(StreamReader reader)

@@ -23,12 +23,15 @@ namespace Cadena.Data.Entities
                 case "photo":
                     MediaType = MediaType.Photo;
                     break;
+
                 case "video":
                     MediaType = MediaType.Video;
                     break;
+
                 case "animated_gif":
                     MediaType = MediaType.AnimatedGif;
                     break;
+
                 default:
                     MediaType = MediaType.Unknown;
                     break;
@@ -59,7 +62,6 @@ namespace Cadena.Data.Entities
             [CanBeNull] VideoInfo videoInfo)
             : base(indices)
         {
-            if (mediaSizes == null) throw new ArgumentNullException(nameof(mediaSizes));
             Id = id;
             MediaUrl = mediaUrl;
             MediaUrlHttps = mediaUrlHttps;
@@ -67,7 +69,7 @@ namespace Cadena.Data.Entities
             DisplayUrl = displayUrl;
             ExpandedUrl = expandedUrl;
             MediaType = mediaType;
-            MediaSizes = mediaSizes;
+            MediaSizes = mediaSizes ?? throw new ArgumentNullException(nameof(mediaSizes));
             VideoInfo = videoInfo;
         }
 
@@ -120,9 +122,11 @@ namespace Cadena.Data.Entities
                 case "crop":
                     Resize = MediaResizeMode.Crop;
                     break;
+
                 case "fit":
                     Resize = MediaResizeMode.Fit;
                     break;
+
                 default:
                     Resize = MediaResizeMode.Unknown;
                     break;
@@ -239,7 +243,6 @@ namespace Cadena.Data.Entities
 
         [NotNull]
         public string Url { get; }
-
     }
 
     public enum VideoContentType

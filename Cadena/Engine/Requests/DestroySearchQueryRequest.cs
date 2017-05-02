@@ -16,8 +16,7 @@ namespace Cadena.Engine.Requests
 
         public DestroySearchQueryRequest([NotNull] IApiAccessor accessor, long id)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            Accessor = accessor;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             Id = id;
         }
 

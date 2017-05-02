@@ -34,9 +34,9 @@ namespace Cadena.Api.Streams
 
             // remove empty string and remove duplicates, concatenate strings
             var filteredTracks = tracksOrNull?.Select(t => t?.Trim())
-                                              .Where(t => !String.IsNullOrEmpty(t))
-                                              .Distinct()
-                                              .JoinString(",");
+                                             .Where(t => !String.IsNullOrEmpty(t))
+                                             .Distinct()
+                                             .JoinString(",");
             // build parameter
             var param = new Dictionary<string, object>
             {

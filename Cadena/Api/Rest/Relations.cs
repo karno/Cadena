@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -27,7 +27,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion friends/ids
 
         #region followers/ids
 
@@ -45,7 +45,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion followers/ids
 
         #region friendships/no_retweets/ids
 
@@ -55,10 +55,11 @@ namespace Cadena.Api.Rest
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             return await accessor.GetAsync("friendships/no_retweets/ids.json",
-                new Dictionary<string, object>(), ResultHandlers.ReadAsIdCollectionAsync, cancellationToken).ConfigureAwait(false);
+                new Dictionary<string, object>(), ResultHandlers.ReadAsIdCollectionAsync,
+                cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion friendships/no_retweets/ids
 
         #region mutes/users/ids
 
@@ -75,7 +76,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion mutes/users/ids
 
         #region friendships/create
 
@@ -89,7 +90,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion friendships/create
 
         #region friendships/destroy
 
@@ -103,9 +104,9 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion friendships/destroy
 
-        #region friendships/show 
+        #region friendships/show
 
         public static async Task<IApiResult<TwitterFriendship>> ShowFriendshipAsync(
             [NotNull] this IApiAccessor accessor,
@@ -121,7 +122,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsFriendshipAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion friendships/show
 
         #region friendships/update
 
@@ -142,7 +143,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsFriendshipAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion friendships/update
 
         #region mutes/users/[create|destroy]
 
@@ -157,7 +158,6 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion mutes/users/[create|destroy]
     }
 }
-

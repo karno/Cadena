@@ -81,7 +81,6 @@ namespace Cadena.Meteor._Internals
             pick.IsBlack = node.IsBlack;
             node.IsBlack = false;
             return pick;
-
         }
 
         private KeyCacheTreeNode RotateRight(KeyCacheTreeNode node)
@@ -120,7 +119,7 @@ namespace Cadena.Meteor._Internals
             Count = 0;
         }
 
-        sealed class KeyCacheTreeDigger : IKeyCacheTreeDigger
+        private sealed class KeyCacheTreeDigger : IKeyCacheTreeDigger
         {
             private readonly KeyCacheTree _parent;
 

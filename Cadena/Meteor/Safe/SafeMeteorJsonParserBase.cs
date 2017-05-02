@@ -8,7 +8,7 @@ namespace Cadena.Meteor.Safe
 {
     public abstract class SafeMeteorJsonParserBase
     {
-        const int StringBufferLength = 64;
+        private const int StringBufferLength = 64;
 
         /// <summary>
         /// Read value.
@@ -216,27 +216,35 @@ namespace Cadena.Meteor.Safe
                             case '"':
                                 strbuf[bp] = '"';
                                 break;
+
                             case '\\':
                                 strbuf[bp] = '\\';
                                 break;
+
                             case '/':
                                 strbuf[bp] = '/';
                                 break;
+
                             case 'b':
                                 strbuf[bp] = '\b';
                                 break;
+
                             case 'f':
                                 strbuf[bp] = '\f';
                                 break;
+
                             case 'n':
                                 strbuf[bp] = '\n';
                                 break;
+
                             case 'r':
                                 strbuf[bp] = '\r';
                                 break;
+
                             case 't':
                                 strbuf[bp] = '\t';
                                 break;
+
                             case 'u':
                                 // hex unicode
                                 var code = 0;
@@ -324,7 +332,7 @@ namespace Cadena.Meteor.Safe
             // read sign
             if (buffer[index] == '-' || buffer[index] == '+')
             {
-                // RFC7159 says sign is only for '-', but twitter sometime returns stupid JSON. 
+                // RFC7159 says sign is only for '-', but twitter sometime returns stupid JSON.
                 // So we also check '+' sign.
                 isNegative = buffer[index] == '-';
                 index++;
@@ -335,7 +343,7 @@ namespace Cadena.Meteor.Safe
             // otherwise, parent don't call this method.
             AssertDigit(ref buffer, ref index, ref length, "number is required after the sign.");
 
-            // read main int 
+            // read main int
             var longValue = ReadInteger(ref buffer, ref index, ref length);
             // read frac
             if (!IsEndOfJson(ref buffer, ref index, ref length) && buffer[index] == '.')
@@ -563,6 +571,5 @@ namespace Cadena.Meteor.Safe
         protected abstract bool ReadMore(ref char[] buffer, ref int index, ref int length);
 
         protected abstract JsonParseException CreateException(char[] buffer, int index, string message);
-
     }
 }

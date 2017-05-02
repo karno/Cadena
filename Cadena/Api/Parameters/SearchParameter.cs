@@ -28,8 +28,8 @@ namespace Cadena.Api.Parameters
         public long? MaxId { get; }
 
         public SearchParameter([NotNull] string query, SearchResultType resultType = SearchResultType.Mixed,
-           [CanBeNull] string geoCode = null, [CanBeNull] string lang = null, [CanBeNull] string locale = null,
-           int? count = null, DateTime? untilDate = null, long? sinceId = null, long? maxId = null)
+            [CanBeNull] string geoCode = null, [CanBeNull] string lang = null, [CanBeNull] string locale = null,
+            int? count = null, DateTime? untilDate = null, long? sinceId = null, long? maxId = null)
         {
             _query = query;
             ResultType = resultType;
@@ -47,11 +47,7 @@ namespace Cadena.Api.Parameters
         public string Query
         {
             get { return _query; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _query = value;
-            }
+            set { _query = value ?? throw new ArgumentNullException(nameof(value)); }
         }
 
         public override void SetDictionary(IDictionary<string, object> target)
@@ -67,7 +63,6 @@ namespace Cadena.Api.Parameters
             target["max_id"] = MaxId;
         }
     }
-
 
     public enum SearchResultType
     {

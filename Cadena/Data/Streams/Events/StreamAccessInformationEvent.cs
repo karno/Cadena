@@ -18,8 +18,10 @@ namespace Cadena.Data.Streams.Events
             {
                 case "access_revoked":
                     return AccessInformationEvents.AccessRevoked;
+
                 case "access_unrevoked":
                     return AccessInformationEvents.AccessUnrevoked;
+
                 default:
                     return AccessInformationEvents.Unknown;
             }

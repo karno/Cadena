@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -21,10 +21,11 @@ namespace Cadena.Api.Rest
             if (query == null) throw new ArgumentNullException(nameof(query));
 
             return await accessor.GetAsync("search/tweets.json", query.ToDictionary().SetExtended(),
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion search/tweets
 
         #region saved_searches/list
 
@@ -33,10 +34,11 @@ namespace Cadena.Api.Rest
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             return await accessor.GetAsync("saved_searches/list.json", new Dictionary<string, object>(),
-                ResultHandlers.ReadAsSavedSearchCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsSavedSearchCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion saved_searches/list
 
         #region saved_searches/create
 
@@ -54,7 +56,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsSavedSearchAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion saved_searches/create
 
         #region saved_searches/destroy
 
@@ -64,10 +66,11 @@ namespace Cadena.Api.Rest
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             return await accessor.PostAsync("saved_searches/destroy/" + id + ".json",
-                new Dictionary<string, object>(), ResultHandlers.ReadAsSavedSearchAsync, cancellationToken)
-                                   .ConfigureAwait(false);
+                                     new Dictionary<string, object>(), ResultHandlers.ReadAsSavedSearchAsync,
+                                     cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion saved_searches/destroy
     }
 }

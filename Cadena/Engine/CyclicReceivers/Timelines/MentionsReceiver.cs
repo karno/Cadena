@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Rest;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers.Timelines
@@ -18,8 +18,7 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
             [CanBeNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)
             : base(handler, exceptionHandler)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            _accessor = accessor;
+            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             _receiveCount = receiveCount;
             _includeRetweets = includeRetweets;
         }

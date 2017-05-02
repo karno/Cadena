@@ -1,4 +1,5 @@
-﻿using Cadena.Meteor;
+﻿using System;
+using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
 
@@ -25,12 +26,12 @@ namespace Cadena.Data
         }
 
         public TwitterUploadedMedia(long mediaId, long? expireAfterSecs, long? size,
-            TwitterUploadedMediaPayload payload)
+            [NotNull] TwitterUploadedMediaPayload payload)
         {
             MediaId = mediaId;
             ExpireAfterSecs = expireAfterSecs;
             Size = size;
-            Payload = payload;
+            Payload = payload ?? throw new ArgumentNullException(nameof(payload));
         }
 
         public long MediaId { get; }
@@ -42,7 +43,9 @@ namespace Cadena.Data
         public TwitterUploadedMediaPayload Payload { get; }
     }
 
-    public abstract class TwitterUploadedMediaPayload { }
+    public abstract class TwitterUploadedMediaPayload
+    {
+    }
 
     public class TwitterUploadedPhotoPayload : TwitterUploadedMediaPayload
     {

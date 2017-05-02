@@ -17,22 +17,13 @@ namespace Cadena.Meteor
 
         public virtual bool IsNull { get; } = false;
 
-        public virtual int Count
-        {
-            get { throw new NotSupportedException(); }
-        }
+        public virtual int Count => throw new NotSupportedException();
 
         [NotNull]
-        public JsonValue this[int index]
-        {
-            get { return GetValue(index); }
-        }
+        public JsonValue this[int index] => GetValue(index);
 
         [NotNull]
-        public JsonValue this[string key]
-        {
-            get { return GetValue(key); }
-        }
+        public JsonValue this[string key] => GetValue(key);
 
         public virtual bool ContainsKey([NotNull] string key)
         {
@@ -128,7 +119,6 @@ namespace Cadena.Meteor
             return (int?)AsLongOrNull();
         }
 
-
         public virtual double? AsDoubleOrNull()
         {
             return null;
@@ -138,7 +128,6 @@ namespace Cadena.Meteor
         {
             return null;
         }
-
 
         #region overriding comparators
 
@@ -160,6 +149,6 @@ namespace Cadena.Meteor
             return !(left == right);
         }
 
-        #endregion
+        #endregion overriding comparators
     }
 }

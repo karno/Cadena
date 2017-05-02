@@ -31,8 +31,7 @@ namespace Cadena.Api.Parameters
             [CanBeNull] string placeId = null, bool? displayCoordinates = null,
             [CanBeNull] long[] mediaIds = null, [CanBeNull] string attachmentUrl = null)
         {
-            if (status == null) throw new ArgumentNullException(nameof(status));
-            Status = status;
+            Status = status ?? throw new ArgumentNullException(nameof(status));
             InReplyToStatusId = inReplyToStatusId;
             AutoPopulateReplyMetadata = inReplyToStatusId != null;
             PossiblySensitive = possiblySensitive;

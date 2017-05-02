@@ -29,7 +29,7 @@ namespace Cadena.Engine.StreamReceivers
 
         private const int NetworkErrorMaxWait = 16000; // 16 sec
 
-        #endregion
+        #endregion error handling/backoff constants
 
         private readonly IApiAccessor _accessor;
         private readonly IStreamHandler _handler;
@@ -70,7 +70,7 @@ namespace Cadena.Engine.StreamReceivers
         /// </summary>
         public StreamFilterLevel StreamFilterLevel { get; set; }
 
-        #endregion
+        #endregion User Stream properties
 
         public UserStreamReceiver(IApiAccessor accessor, IStreamHandler handler)
         {
@@ -95,8 +95,8 @@ namespace Cadena.Engine.StreamReceivers
                 try
                 {
                     await UserStreams.ConnectAsync(_accessor, ParseLine, _userStreamTimeout, cancellationToken,
-                        TrackKeywords, StallWarnings, StreamFilterLevel,
-                        RepliesAll, IncludeFollowingsActivities)
+                                         TrackKeywords, StallWarnings, StreamFilterLevel,
+                                         RepliesAll, IncludeFollowingsActivities)
                                      .ConfigureAwait(false);
                 }
                 catch (Exception ex)
@@ -144,6 +144,7 @@ namespace Cadena.Engine.StreamReceivers
                             return false;
                         }
                         break;
+
                     case HttpStatusCode.Forbidden:
                     case HttpStatusCode.NotFound:
                         Log("Endpoint not found / not accessible.");
@@ -152,13 +153,16 @@ namespace Cadena.Engine.StreamReceivers
                             return false;
                         }
                         break;
+
                     case HttpStatusCode.NotAcceptable:
                     case HttpStatusCode.RequestEntityTooLarge:
                         Log("Specified argument could not be accepted.");
                         return false;
+
                     case HttpStatusCode.RequestedRangeNotSatisfiable:
                         Log("Permission denied / Parameter out var of range");
                         return false;
+
                     case (HttpStatusCode)420: // Too many connections
                         Log("Too many connections are established.");
                         return false;

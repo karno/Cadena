@@ -98,7 +98,6 @@ namespace Cadena.Engine.Requests
             return bt.ResultTask;
         }
 
-
         /// <summary>
         /// Enqueue new *typed* task.
         /// If this batch was completed its execution already, will throws exception.
@@ -179,7 +178,6 @@ namespace Cadena.Engine.Requests
             return bt.ResultTask;
         }
 
-
         public IEnumerator<IRequest> GetEnumerator()
         {
             lock (_requestQueue)
@@ -223,7 +221,7 @@ namespace Cadena.Engine.Requests
         /// <remarks>
         /// This interface is equal to IRequest, but we should not merge them
         /// so not as to raise confusing.
-        /// (We can distinguish pure request task and batched request task easily 
+        /// (We can distinguish pure request task and batched request task easily
         ///  if the type tree is completely separated.)
         /// </remarks>
         private interface IBatchedRequest

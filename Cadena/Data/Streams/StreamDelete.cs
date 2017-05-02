@@ -5,7 +5,7 @@
     /// </summary>
     /// <remarks>
     /// This message indicates: specified tweet was deleted.
-    /// 
+    ///
     /// This element is supported by: (generic) streams, user streams, site streams.
     /// </remarks>
     public sealed class StreamDelete : StreamMessage

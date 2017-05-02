@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -22,7 +22,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion blocks/ids
 
         #region blocks/create
 
@@ -36,7 +36,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion blocks/create
 
         #region blocks/destroy
 
@@ -50,7 +50,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion blocks/destroy
 
         #region users/report_spam
 
@@ -64,6 +64,6 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion users/report_spam
     }
 }

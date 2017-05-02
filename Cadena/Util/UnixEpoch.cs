@@ -4,7 +4,7 @@ namespace Cadena.Util
 {
     public static class UnixEpoch
     {
-        const long Epoch = 621355968000000000;
+        private const long Epoch = 621355968000000000;
 
         /// <summary>
         /// Get Unix epoch from DateTime

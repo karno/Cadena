@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Cadena._Internals
 {
-    // see also: 
+    // see also:
     // this source is referenced coreclr/StreamReader.cs, (C)Microsoft.
     // https://github.com/dotnet/coreclr/blob/master/src/mscorlib/src/System/IO/StreamReader.cs
     // --------------------------------------------------------------------------------

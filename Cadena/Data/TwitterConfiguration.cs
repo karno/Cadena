@@ -24,9 +24,8 @@ namespace Cadena.Data
             int charactersReservedPerMedia, [NotNull] string[] nonUserPaths,
             int photoSizeLimit, int shortUrlLength, int shortUrlLengthHttps)
         {
-            if (nonUserPaths == null) throw new ArgumentNullException(nameof(nonUserPaths));
             CharactersReservedPerMedia = charactersReservedPerMedia;
-            NonUserPaths = nonUserPaths;
+            NonUserPaths = nonUserPaths ?? throw new ArgumentNullException(nameof(nonUserPaths));
             PhotoSizeLimit = photoSizeLimit;
             ShortUrlLength = shortUrlLength;
             ShortUrlLengthHttps = shortUrlLengthHttps;

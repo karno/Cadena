@@ -5,7 +5,7 @@
     /// </summary>
     /// <remarks>
     /// This message indicates: events about twitter users
-    /// 
+    ///
     /// This element is supported by: user streams, site streams
     /// </remarks>
     public class StreamWithheld : StreamMessage

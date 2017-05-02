@@ -31,17 +31,12 @@ namespace Cadena.Data
             [NotNull] Uri uri, [NotNull] string slug, ListMode mode, [CanBeNull] string description,
             long memberCount, long subscriberCount, DateTime createdAt)
         {
-            if (user == null) throw new ArgumentNullException(nameof(user));
-            if (name == null) throw new ArgumentNullException(nameof(name));
-            if (fullName == null) throw new ArgumentNullException(nameof(fullName));
-            if (uri == null) throw new ArgumentNullException(nameof(uri));
-            if (slug == null) throw new ArgumentNullException(nameof(slug));
             Id = id;
-            User = user;
-            Name = name;
-            FullName = fullName;
-            Uri = uri;
-            Slug = slug;
+            User = user ?? throw new ArgumentNullException(nameof(user));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
+            Uri = uri ?? throw new ArgumentNullException(nameof(uri));
+            Slug = slug ?? throw new ArgumentNullException(nameof(slug));
             ListMode = mode;
             Description = description ?? String.Empty;
             MemberCount = memberCount;

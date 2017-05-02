@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Api.Rest;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers
@@ -17,10 +17,8 @@ namespace Cadena.Engine.CyclicReceivers
         public OwnedListsInfoReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<TwitterList> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(exceptionHandler)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-            _accessor = accessor;
-            _handler = handler;
+            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)

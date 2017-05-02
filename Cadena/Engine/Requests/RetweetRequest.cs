@@ -16,8 +16,7 @@ namespace Cadena.Engine.Requests
 
         public RetweetRequest([NotNull] IApiAccessor accessor, long targetId)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            Accessor = accessor;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             TargetId = targetId;
         }
 

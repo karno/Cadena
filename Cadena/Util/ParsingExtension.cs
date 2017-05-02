@@ -155,8 +155,8 @@ namespace Cadena.Util
             return text
                 // .Replace("&quot;", "\"")
                 ?.Replace("&lt;", "<")
-                 .Replace("&gt;", ">")
-                 .Replace("&amp;", "&");
+                .Replace("&gt;", ">")
+                .Replace("&amp;", "&");
         }
 
         /// <summary>
@@ -167,10 +167,9 @@ namespace Cadena.Util
         {
             return text
                 ?.Replace("&", "&amp;")
-                 .Replace(">", "&gt;")
-                 .Replace("<", "&lt;");
+                .Replace(">", "&gt;")
+                .Replace("<", "&lt;");
             // .Replace("\"", "&quot;")
         }
     }
 }
-

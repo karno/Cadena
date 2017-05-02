@@ -12,8 +12,7 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
         protected CyclicTimelineReceiverBase([NotNull] Action<TwitterStatus> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(exceptionHandler)
         {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-            _handler = handler;
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
 
         protected void CallHandler(TwitterStatus status)

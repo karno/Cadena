@@ -14,4 +14,3 @@ namespace Cadena.Engine
         Task<TimeSpan> ExecuteAsync(CancellationToken token);
     }
 }
-

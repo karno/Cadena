@@ -6,7 +6,7 @@ namespace Cadena.Meteor.Safe
 {
     public sealed class SafeJsonStreamParser : SafeMeteorJsonParserBase, IDisposable
     {
-        const int BufferSize = 2048;
+        private const int BufferSize = 2048;
 
         private readonly StreamReader _reader;
 
@@ -18,7 +18,6 @@ namespace Cadena.Meteor.Safe
         public SafeJsonStreamParser(Stream stream, Encoding encoding)
             : this(new StreamReader(stream, encoding))
         {
-
         }
 
         public SafeJsonStreamParser(StreamReader reader)
@@ -43,7 +42,6 @@ namespace Cadena.Meteor.Safe
             }
             // return result
             return value;
-
         }
 
         public void Dispose()

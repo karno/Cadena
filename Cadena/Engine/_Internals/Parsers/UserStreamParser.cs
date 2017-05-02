@@ -12,10 +12,10 @@ namespace Cadena.Engine._Internals.Parsers
 {
     internal static class UserStreamParser
     {
-        const string EventSourceKey = "source";
-        const string EventTargetKey = "target";
-        const string EventCreatedAtKey = "target";
-        const string EventTargetObjectKey = "target_object";
+        private const string EventSourceKey = "source";
+        private const string EventTargetKey = "target";
+        private const string EventCreatedAtKey = "target";
+        private const string EventTargetObjectKey = "target_object";
 
         /// <summary>
         /// Parse streamed JSON line
@@ -57,8 +57,6 @@ namespace Cadena.Engine._Internals.Parsers
         /// <param name="handler">result handler</param>
         public static void ParseStreamLine(JsonValue graph, IStreamHandler handler)
         {
-
-
             try
             {
                 // element.foo() -> element.IsDefined("foo")
@@ -93,7 +91,7 @@ namespace Cadena.Engine._Internals.Parsers
                     return;
                 }
 
-                var @event = graph["event"].AsString();
+                var @event = graph["event"].AsStringOrNull();
                 if (@event != null)
                 {
                     ParseStreamEvent(@event.ToLower(), graph, handler);
@@ -149,6 +147,7 @@ namespace Cadena.Engine._Internals.Parsers
                         handler.OnMessage(new StreamStatusEvent(source, target,
                             new TwitterStatus(graph[EventTargetObjectKey]), ev, timestamp));
                         break;
+
                     case "block":
                     case "unblock":
                     case "follow":
@@ -161,6 +160,7 @@ namespace Cadena.Engine._Internals.Parsers
                         handler.OnMessage(new StreamUserEvent(source, target,
                             ev, timestamp));
                         break;
+
                     case "list_created":
                     case "list_destroyed":
                     case "list_updated":
@@ -171,6 +171,7 @@ namespace Cadena.Engine._Internals.Parsers
                         handler.OnMessage(new StreamListEvent(source, target,
                             new TwitterList(graph[EventTargetObjectKey]), ev, timestamp));
                         break;
+
                     case "access_revoked":
                     case "access_unrevoked":
                         handler.OnMessage(new StreamAccessInformationEvent(source, target,

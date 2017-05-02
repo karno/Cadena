@@ -23,14 +23,12 @@ namespace Cadena.Engine.Requests
         public UpdateFriendshipRequest([NotNull] IApiAccessor accessor, [NotNull] UserParameter param,
             bool? deviceNotifications, bool? showRetweets)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (param == null) throw new ArgumentNullException(nameof(param));
             if (deviceNotifications == null && showRetweets == null)
             {
                 throw new ArgumentException("deviceNotifications or showRetweets must be specified.");
             }
-            Accessor = accessor;
-            TargetUser = param;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            TargetUser = param ?? throw new ArgumentNullException(nameof(param));
             DeviceNotifications = deviceNotifications;
             ShowRetweets = showRetweets;
         }

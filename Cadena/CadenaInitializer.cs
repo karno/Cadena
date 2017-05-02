@@ -12,7 +12,13 @@ namespace Cadena
             // set ServicePointManager properties.
             ServicePointManager.Expect100Continue = false;
             ServicePointManager.DefaultConnectionLimit = Int32.MaxValue;
-            OAuthUtility.ComputeHash = (key, buffer) => { using (var hmac = new HMACSHA1(key)) { return hmac.ComputeHash(buffer); } };
+            OAuthUtility.ComputeHash = (key, buffer) =>
+            {
+                using (var hmac = new HMACSHA1(key))
+                {
+                    return hmac.ComputeHash(buffer);
+                }
+            };
         }
     }
 }

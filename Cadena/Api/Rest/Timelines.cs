@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -25,10 +25,11 @@ namespace Cadena.Api.Rest
                 {"max_id", maxId}
             }.SetExtended();
             return await accessor.GetAsync("statuses/home_timeline.json", param,
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/home_timeline
 
         #region statuses/user_timeline
 
@@ -40,18 +41,19 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             if (targetUser == null) throw new ArgumentNullException(nameof(targetUser));
             var param = new Dictionary<string, object>
-                {
-                    {"since_id", sinceId},
-                    {"max_id", maxId},
-                    {"count", count},
-                    {"exclude_replies", excludeReplies},
-                    {"include_rts", includeRetweets},
-                }.ApplyParameter(targetUser).SetExtended();
+            {
+                {"since_id", sinceId},
+                {"max_id", maxId},
+                {"count", count},
+                {"exclude_replies", excludeReplies},
+                {"include_rts", includeRetweets},
+            }.ApplyParameter(targetUser).SetExtended();
             return await accessor.GetAsync("statuses/user_timeline.json", param,
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/user_timeline
 
         #region statuses/mentions_timeline
 
@@ -69,10 +71,11 @@ namespace Cadena.Api.Rest
                 {"include_rts", includeRetweets},
             }.SetExtended();
             return await accessor.GetAsync("statuses/mentions_timeline.json", param,
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/mentions_timeline
 
         #region statuses/retweets_of_me
 
@@ -88,9 +91,10 @@ namespace Cadena.Api.Rest
                 {"max_id", maxId},
             }.SetExtended();
             return await accessor.GetAsync("statuses/retweets_of_me.json", param,
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion statuses/retweets_of_me
     }
 }

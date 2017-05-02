@@ -15,14 +15,13 @@ namespace Cadena.Engine.CyclicReceivers.Relations
         public MutesReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(handler, exceptionHandler)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            _accessor = accessor;
+            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
         }
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)
         {
             var result = await RetrieveCursoredResult(_accessor,
-                (a, i) => a.GetMuteIdsAsync(i, token), CallExceptionHandler, token)
+                    (a, i) => a.GetMuteIdsAsync(i, token), CallExceptionHandler, token)
                 .ConfigureAwait(false);
             CallHandler(result.Result);
             return result.RateLimit;

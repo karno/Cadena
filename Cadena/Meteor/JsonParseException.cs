@@ -9,6 +9,7 @@ namespace Cadena.Meteor
     {
         [DataMember]
         private readonly string _json;
+
         [DataMember]
         private readonly long _index;
 

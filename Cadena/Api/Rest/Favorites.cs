@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -26,10 +26,11 @@ namespace Cadena.Api.Rest
                 {"max_id", maxId},
             }.ApplyParameter(targetUser).SetExtended();
             return await accessor.GetAsync("favorites/list.json", param,
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion favorites/list
 
         #region favorites/create
 
@@ -46,7 +47,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion favorites/create
 
         #region favorites/destroy
 
@@ -63,6 +64,6 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion favorites/destroy
     }
 }

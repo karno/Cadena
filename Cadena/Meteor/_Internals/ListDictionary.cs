@@ -7,8 +7,8 @@ namespace Cadena.Meteor._Internals
     public class ListDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly int _capacity;
-        readonly TKey[] _keys;
-        readonly TValue[] _values;
+        private readonly TKey[] _keys;
+        private readonly TValue[] _values;
 
         private int _count;
 
@@ -67,6 +67,7 @@ namespace Cadena.Meteor._Internals
 
         public int Count => _count;
         public bool IsReadOnly => false;
+
         public bool ContainsKey(TKey key)
         {
             for (var i = 0; i < _count; i++)

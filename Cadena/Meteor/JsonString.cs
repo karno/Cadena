@@ -11,8 +11,7 @@ namespace Cadena.Meteor
 
         public JsonString([NotNull] string value)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-            Value = value;
+            Value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         public override string AsStringOrNull()

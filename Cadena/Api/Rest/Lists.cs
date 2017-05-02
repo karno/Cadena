@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -22,7 +22,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsListAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion lists/show
 
         #region lists/list
 
@@ -34,10 +34,11 @@ namespace Cadena.Api.Rest
             if (targetUser == null) throw new ArgumentNullException(nameof(targetUser));
 
             return await accessor.GetAsync("lists/list.json", targetUser.ToDictionary(),
-                ResultHandlers.ReadAsListCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsListCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion lists/list
 
         #region lists/statuses
 
@@ -55,10 +56,11 @@ namespace Cadena.Api.Rest
                 {"include_rts", includeRts},
             }.ApplyParameter(listTarget).SetExtended();
             return await accessor.GetAsync("lists/statuses.json", param,
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion lists/statuses
 
         #region lists/members
 
@@ -77,7 +79,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsCursoredUsersAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion lists/members
 
         #region lists/memberships
 
@@ -95,6 +97,6 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsCursoredListsAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion lists/memberships
     }
 }

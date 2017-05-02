@@ -58,7 +58,6 @@ namespace Cadena.Meteor
         public IEnumerator<KeyValuePair<string, JsonValue>> GetEnumerator()
         {
             return _dictionary.GetEnumerator();
-
         }
 
         public override bool Equals(object obj)

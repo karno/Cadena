@@ -28,7 +28,8 @@
             SkipWhitespaces(ref array, ref index, ref length);
             if (index < length)
             {
-                throw CreateException(array, index, "invalid character is existed after the valid object: " + array[index]);
+                throw CreateException(array, index,
+                    "invalid character is existed after the valid object: " + array[index]);
             }
             // return result
             return value;

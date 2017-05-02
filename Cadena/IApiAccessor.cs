@@ -22,13 +22,11 @@ namespace Cadena
             [NotNull] Func<HttpResponseMessage, Task<T>> converter,
             CancellationToken cancellationToken);
 
-
         [NotNull]
         Task<IApiResult<T>> PostAsync<T>([NotNull] string path,
             [NotNull] HttpContent content,
             [NotNull] Func<HttpResponseMessage, Task<T>> converter,
             CancellationToken cancellationToken);
-
 
         [NotNull]
         Task<IApiResult<T>> PostAsync<T>([NotNull] string path,

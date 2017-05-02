@@ -21,10 +21,8 @@ namespace Cadena.Engine.Requests
         public UpdateRelationRequest([NotNull] IApiAccessor accessor,
             [NotNull] UserParameter target, Relations relation)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (target == null) throw new ArgumentNullException(nameof(target));
-            Accessor = accessor;
-            Target = target;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            Target = target ?? throw new ArgumentNullException(nameof(target));
             Relation = relation;
         }
 
@@ -34,20 +32,24 @@ namespace Cadena.Engine.Requests
             {
                 case Relations.Follow:
                     return Accessor.CreateFriendshipAsync(Target, token);
+
                 case Relations.Unfollow:
                     return Accessor.DestroyFriendshipAsync(Target, token);
+
                 case Relations.Block:
                     return Accessor.CreateBlockAsync(Target, token);
+
                 case Relations.ReportAsSpam:
                     return Accessor.ReportSpamAsync(Target, token);
+
                 case Relations.Unblock:
                     return Accessor.DestroyBlockAsync(Target, token);
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
     }
-
 
     public enum Relations
     {

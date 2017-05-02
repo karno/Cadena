@@ -5,14 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Cadena.Api.Streams;
 using Cadena.Data;
 using Cadena.Data.Streams;
-using Cadena.Engine._Internals.Parsers;
 using Cadena.Engine.StreamReceivers;
+using Cadena.Engine._Internals.Parsers;
 using Cadena.Meteor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Task = System.Threading.Tasks.Task;
 
 namespace Cadena.Test
 {
@@ -23,20 +23,15 @@ namespace Cadena.Test
     public class UserStreamsPerformanceTest
     {
         private TestContext testContextInstance;
+
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
         public TestContext TestContext
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
+            get { return testContextInstance; }
+            set { testContextInstance = value; }
         }
 
         [TestMethod]
@@ -65,7 +60,8 @@ namespace Cadena.Test
             }
             var wsa = Environment.WorkingSet;
             TestContext.WriteLine("received: {0}", received);
-            TestContext.WriteLine("handler: statuses: {0} / events: {1}", handler.ReceivedStatuses, handler.ReceivedEvents);
+            TestContext.WriteLine("handler: statuses: {0} / events: {1}", handler.ReceivedStatuses,
+                handler.ReceivedEvents);
             TestContext.WriteLine("cache: {0} / {1}", parser.CacheCount(), parser.ALQCount());
             TestContext.WriteLine("workingset delta: {0}", wsa - workingset);
         }
@@ -121,7 +117,6 @@ namespace Cadena.Test
 
             public void OnMessage(StreamMessage notification)
             {
-
                 _receivedEvents++;
             }
 
@@ -150,7 +145,6 @@ namespace Cadena.Test
             public InfiniteStream(IEnumerable<string> contents, CancellationToken token)
                 : this(contents.Select(c => Encoding.UTF8.GetBytes(c)), token)
             {
-
             }
 
             public InfiniteStream(IEnumerable<byte[]> contents, CancellationToken token)

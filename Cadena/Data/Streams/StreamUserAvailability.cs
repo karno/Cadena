@@ -5,7 +5,7 @@
     /// </summary>
     /// <remarks>
     /// This message indicates: change availability of specified user.
-    /// 
+    ///
     /// This element is supported by: user streams, site streams
     /// </remarks>
     public sealed class StreamUserAvailability : StreamMessage

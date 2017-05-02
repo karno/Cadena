@@ -32,10 +32,8 @@ namespace Cadena.Engine.Requests
             long? inReplyToStatusId = null, [CanBeNull] Tuple<double, double> geoLatLong = null,
             [CanBeNull] string placeId = null, bool? displayCoordinates = null)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            Accessor = accessor;
-            Text = text;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            Text = text ?? throw new ArgumentNullException(nameof(text));
             InReplyToStatusId = inReplyToStatusId;
             GeoLatLong = geoLatLong;
             PlaceId = placeId;

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -26,10 +26,11 @@ namespace Cadena.Api.Rest
                 {"full_text", true} // full_text mode is always applied
             }.SetExtended();
             return await accessor.GetAsync("direct_messages.json", param,
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion direct_messages
 
         #region direct_messages/sent
 
@@ -47,10 +48,11 @@ namespace Cadena.Api.Rest
                 {"full_text", true} // full_text mode is always applied
             }.SetExtended();
             return await accessor.GetAsync("direct_messages/sent.json", param,
-                ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsStatusCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion direct_messages/sent
 
         #region direct_messages/show
 
@@ -68,7 +70,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion direct_messages/show
 
         #region direct_messages/new
 
@@ -87,7 +89,7 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion direct_messages/new
 
         #region direct_messages/destroy
 
@@ -104,6 +106,6 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion direct_messages/destroy
     }
 }

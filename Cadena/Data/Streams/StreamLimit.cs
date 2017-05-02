@@ -5,7 +5,7 @@
     /// </summary>
     /// <remarks>
     /// This message indicates: timeline speed is reached to delivery limit.
-    /// 
+    ///
     /// This element is supported by: (generic) streams, user streams, site streams.
     /// </remarks>
     public sealed class StreamLimit : StreamMessage

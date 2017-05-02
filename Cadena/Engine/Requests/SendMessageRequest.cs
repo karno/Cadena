@@ -19,14 +19,12 @@ namespace Cadena.Engine.Requests
         [NotNull]
         public string Text { get; }
 
-        public SendMessageRequest([NotNull] IApiAccessor accessor, [NotNull] UserParameter recipient, [NotNull] string text)
+        public SendMessageRequest([NotNull] IApiAccessor accessor, [NotNull] UserParameter recipient,
+            [NotNull] string text)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (recipient == null) throw new ArgumentNullException(nameof(recipient));
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            Accessor = accessor;
-            Recipient = recipient;
-            Text = text;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            Recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));
+            Text = text ?? throw new ArgumentNullException(nameof(text));
         }
 
         public override Task<IApiResult<TwitterStatus>> Send(CancellationToken token)

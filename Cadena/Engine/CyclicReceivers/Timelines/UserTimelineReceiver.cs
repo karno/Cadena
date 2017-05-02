@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Api.Rest;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers.Timelines
@@ -21,10 +21,8 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
             [CanBeNull] Action<Exception> exceptionHandler, [NotNull] UserParameter target, int receiveCount = 100,
             bool excludeReplies = false, bool includeRetweets = true) : base(handler, exceptionHandler)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (target == null) throw new ArgumentNullException(nameof(target));
-            _accessor = accessor;
-            _target = target;
+            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            _target = target ?? throw new ArgumentNullException(nameof(target));
             _receiveCount = receiveCount;
             _excludeReplies = excludeReplies;
             _includeRetweets = includeRetweets;

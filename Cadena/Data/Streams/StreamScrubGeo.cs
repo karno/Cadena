@@ -5,7 +5,7 @@
     /// </summary>
     /// <remarks>
     /// This message indicates: delete location information from (range-)specified statuses.
-    /// 
+    ///
     /// This element is supported by: (generic) streams, user streams, site streams.
     /// </remarks>
     public sealed class StreamScrubGeo : StreamMessage

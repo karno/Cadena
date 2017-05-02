@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Api.Rest;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers.Timelines
@@ -33,10 +33,8 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
             [CanBeNull] Action<Exception> exceptionHandler, int receiveCount = 100, bool includeRetweets = false)
             : base(exceptionHandler)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-            _accessor = accessor;
-            _handler = handler;
+            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
             _receiveCount = receiveCount;
             _includeRetweets = includeRetweets;
         }
@@ -82,7 +80,8 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
             try
             {
                 var result = await _accessor.GetListTimelineAsync(target,
-                    null, null, _receiveCount, _includeRetweets, token).ConfigureAwait(false);
+                                                null, null, _receiveCount, _includeRetweets, token)
+                                            .ConfigureAwait(false);
                 result.CallForEachItems(_handler);
                 return result.RateLimit;
             }

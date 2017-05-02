@@ -52,12 +52,9 @@ namespace Cadena.Engine.StreamReceivers
             [NotNull] Action<StreamParseException> exceptionHandler, [NotNull] Action<StreamState> stateHandler,
             [CanBeNull] Action<string> logHandler)
         {
-            if (statusHandler == null) throw new ArgumentNullException(nameof(statusHandler));
-            if (exceptionHandler == null) throw new ArgumentNullException(nameof(exceptionHandler));
-            if (stateHandler == null) throw new ArgumentNullException(nameof(stateHandler));
-            _statusHandler = statusHandler;
-            _exceptionHandler = exceptionHandler;
-            _stateHandler = stateHandler;
+            _statusHandler = statusHandler ?? throw new ArgumentNullException(nameof(statusHandler));
+            _exceptionHandler = exceptionHandler ?? throw new ArgumentNullException(nameof(exceptionHandler));
+            _stateHandler = stateHandler ?? throw new ArgumentNullException(nameof(stateHandler));
             _logHandler = logHandler;
             _notificationHandlers = new Dictionary<Type, Action<StreamMessage>>();
         }
@@ -134,7 +131,7 @@ namespace Cadena.Engine.StreamReceivers
 
         /// <summary>
         /// Stream channel is disconnected<para />
-        /// Stream engine is not started or disconnected 
+        /// Stream engine is not started or disconnected
         /// (Unhandled exception thrown, reaching limit of connection trial, etc...)
         /// </summary>
         Disconnected,

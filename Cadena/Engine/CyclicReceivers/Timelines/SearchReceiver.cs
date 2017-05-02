@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Api.Rest;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers.Timelines
@@ -15,12 +15,11 @@ namespace Cadena.Engine.CyclicReceivers.Timelines
         private readonly SearchParameter _parameter;
 
         public SearchReceiver([NotNull] IApiAccessor accessor, Action<TwitterStatus> handler,
-            [CanBeNull] Action<Exception> exceptionHandler, [NotNull] SearchParameter parameter) : base(handler, exceptionHandler)
+            [CanBeNull] Action<Exception> exceptionHandler, [NotNull] SearchParameter parameter) : base(handler,
+            exceptionHandler)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
-            _accessor = accessor;
-            _parameter = parameter;
+            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)

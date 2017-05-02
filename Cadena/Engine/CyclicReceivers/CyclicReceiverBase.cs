@@ -31,7 +31,7 @@ namespace Cadena.Engine.CyclicReceivers
 
         private double _averageApiConsumption;
 
-        #endregion
+        #endregion call interval management
 
         #region backoff management
 
@@ -47,7 +47,7 @@ namespace Cadena.Engine.CyclicReceivers
 
         protected virtual TimeSpan ExponentialBackoffMaxWait => TimeSpan.FromMilliseconds(320000);
 
-        #endregion
+        #endregion backoff management
 
         protected CyclicReceiverBase([CanBeNull] Action<Exception> exceptionHandler)
         {

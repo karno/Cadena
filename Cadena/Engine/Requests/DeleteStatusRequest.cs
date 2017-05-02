@@ -18,8 +18,7 @@ namespace Cadena.Engine.Requests
 
         public DeleteStatusRequest([NotNull] IApiAccessor accessor, long id, StatusType type)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            Accessor = accessor;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             Id = id;
             Type = type;
         }

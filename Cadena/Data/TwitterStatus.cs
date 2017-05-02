@@ -124,17 +124,14 @@ namespace Cadena.Data
             long id, StatusType statusType, [NotNull] TwitterUser user, [NotNull] string text,
             [CanBeNull] Tuple<int, int> displayTextRange, DateTime createdAt, [NotNull] TwitterEntity[] entities)
         {
-            if (user == null) throw new ArgumentNullException(nameof(user));
-            if (text == null) throw new ArgumentNullException(nameof(text));
-            if (entities == null) throw new ArgumentNullException(nameof(entities));
             Id = id;
             StatusType = statusType;
+            User = user ?? throw new ArgumentNullException(nameof(user));
             User = user;
-            User = user;
-            Text = text;
+            Text = text ?? throw new ArgumentNullException(nameof(text));
             DisplayTextRange = displayTextRange;
             CreatedAt = createdAt;
-            Entities = entities;
+            Entities = entities ?? throw new ArgumentNullException(nameof(entities));
         }
 
         /// <summary>
@@ -222,7 +219,7 @@ namespace Cadena.Data
         [CanBeNull]
         public TwitterStatus QuotedStatus { get; }
 
-        #endregion
+        #endregion Properties for statuses
 
         #region Properties for direct messages
 
@@ -232,7 +229,7 @@ namespace Cadena.Data
         [CanBeNull]
         public TwitterUser Recipient { get; }
 
-        #endregion
+        #endregion Properties for direct messages
 
         /// <summary>
         /// Entity objects of the status
@@ -244,17 +241,11 @@ namespace Cadena.Data
         /// Web URL for accessing status
         /// </summary>
         [NotNull]
-        public string Permalink
-        {
-            get { return String.Format(TwitterStatusUrl, User.ScreenName, Id); }
-        }
+        public string Permalink => String.Format(TwitterStatusUrl, User.ScreenName, Id);
 
         // ReSharper disable InconsistentNaming
         [NotNull]
-        public string STOTString
-        {
-            get { return "@" + User.ScreenName + ": " + Text + " [" + Permalink + "]"; }
-        }
+        public string STOTString => "@" + User.ScreenName + ": " + Text + " [" + Permalink + "]";
 
         // ReSharper restore InconsistentNaming
 

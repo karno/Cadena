@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Data;
 using Cadena.Util;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Engine.CyclicReceivers.Relations
@@ -18,13 +18,12 @@ namespace Cadena.Engine.CyclicReceivers.Relations
         protected CyclicRelationInfoReceiverBase([NotNull] Action<IEnumerable<long>> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(exceptionHandler)
         {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-            _handler = handler;
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
 
         protected static async Task<IApiResult<IEnumerable<long>>> RetrieveCursoredResult(IApiAccessor accessor,
             Func<IApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<long>>>>> func,
-             Action<Exception> exceptionHandler, CancellationToken token)
+            Action<Exception> exceptionHandler, CancellationToken token)
         {
             var resultList = new List<long>();
             CursorResultExtension.ApiContinuationReader<IEnumerable<long>> reader =

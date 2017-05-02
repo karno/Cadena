@@ -68,7 +68,7 @@ namespace Cadena.Engine._Internals
             return GetOrCreateFactory(priority).StartNew(task, token).Unwrap();
         }
 
-        #endregion
+        #endregion Task runner utilities
 
         // -------------------- Task Runner --------------------
 

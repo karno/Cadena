@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Cadena._Internals;
 using Cadena.Api.Parameters;
 using Cadena.Data;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena.Api.Rest
@@ -47,10 +47,11 @@ namespace Cadena.Api.Rest
                 {"screen_name", screenNames == null ? null : String.Join(",", screenNames)}
             };
             return await accessor.GetAsync("users/lookup.json", param,
-                ResultHandlers.ReadAsUserCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsUserCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion users/lookup
 
         #region users/search
 
@@ -67,10 +68,11 @@ namespace Cadena.Api.Rest
                 {"count", count},
             };
             return await accessor.GetAsync("users/search.json", param,
-                ResultHandlers.ReadAsUserCollectionAsync, cancellationToken).ConfigureAwait(false);
+                                     ResultHandlers.ReadAsUserCollectionAsync, cancellationToken)
+                                 .ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion users/search
 
         #region users/show
 
@@ -85,6 +87,6 @@ namespace Cadena.Api.Rest
                 ResultHandlers.ReadAsUserAsync, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
+        #endregion users/show
     }
 }

@@ -1,7 +1,7 @@
-﻿using Cadena.Meteor;
+﻿using System;
+using Cadena.Meteor;
 using Cadena.Util;
 using JetBrains.Annotations;
-using System;
 
 namespace Cadena.Data
 {
@@ -33,12 +33,10 @@ namespace Cadena.Data
             bool isSourceFollowingTarget, bool isTargetFollowingSource,
             bool isBlocking, bool isMuting, bool isWantRetweets)
         {
-            if (sourceScreenName == null) throw new ArgumentNullException(nameof(sourceScreenName));
-            if (targetScreenName == null) throw new ArgumentNullException(nameof(targetScreenName));
             SourceId = sourceId;
-            SourceScreenName = sourceScreenName;
+            SourceScreenName = sourceScreenName ?? throw new ArgumentNullException(nameof(sourceScreenName));
             TargetId = targetId;
-            TargetScreenName = targetScreenName;
+            TargetScreenName = targetScreenName ?? throw new ArgumentNullException(nameof(targetScreenName));
             IsSourceFollowingTarget = isSourceFollowingTarget;
             IsTargetFollowingSource = isTargetFollowingSource;
             IsBlocking = isBlocking;

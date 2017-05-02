@@ -55,11 +55,8 @@ namespace Cadena.Data
             string language, DateTime createdAt, [NotNull] TwitterUrlEntity[] urlEntities,
             [NotNull] TwitterEntity[] descriptionEntities)
         {
-            if (screenName == null) throw new ArgumentNullException(nameof(screenName));
-            if (urlEntities == null) throw new ArgumentNullException(nameof(urlEntities));
-            if (descriptionEntities == null) throw new ArgumentNullException(nameof(descriptionEntities));
             Id = id;
-            ScreenName = screenName;
+            ScreenName = screenName ?? throw new ArgumentNullException(nameof(screenName));
             Name = name;
             Description = description;
             Location = location;
@@ -80,8 +77,8 @@ namespace Cadena.Data
             ListedCount = listedCount;
             Language = language;
             CreatedAt = createdAt;
-            UrlEntities = urlEntities;
-            DescriptionEntities = descriptionEntities;
+            UrlEntities = urlEntities ?? throw new ArgumentNullException(nameof(urlEntities));
+            DescriptionEntities = descriptionEntities ?? throw new ArgumentNullException(nameof(descriptionEntities));
         }
 
         public const string TwitterUserUrl = "https://twitter.com/{0}";
@@ -220,22 +217,13 @@ namespace Cadena.Data
         public TwitterEntity[] DescriptionEntities { get; }
 
         [NotNull]
-        public string UserPermalink
-        {
-            get { return String.Format(TwitterUserUrl, ScreenName); }
-        }
+        public string UserPermalink => String.Format(TwitterUserUrl, ScreenName);
 
         [NotNull]
-        public string FavstarUserPermalink
-        {
-            get { return String.Format(FavstarUserUrl, ScreenName); }
-        }
+        public string FavstarUserPermalink => String.Format(FavstarUserUrl, ScreenName);
 
         [NotNull]
-        public string TwilogUserPermalink
-        {
-            get { return String.Format(TwilogUserUrl, ScreenName); }
-        }
+        public string TwilogUserPermalink => String.Format(TwilogUserUrl, ScreenName);
 
         public override bool Equals(object obj)
         {

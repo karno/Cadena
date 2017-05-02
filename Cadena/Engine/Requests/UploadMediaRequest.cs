@@ -31,17 +31,14 @@ namespace Cadena.Engine.Requests
         {
         }
 
-
         public UploadMediaRequest([NotNull] IApiAccessor accessor, [NotNull] IEnumerable<byte> media,
             [CanBeNull] IEnumerable<long> additionalOwnerIds = null,
             [CanBeNull] IProgress<double> sentPercentageCallback = null)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            if (media == null) throw new ArgumentNullException(nameof(media));
             AdditionalOwnerIds = additionalOwnerIds?.ToArray();
-            Accessor = accessor;
+            Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             SentPercentageCallback = sentPercentageCallback;
-            Media = media.ToArray();
+            Media = (media ?? throw new ArgumentNullException(nameof(media))).ToArray();
         }
 
         public override Task<IApiResult<TwitterUploadedMedia>> Send(CancellationToken token)

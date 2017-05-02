@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,10 +7,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncOAuth;
-using Cadena._Internals;
 using Cadena.Api;
 using Cadena.Data;
 using Cadena.Util;
+using Cadena._Internals;
 using JetBrains.Annotations;
 
 namespace Cadena
@@ -37,9 +36,9 @@ namespace Cadena
             return WebRequest.DefaultWebProxy;
         }
 
-        #endregion
+        #endregion Provide default configuration
 
-        public long Id { get { return Credential.Id; } }
+        public long Id => Credential.Id;
 
         /// <summary>
         /// Credential information of this accessor.
@@ -59,10 +58,8 @@ namespace Cadena
         public ApiAccessor([NotNull] IOAuthCredential credential, [NotNull] string endpoint,
             [CanBeNull] IWebProxy proxy, string userAgent = null, bool useGzip = true)
         {
-            if (credential == null) throw new ArgumentNullException(nameof(credential));
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
-            Credential = credential;
-            Endpoint = endpoint;
+            Credential = credential ?? throw new ArgumentNullException(nameof(credential));
+            Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
             Proxy = proxy;
             UserAgent = userAgent ?? DefaultUserAgent;
             _client = new Lazy<HttpClient>(() => new TwitterApiHttpClient(credential, proxy, UserAgent, useGzip),
@@ -174,7 +171,6 @@ namespace Cadena
                     client.Dispose();
                 }
             }
-
         }
 
         private string FormatUrl([NotNull] string endpoint, [NotNull] string path)
@@ -242,7 +238,5 @@ namespace Cadena
             }
             _disposed = true;
         }
-
-
     }
 }

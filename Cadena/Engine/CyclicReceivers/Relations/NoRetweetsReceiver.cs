@@ -15,8 +15,7 @@ namespace Cadena.Engine.CyclicReceivers.Relations
         public NoRetweetsReceiver([NotNull] IApiAccessor accessor, [NotNull] Action<IEnumerable<long>> handler,
             [CanBeNull] Action<Exception> exceptionHandler) : base(handler, exceptionHandler)
         {
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-            _accessor = accessor;
+            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
         }
 
         protected override async Task<RateLimitDescription> Execute(CancellationToken token)

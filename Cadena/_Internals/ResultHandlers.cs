@@ -135,7 +135,8 @@ namespace Cadena._Internals
             {
                 parsed = parsed["statuses"];
             }
-            return parsed.AsArrayOrNull()?.Select(status => new TwitterStatus(status)) ?? Enumerable.Empty<TwitterStatus>();
+            return parsed.AsArrayOrNull()?.Select(status => new TwitterStatus(status)) ??
+                   Enumerable.Empty<TwitterStatus>();
         }
 
         private static async Task<IEnumerable<T>> ReadAsCollectionAsync<T>(
@@ -188,6 +189,5 @@ namespace Cadena._Internals
             var nextCursor = parsed["next_cursor_str"].AsLongOrNull() ?? -1;
             return CursorResult.Create(converteds, prevCursor, nextCursor);
         }
-
     }
 }
