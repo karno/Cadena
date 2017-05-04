@@ -210,7 +210,7 @@ namespace Cadena.Data.Entities
             {
                 {"video/mp4", VideoContentType.Mp4},
                 {"video/webm", VideoContentType.WebM},
-                {"application/x-mpegURL", VideoContentType.M3U8},
+                {"application/x-mpegURL", VideoContentType.M3U8}
             });
 
         public VideoVariant(JsonValue variantNode)

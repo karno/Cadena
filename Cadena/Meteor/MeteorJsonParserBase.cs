@@ -17,7 +17,6 @@ namespace Cadena.Meteor
         private readonly KeyCacheTree _cacheTree;
         private readonly IKeyCacheTreeDigger _cacheDigger;
 
-        private readonly JsonValue[] _sharedArray = new JsonValue[16];
         private StringBuilder _sharedStringBuilder = new StringBuilder(StringBufferLength * 4);
 
         protected MeteorJsonParserBase() : this(new KeyCacheTree())
@@ -125,9 +124,10 @@ namespace Cadena.Meteor
 
             // first stage: for smaller arrays
 
-            for (var itemCount = 0; itemCount < SmallArrayLength; itemCount++)
+            var smallArray = new JsonValue[SmallArrayLength];
+            for (var index = 0; index < smallArray.Length; index++)
             {
-                _sharedArray[itemCount] = ReadValue(ref ptr, ref end);
+                smallArray[index] = ReadValue(ref ptr, ref end);
 
                 // read close bracket or comma
                 SkipWhitespaces(ref ptr, ref end);
@@ -143,7 +143,7 @@ namespace Cadena.Meteor
                 {
                     // end of array
                     ptr++;
-                    return new JsonArray(_sharedArray, itemCount);
+                    return new JsonArray(smallArray, index + 1);
                 }
 
                 // otherwise, next letter should be ','.
@@ -153,7 +153,7 @@ namespace Cadena.Meteor
             // second stage: for longer arrays
 
             // initialize with contents already read
-            List<JsonValue> items = new List<JsonValue>(_sharedArray);
+            List<JsonValue> items = new List<JsonValue>(smallArray);
 
             while (true)
             {
