@@ -75,28 +75,30 @@ namespace Cadena.Engine._Internals
         private void InvokeNewTask()
         {
             // fire and forget
-            ThreadPool.QueueUserWorkItem(async _ =>
+            Task.Run(TaskRunner, CancellationToken.None);
+        }
+
+        private async Task TaskRunner()
+        {
+            while (true)
             {
-                while (true)
+                Func<Task> executor;
+                lock (_shadowSchedulers)
                 {
-                    Func<Task> executor;
-                    lock (_shadowSchedulers)
+                    executor = _shadowSchedulers.Values
+                                                .Select(s => s.GetNextLocalTaskExecutor())
+                                                .FirstOrDefault(a => a != null);
+                    if (executor == null)
                     {
-                        executor = _shadowSchedulers.Values
-                                                    .Select(s => s.GetNextLocalTaskExecutor())
-                                                    .FirstOrDefault(a => a != null);
-                        if (executor == null)
-                        {
-                            _currentWorkingTasks--;
-                            return;
-                        }
-                    }
-                    if (executor() is Task<Task> wrappedTask)
-                    {
-                        await wrappedTask.Unwrap().ConfigureAwait(false);
+                        _currentWorkingTasks--;
+                        return;
                     }
                 }
-            });
+                if (executor() is Task<Task> wrappedTask)
+                {
+                    await wrappedTask.Unwrap().ConfigureAwait(false);
+                }
+            }
         }
 
         private sealed class ShadowTaskScheduler : TaskScheduler
