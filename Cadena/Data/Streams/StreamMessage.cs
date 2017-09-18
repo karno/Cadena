@@ -8,7 +8,7 @@ namespace Cadena.Data.Streams
     /// </summary>
     public abstract class StreamMessage
     {
-        internal static readonly DateTime SerialTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        internal static readonly DateTime SerialTimeStandard = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Initialize stream message.
@@ -25,7 +25,7 @@ namespace Cadena.Data.Streams
         /// <param name="timestampMs">serial timestamp (millisecond, from 1970/01/01 00:00:00)</param>
         protected StreamMessage(long timestampMs)
         {
-            Timestamp = SerialTime.AddMilliseconds(timestampMs).ToLocalTime();
+            Timestamp = SerialTimeStandard.AddMilliseconds(timestampMs).ToLocalTime();
         }
 
         /// <summary>

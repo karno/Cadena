@@ -171,7 +171,6 @@ namespace Cadena.Engine._Internals.Parsers
 
                 // unknown event-type...
                 handler.OnMessage(new StreamUnknownMessage(null, graph.ToString()));
-
             }
             catch (Exception ex)
             {
@@ -189,7 +188,7 @@ namespace Cadena.Engine._Internals.Parsers
         {
             return graph.ContainsKey("timestamp_ms")
                 ? graph["timestamp_ms"].AsString()
-                : ((long)(DateTime.Now.ToUniversalTime() - StreamMessage.SerialTime)
+                : ((long)(DateTime.Now.ToUniversalTime() - StreamMessage.SerialTimeStandard)
                     .TotalMilliseconds).ToString();
         }
     }
