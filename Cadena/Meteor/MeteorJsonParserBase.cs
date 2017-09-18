@@ -12,12 +12,34 @@ namespace Cadena.Meteor
         private const int SmallDictionaryLength = 8;
         private const int SmallArrayLength = 16;
         private const int StringBufferLength = 64;
+        private const int StringBuilderInitialSize = StringBufferLength * 4;
         private const int StringBuilderRecycleThreshold = 8192;
+
+        private static readonly int[] _hexCharTable = new int[256]
+        {
+            /*------  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15 */
+            /*  0 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /*  1 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /*  2 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, +0,
+            /*  3 */ +1, +2, +3, +4, +5, +6, +7, +8, +9, -0, -0, -0, -0, -0, -0, -0,
+            /*  4 */ -0, 10, 11, 12, 13, 14, 15, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /*  5 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /*  6 */ -0, 10, 11, 12, 13, 14, 15, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /*  7 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /*  8 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /*  9 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /* 10 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /* 11 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /* 12 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /* 13 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /* 14 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0,
+            /* 15 */ -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0, -0
+        };
 
         private readonly KeyCacheTree _cacheTree;
         private readonly IKeyCacheTreeDigger _cacheDigger;
 
-        private StringBuilder _sharedStringBuilder = new StringBuilder(StringBufferLength * 4);
+        private StringBuilder _sharedStringBuilder = new StringBuilder(StringBuilderInitialSize);
 
         protected MeteorJsonParserBase() : this(new KeyCacheTree())
         {
@@ -397,15 +419,7 @@ namespace Cadena.Meteor
             }
 
             // for long string
-            StringBuilder builder = null;
-
-            /*
-            for (; !IsEndOfJson(ref ptr, ref end) && *ptr != '\"'; ptr++)
-            {
-            }
-            AssertAndReadNext(ref ptr, '\"');
-            return new JsonString(String.Empty);
-            */
+            StringBuilder builder = _sharedStringBuilder;
 
             var bufptr = stackalloc char[StringBufferLength];
             var bp = bufptr;
@@ -416,104 +430,13 @@ namespace Cadena.Meteor
                 if (bp > bend)
                 {
                     // buffer is full
-                    if (builder == null)
-                    {
-                        builder = _sharedStringBuilder;
-                    }
+                    builder.Append(bufptr, StringBufferLength);
                     bp = bufptr;
-                    builder.Append(bp, StringBufferLength);
                 }
 
                 if (*ptr == '\\')
                 {
-                    // escaped
-                    ptr++;
-                    if (!IsEndOfJson(ref ptr, ref end))
-                    {
-                        switch (*ptr)
-                        {
-                            case '"':
-                                *bp = '"';
-                                break;
-
-                            case '\\':
-                                *bp = '\\';
-                                break;
-
-                            case '/':
-                                *bp = '/';
-                                break;
-
-                            case 'b':
-                                *bp = '\b';
-                                break;
-
-                            case 'f':
-                                *bp = '\f';
-                                break;
-
-                            case 'n':
-                                *bp = '\n';
-                                break;
-
-                            case 'r':
-                                *bp = '\r';
-                                break;
-
-                            case 't':
-                                *bp = '\t';
-                                break;
-
-                            case 'u':
-                                // hex unicode
-                                var code = 0;
-                                for (var i = 0; i < 4; i++)
-                                {
-                                    ptr++;
-                                    if (IsEndOfJson(ref ptr, ref end))
-                                    {
-                                        // hitting end of char
-                                        break;
-                                    }
-                                    code <<= 4;
-                                    if (*ptr <= '9' && *ptr >= '0')
-                                    {
-                                        code += *ptr - '0';
-                                    }
-                                    else if (*ptr <= 'F' && *ptr >= 'A')
-                                    {
-                                        // code += *sp - 'A' + 10
-                                        code += *ptr - '7';
-                                    }
-                                    else if (*ptr <= 'f' && *ptr >= 'a')
-                                    {
-                                        // code += *sp - 'a' + 10
-                                        code += *ptr - 'W';
-                                    }
-                                    else
-                                    {
-                                        // invalid code, abort processing
-                                        ptr--;
-                                        break;
-                                    }
-                                }
-                                // we can decode 0x0000~0xffff, so we can't exceed the Char.MaxValue
-                                Debug.Assert(code <= Char.MaxValue);
-                                *bp = (char)code;
-                                break;
-
-                            default:
-                                // this is not registered escape code.
-                                ptr--;
-                                *bp = '\\';
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        ptr--;
-                        *bp = '\\';
-                    }
+                    *bp = DecodeEscapedChar(ref ptr, ref end);
                 }
                 else
                 {
@@ -531,7 +454,7 @@ namespace Cadena.Meteor
             AssertAndReadNext(ref ptr, '\"');
 
             // create result string
-            if (builder == null)
+            if (builder.Length == 0)
             {
                 // builder is not used
                 return new JsonString(new String(bufptr, 0, (int)(bp - bufptr)));
@@ -541,7 +464,7 @@ namespace Cadena.Meteor
             var str = builder.ToString();
             if (builder.Length > StringBuilderRecycleThreshold)
             {
-                _sharedStringBuilder = new StringBuilder(StringBufferLength * 2);
+                _sharedStringBuilder = new StringBuilder(StringBufferLength * 4);
             }
             else
             {
@@ -568,95 +491,7 @@ namespace Cadena.Meteor
             {
                 if (*ptr == '\\')
                 {
-                    // escaped
-                    ptr++;
-                    char bp;
-                    if (!IsEndOfJson(ref ptr, ref end))
-                    {
-                        switch (*ptr)
-                        {
-                            case '"':
-                                bp = '"';
-                                break;
-
-                            case '\\':
-                                bp = '\\';
-                                break;
-
-                            case '/':
-                                bp = '/';
-                                break;
-
-                            case 'b':
-                                bp = '\b';
-                                break;
-
-                            case 'f':
-                                bp = '\f';
-                                break;
-
-                            case 'n':
-                                bp = '\n';
-                                break;
-
-                            case 'r':
-                                bp = '\r';
-                                break;
-
-                            case 't':
-                                bp = '\t';
-                                break;
-
-                            case 'u':
-                                // hex unicode
-                                var code = 0;
-                                for (var i = 0; i < 4; i++)
-                                {
-                                    ptr++;
-                                    if (IsEndOfJson(ref ptr, ref end))
-                                    {
-                                        // hitting end of char
-                                        break;
-                                    }
-                                    code <<= 4;
-                                    if (*ptr <= '9' && *ptr >= '0')
-                                    {
-                                        code += *ptr - '0';
-                                    }
-                                    else if (*ptr <= 'F' && *ptr >= 'A')
-                                    {
-                                        // code += *sp - 'A' + 10
-                                        code += *ptr - '7';
-                                    }
-                                    else if (*ptr <= 'f' && *ptr >= 'a')
-                                    {
-                                        // code += *sp - 'a' + 10
-                                        code += *ptr - 'W';
-                                    }
-                                    else
-                                    {
-                                        // invalid code, abort processing
-                                        ptr--;
-                                        break;
-                                    }
-                                }
-                                // we can decode 0x0000~0xffff, so we can't exceed the Char.MaxValue
-                                Debug.Assert(code <= Char.MaxValue);
-                                bp = (char)code;
-                                break;
-
-                            default:
-                                // this is not registered escape code.
-                                ptr--;
-                                bp = '\\';
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        ptr--;
-                        bp = '\\';
-                    }
+                    var bp = DecodeEscapedChar(ref ptr, ref end);
                     if (_cacheDigger.DigNextChar(bp)) continue;
                     goto miss_hit;
                 }
@@ -697,6 +532,54 @@ namespace Cadena.Meteor
             var newkey = _cacheDigger.PointingItem?.Substring(0, _cacheDigger.ItemValidLength) + offload;
             _cacheTree.Add(newkey);
             return newkey;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private char DecodeEscapedChar(ref char* ptr, ref char* end)
+        {
+            // escaped
+            ptr++;
+            if (!IsEndOfJson(ref ptr, ref end))
+            {
+                // ReSharper disable once SwitchStatementMissingSomeCases
+                switch (*ptr)
+                {
+                    case '\\': return '\\';
+                    case '"': return '"';
+                    case '/': return '/';
+                    case 'b': return '\b';
+                    case 'f': return '\f';
+                    case 'n': return '\n';
+                    case 'r': return '\r';
+                    case 't': return '\t';
+                    case 'u':
+                        // hex unicode
+                        var code = 0;
+                        for (var i = 0; i < 4; i++)
+                        {
+                            ptr++;
+                            if (IsEndOfJson(ref ptr, ref end))
+                            {
+                                // hitting end of char
+                                break;
+                            }
+                            code <<= 4;
+
+                            // Whenever wrong char is passed to decode table, maybe it 
+                            // comes from corrupted JSON char and we can't recover anymore 
+                            // because that is problem of upper layer.
+                            // Therefore, I choose optimistic approach that I try decode 
+                            // hex char as long as I can and skip checking correctness of passed value.
+                            code += _hexCharTable[*ptr];
+                        }
+                        // we can decode 0x0000~0xffff, so we can't exceed the Char.MaxValue
+                        Debug.Assert(code <= Char.MaxValue);
+                        return (char)code;
+                }
+            }
+            // this is not registered escape code or end of string.
+            ptr--;
+            return '\\';
         }
 
         // read values -----------------------------------
