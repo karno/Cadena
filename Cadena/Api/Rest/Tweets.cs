@@ -24,8 +24,8 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
-                {"id", id},
-                {"include_my_retweet", true}
+                { "id", id },
+                { "include_my_retweet", true }
             };
             return await accessor.GetAsync("statuses/show.json", param,
                 async resp =>
@@ -64,8 +64,8 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
-                {"id", id},
-                {"cursor", cursor}
+                { "id", id },
+                { "cursor", cursor }
             };
             return await accessor.GetAsync("retweeters/ids.json", param,
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
@@ -82,7 +82,7 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
-                {"id", id},
+                { "id", id },
             }.SetExtended();
             return await accessor.GetAsync("statuses/show.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
@@ -106,6 +106,8 @@ namespace Cadena.Api.Rest
 
         #region media/upload
 
+        private static string MediaUploadPath = "media/upload.json";
+
         public static Task<IApiResult<TwitterUploadedMedia>> UploadMediaAsync(
             [NotNull] this IApiAccessor accessor, [NotNull] byte[] image,
             CancellationToken cancellationToken)
@@ -126,7 +128,7 @@ namespace Cadena.Api.Rest
             }
             var content = new MultipartFormDataContent
             {
-                {new ByteArrayContent(image), "media", System.IO.Path.GetRandomFileName() + ".png"}
+                { new ByteArrayContent(image), "media", System.IO.Path.GetRandomFileName() + ".png" }
             };
             if (additionalOwners != null)
             {
@@ -198,9 +200,9 @@ namespace Cadena.Api.Rest
             // send INIT request
             var initialContent = new MultipartFormDataContent
             {
-                {new StringContent("INIT"), "command"},
-                {new StringContent(media.Length.ToString()), "total_bytes"},
-                {new StringContent(mimeType), "media_type"},
+                { new StringContent("INIT"), "command" },
+                { new StringContent(media.Length.ToString()), "total_bytes" },
+                { new StringContent(mimeType), "media_type" },
             };
             if (additionalOwners != null)
             {
@@ -222,12 +224,12 @@ namespace Cadena.Api.Rest
             {
                 var content = new MultipartFormDataContent
                 {
-                    {new StringContent("APPEND"), "command"},
-                    {new StringContent(mediaId.ToString()), "media_id"},
-                    {new ByteArrayContent(part), "media", fileName},
-                    {new StringContent(index.ToString()), "segment_index"},
+                    { new StringContent("APPEND"), "command" },
+                    { new StringContent(mediaId.ToString()), "media_id" },
+                    { new ByteArrayContent(part), "media", fileName },
+                    { new StringContent(index.ToString()), "segment_index" },
                 };
-                await UploadMediaCoreAsync(accessor, content, cancellationToken).ConfigureAwait(false);
+                await UploadCoreAsync(accessor, content, cancellationToken).ConfigureAwait(false);
                 sentSize += part.Length;
                 sentBytesCallback?.Report(sentSize);
                 index++;
@@ -247,7 +249,7 @@ namespace Cadena.Api.Rest
             CancellationToken cancellationToken)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
-            return await accessor.PostAsync("media/upload.json", content,
+            return await accessor.PostAsync(MediaUploadPath, content,
                 async resp =>
                 {
                     var json = await resp.ReadAsStringAsync().ConfigureAwait(false);
@@ -260,7 +262,7 @@ namespace Cadena.Api.Rest
             CancellationToken cancellationToken)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
-            return await accessor.PostAsync("media/upload.json", content,
+            return await accessor.PostAsync(MediaUploadPath, content,
                 async resp => await resp.ReadAsStringAsync().ConfigureAwait(false),
                 cancellationToken).ConfigureAwait(false);
         }
