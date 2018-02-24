@@ -94,10 +94,14 @@ namespace Cadena.Engine._Internals
                         return;
                     }
                 }
-                if (executor() is Task<Task> wrappedTask)
+                var result = executor();
+                await result.ConfigureAwait(false);
+                /*
+                if (result is Task<Task> wrappedTask)
                 {
                     await wrappedTask.Unwrap().ConfigureAwait(false);
                 }
+                */
             }
         }
 

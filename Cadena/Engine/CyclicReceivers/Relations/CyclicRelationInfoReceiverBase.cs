@@ -21,12 +21,12 @@ namespace Cadena.Engine.CyclicReceivers.Relations
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
 
-        protected static async Task<IApiResult<IEnumerable<long>>> RetrieveCursoredResult(IApiAccessor accessor,
-            Func<IApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<long>>>>> func,
+        protected static async Task<IApiResult<IEnumerable<T>>> RetrieveCursoredResult<T>(IApiAccessor accessor,
+            Func<IApiAccessor, long, Task<IApiResult<ICursorResult<IEnumerable<T>>>>> func,
             Action<Exception> exceptionHandler, CancellationToken token)
         {
-            var resultList = new List<long>();
-            CursorResultExtension.ApiContinuationReader<IEnumerable<long>> reader =
+            var resultList = new List<T>();
+            CursorResultExtension.ApiContinuationReader<IEnumerable<T>> reader =
                 () => accessor.ReadCursorApi(func, token);
             var lastRateLimit = RateLimitDescription.Empty;
             while (reader != null)

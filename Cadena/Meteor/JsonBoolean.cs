@@ -6,7 +6,7 @@ namespace Cadena.Meteor
     {
         public static readonly JsonBoolean True = new JsonBoolean(true);
 
-        public static readonly JsonBoolean False = new JsonBoolean(true);
+        public static readonly JsonBoolean False = new JsonBoolean(false);
 
         public bool Value { get; }
 

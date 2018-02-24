@@ -185,8 +185,8 @@ namespace Cadena._Internals
             var json = await response.ReadAsStringAsync().ConfigureAwait(false);
             var parsed = MeteorJson.Parse(json);
             var converteds = selector(parsed).Select(instantiator);
-            var prevCursor = parsed["previous_cursor_str"].AsLongOrNull() ?? -1;
-            var nextCursor = parsed["next_cursor_str"].AsLongOrNull() ?? -1;
+            var prevCursor = parsed["previous_cursor"].AsLongOrNull() ?? 0;
+            var nextCursor = parsed["next_cursor"].AsLongOrNull() ?? 0;
             return CursorResult.Create(converteds, prevCursor, nextCursor);
         }
     }

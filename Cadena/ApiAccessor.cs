@@ -155,6 +155,7 @@ namespace Cadena
                 }
                 client = new TwitterApiHttpClient(Credential, Proxy, UserAgent, false);
                 client.Timeout = Timeout.InfiniteTimeSpan;
+                Debug.WriteLine("[GET STREAM] " + endpoint);
                 using (var resp = await client.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead,
                     cancellationToken).ConfigureAwait(false))
                 using (var stream = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false))

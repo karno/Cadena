@@ -25,7 +25,7 @@ namespace Cadena.Engine.Requests
         public IProgress<double> SentPercentageCallback { get; }
 
         public UploadMediaRequest([NotNull] IApiAccessor accessor, [NotNull] IEnumerable<byte> media,
-            [CanBeNull] IEnumerable<IApiAccessor> additionalOwners = null,
+            [CanBeNull] IEnumerable<IApiAccessor> additionalOwners,
             [CanBeNull] IProgress<double> sentPercentageCallback = null)
             : this(accessor, media, additionalOwners?.Select(a => a.Id), sentPercentageCallback)
         {

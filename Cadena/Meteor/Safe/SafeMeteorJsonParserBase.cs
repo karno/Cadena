@@ -322,7 +322,8 @@ namespace Cadena.Meteor.Safe
 
         private JsonNumber ReadNumber(ref char[] buffer, ref int index, ref int length)
         {
-            Debug.Assert(buffer[index] == '+' || buffer[index] == '-' || (buffer[index] >= '0' && buffer[index] <= '9'));
+            Debug.Assert(buffer[index] == '+' || buffer[index] == '-' ||
+                         (buffer[index] >= '0' && buffer[index] <= '9'));
 
             var isNegative = false;
 
@@ -385,9 +386,11 @@ namespace Cadena.Meteor.Safe
             return new JsonNumber(longValue);
         }
 
-        private JsonNumber ReadRealNumber(bool isNegative, long intpart, ref char[] buffer, ref int index, ref int length)
+        private JsonNumber ReadRealNumber(bool isNegative, long intpart, ref char[] buffer, ref int index,
+            ref int length)
         {
-            Debug.Assert(!IsEndOfJson(ref buffer, ref index, ref length) && (buffer[index] == '.' || buffer[index] == '-'));
+            Debug.Assert(!IsEndOfJson(ref buffer, ref index, ref length) &&
+                         (buffer[index] == '.' || buffer[index] == '-'));
             var readExp = buffer[index] == '-';
             double value = 0;
 
@@ -416,7 +419,8 @@ namespace Cadena.Meteor.Safe
             }
 
             // read exp
-            if (readExp || (!IsEndOfJson(ref buffer, ref index, ref length) && (buffer[index] == 'e' || buffer[index] == 'E')))
+            if (readExp || (!IsEndOfJson(ref buffer, ref index, ref length) &&
+                            (buffer[index] == 'e' || buffer[index] == 'E')))
             {
                 var isNegativeExp = false;
                 if (!readExp)
@@ -485,7 +489,7 @@ namespace Cadena.Meteor.Safe
             AssertAndReadNext(ref buffer, ref index, ref length, 'l', 'L');
             AssertAndReadNext(ref buffer, ref index, ref length, 's', 'S');
             AssertAndReadNext(ref buffer, ref index, ref length, 'e', 'E');
-            return JsonBoolean.True;
+            return JsonBoolean.False;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -516,7 +520,8 @@ namespace Cadena.Meteor.Safe
         {
             if (IsEndOfJson(ref buffer, ref index, ref length) || (buffer[index] != c1 && buffer[index] != c2))
             {
-                CreateException(buffer, index, $"{c1} or {c2} is expected in this place, but placed char is {buffer[index]}.");
+                CreateException(buffer, index,
+                    $"{c1} or {c2} is expected in this place, but placed char is {buffer[index]}.");
             }
             index++;
         }

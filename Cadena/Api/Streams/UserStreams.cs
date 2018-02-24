@@ -40,11 +40,11 @@ namespace Cadena.Api.Streams
             // build parameter
             var param = new Dictionary<string, object>
             {
-                {"track", String.IsNullOrEmpty(filteredTracks) ? null : filteredTracks},
-                {"stall_warnings", stallWarnings ? "true" : null},
-                {"filter_level", filterLevel == StreamFilterLevel.None ? null : filterLevel.ToParamString()},
-                {"replies", repliesAll ? "all" : null},
-                {"include_followings_activity", followingsActivity ? "true" : null}
+                { "track", String.IsNullOrEmpty(filteredTracks) ? null : filteredTracks },
+                { "stall_warnings", stallWarnings ? "true" : null },
+                { "filter_level", filterLevel == StreamFilterLevel.None ? null : filterLevel.ToParamString() },
+                { "replies", repliesAll ? "all" : null },
+                { "include_followings_activity", followingsActivity ? "true" : null }
             };
 
             // begin connection

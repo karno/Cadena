@@ -20,8 +20,8 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
-                {"cursor", cursor},
-                {"count", count}
+                { "cursor", cursor },
+                { "count", count }
             }.ApplyParameter(nullableTargetUser);
             return await accessor.GetAsync("friends/ids.json", param,
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
@@ -38,8 +38,8 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
-                {"cursor", cursor},
-                {"count", count}
+                { "cursor", cursor },
+                { "count", count }
             }.ApplyParameter(nullableTargetUser);
             return await accessor.GetAsync("followers/ids.json", param,
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
@@ -70,7 +70,7 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
-                {"cursor", cursor}
+                { "cursor", cursor }
             };
             return await accessor.GetAsync("mutes/users/ids.json", param,
                 ResultHandlers.ReadAsCursoredIdsAsync, cancellationToken).ConfigureAwait(false);
@@ -136,8 +136,8 @@ namespace Cadena.Api.Rest
 
             var param = new Dictionary<string, object>
             {
-                {"device", enableDeviceNotifications},
-                {"retweets", showRetweet},
+                { "device", enableDeviceNotifications },
+                { "retweets", showRetweet },
             }.ApplyParameter(screenName);
             return await accessor.PostAsync("friendships/update.json", param,
                 ResultHandlers.ReadAsFriendshipAsync, cancellationToken).ConfigureAwait(false);

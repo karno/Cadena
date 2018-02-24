@@ -16,10 +16,10 @@ namespace Cadena.Engine.Requests
         [NotNull]
         public UserParameter Target { get; }
 
-        public Relations Relation { get; }
+        public Relationships Relation { get; }
 
         public UpdateRelationRequest([NotNull] IApiAccessor accessor,
-            [NotNull] UserParameter target, Relations relation)
+            [NotNull] UserParameter target, Relationships relation)
         {
             Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             Target = target ?? throw new ArgumentNullException(nameof(target));
@@ -30,19 +30,19 @@ namespace Cadena.Engine.Requests
         {
             switch (Relation)
             {
-                case Relations.Follow:
+                case Relationships.Follow:
                     return Accessor.CreateFriendshipAsync(Target, token);
 
-                case Relations.Unfollow:
+                case Relationships.Unfollow:
                     return Accessor.DestroyFriendshipAsync(Target, token);
 
-                case Relations.Block:
+                case Relationships.Block:
                     return Accessor.CreateBlockAsync(Target, token);
 
-                case Relations.ReportAsSpam:
+                case Relationships.ReportAsSpam:
                     return Accessor.ReportSpamAsync(Target, token);
 
-                case Relations.Unblock:
+                case Relationships.Unblock:
                     return Accessor.DestroyBlockAsync(Target, token);
 
                 default:
@@ -51,7 +51,7 @@ namespace Cadena.Engine.Requests
         }
     }
 
-    public enum Relations
+    public enum Relationships
     {
         Follow,
         Unfollow,

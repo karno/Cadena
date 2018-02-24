@@ -115,6 +115,13 @@ namespace Cadena.Engine.StreamReceivers
     public enum StreamState
     {
         /// <summary>
+        /// Stream channel is disconnected<para />
+        /// Stream engine is not started or disconnected
+        /// (Unhandled exception thrown, reaching limit of connection trial, etc...)
+        /// </summary>
+        Disconnected,
+
+        /// <summary>
         /// Opening stream channel
         /// </summary>
         Connecting,
@@ -128,12 +135,5 @@ namespace Cadena.Engine.StreamReceivers
         /// Waiting reconnection for protecting twitter infrastructure
         /// </summary>
         Waiting,
-
-        /// <summary>
-        /// Stream channel is disconnected<para />
-        /// Stream engine is not started or disconnected
-        /// (Unhandled exception thrown, reaching limit of connection trial, etc...)
-        /// </summary>
-        Disconnected,
     }
 }

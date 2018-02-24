@@ -34,21 +34,53 @@ namespace Cadena.Engine.StreamReceivers
         private readonly IApiAccessor _accessor;
         private readonly IStreamHandler _handler;
 
-        private StreamState _currentState;
-
         private BackoffMode _backoffMode;
 
         private long _backoffWait;
 
         private int _hardErrorCount;
 
+        private CancellationTokenSource _currentSource = null;
+
+        [NotNull]
+        private readonly HashSet<string> _trackKeywords = new HashSet<string>();
+
         #region User Stream properties
 
         /// <summary>
         /// Track keywords
         /// </summary>
-        [CanBeNull]
-        public IEnumerable<string> TrackKeywords { get; set; }
+        [NotNull]
+        public IEnumerable<string> TrackKeywords
+        {
+            get => _trackKeywords;
+            set
+            {
+                var changed = false;
+                var set = new HashSet<string>(value);
+                foreach (var item in set)
+                {
+                    if (_trackKeywords.Add(item))
+                    {
+                        Debug.WriteLine("track add: " + item + " into " + _accessor.Id);
+                        changed = true;
+                    }
+                }
+                foreach (var item in _trackKeywords.ToArray())
+                {
+                    if (!set.Remove(item))
+                    {
+                        _trackKeywords.Remove(item);
+                        changed = true;
+                    }
+                }
+                if (changed)
+                {
+                    Debug.WriteLine("track reconnect...");
+                    Reconnect();
+                }
+            }
+        }
 
         /// <summary>
         /// replies=all flag
@@ -63,12 +95,17 @@ namespace Cadena.Engine.StreamReceivers
         /// <summary>
         /// stall_warnings flag
         /// </summary>
-        public bool StallWarnings { get; set; }
+        public bool StallWarnings { get; }
 
         /// <summary>
         /// filter_level parameter
         /// </summary>
-        public StreamFilterLevel StreamFilterLevel { get; set; }
+        public StreamFilterLevel StreamFilterLevel { get; }
+
+        /// <summary>
+        /// current connection status
+        /// </summary>
+        public StreamState CurrentState { get; private set; }
 
         #endregion User Stream properties
 
@@ -80,10 +117,15 @@ namespace Cadena.Engine.StreamReceivers
             // set default values to parameters
             StallWarnings = true;
             StreamFilterLevel = StreamFilterLevel.None;
-            _currentState = StreamState.Connected;
+            CurrentState = StreamState.Connected;
             _backoffMode = BackoffMode.None;
             _backoffWait = 0;
             _hardErrorCount = 0;
+        }
+
+        public void Reconnect()
+        {
+            _currentSource?.Cancel();
         }
 
         protected override async Task ExecuteInternalAsync(CancellationToken cancellationToken)
@@ -91,10 +133,13 @@ namespace Cadena.Engine.StreamReceivers
             while (!cancellationToken.IsCancellationRequested)
             {
                 ChangeState(StreamState.Connecting);
-                _handler.OnStateChanged(StreamState.Connecting);
                 try
                 {
-                    await UserStreams.ConnectAsync(_accessor, ParseLine, _userStreamTimeout, cancellationToken,
+                    _currentSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    ChangeState(StreamState.Connected);
+                    Debug.WriteLine("Connect userstream: " + _accessor.Id + ", with track: " +
+                                    String.Join(",", TrackKeywords));
+                    await UserStreams.ConnectAsync(_accessor, ParseLine, _userStreamTimeout, _currentSource.Token,
                                          TrackKeywords, StallWarnings, StreamFilterLevel,
                                          RepliesAll, IncludeFollowingsActivities)
                                      .ConfigureAwait(false);
@@ -105,6 +150,11 @@ namespace Cadena.Engine.StreamReceivers
                     if (cancellationToken.IsCancellationRequested)
                     {
                         break;
+                    }
+                    if (_currentSource.IsCancellationRequested)
+                    {
+                        Debug.WriteLine($"ID {_accessor.Id} : reconnect required.");
+                        continue;
                     }
                     if (await HandleException(ex).ConfigureAwait(false))
                     {
@@ -223,11 +273,9 @@ namespace Cadena.Engine.StreamReceivers
 
         private void ChangeState(StreamState state)
         {
-            if (_currentState != state)
-            {
-                _currentState = state;
-                _handler.OnStateChanged(state);
-            }
+            if (CurrentState == state) return;
+            CurrentState = state;
+            _handler.OnStateChanged(state);
         }
     }
 

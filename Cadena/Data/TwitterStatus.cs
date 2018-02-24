@@ -16,6 +16,8 @@ namespace Cadena.Data
 
         public TwitterStatus(JsonValue json)
         {
+            GenerateFromJson = true;
+
             // read numeric id and timestamp
             Id = json["id_str"].AsString().ParseLong();
             CreatedAt = json["created_at"].AsString().ParseDateTime(ParsingExtension.TwitterDateTimeFormat);
@@ -242,6 +244,16 @@ namespace Cadena.Data
         /// </summary>
         [NotNull]
         public string Permalink => String.Format(TwitterStatusUrl, User.ScreenName, Id);
+
+        #region for compatibility
+
+        public long[] FavoritedUsers { get; set; } = new long[0];
+
+        public long[] RetweetedUsers { get; set; } = new long[0];
+
+        public bool GenerateFromJson { get; }
+
+        #endregion for compatibility
 
         // ReSharper disable InconsistentNaming
         [NotNull]

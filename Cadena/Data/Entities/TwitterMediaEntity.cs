@@ -58,7 +58,7 @@ namespace Cadena.Data.Entities
         public TwitterMediaEntity(Tuple<int, int> indices,
             long id, [CanBeNull] string mediaUrl, [CanBeNull] string mediaUrlHttps,
             [CanBeNull] string url, [CanBeNull] string displayUrl, [CanBeNull] string expandedUrl,
-            MediaType mediaType, [NotNull] IReadOnlyDictionary<string, MediaSize> mediaSizes,
+            MediaType mediaType, [CanBeNull] IReadOnlyDictionary<string, MediaSize> mediaSizes,
             [CanBeNull] VideoInfo videoInfo)
             : base(indices)
         {
@@ -69,7 +69,7 @@ namespace Cadena.Data.Entities
             DisplayUrl = displayUrl;
             ExpandedUrl = expandedUrl;
             MediaType = mediaType;
-            MediaSizes = mediaSizes ?? throw new ArgumentNullException(nameof(mediaSizes));
+            MediaSizes = mediaSizes ?? new ReadOnlyDictionary<string, MediaSize>(new Dictionary<string, MediaSize>());
             VideoInfo = videoInfo;
         }
 
@@ -208,9 +208,9 @@ namespace Cadena.Data.Entities
         private static readonly ReadOnlyDictionary<string, VideoContentType> _videoContentTypes =
             new ReadOnlyDictionary<string, VideoContentType>(new Dictionary<string, VideoContentType>
             {
-                {"video/mp4", VideoContentType.Mp4},
-                {"video/webm", VideoContentType.WebM},
-                {"application/x-mpegURL", VideoContentType.M3U8}
+                { "video/mp4", VideoContentType.Mp4 },
+                { "video/webm", VideoContentType.WebM },
+                { "application/x-mpegURL", VideoContentType.M3U8 }
             });
 
         public VideoVariant(JsonValue variantNode)

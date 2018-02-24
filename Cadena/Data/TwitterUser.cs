@@ -81,6 +81,13 @@ namespace Cadena.Data
             DescriptionEntities = descriptionEntities ?? throw new ArgumentNullException(nameof(descriptionEntities));
         }
 
+        public TwitterUser(long id, string screenName, Uri profileImageUri)
+        {
+            Id = id;
+            ScreenName = screenName;
+            ProfileImageUri = profileImageUri;
+        }
+
         public const string TwitterUserUrl = "https://twitter.com/{0}";
         public const string FavstarUserUrl = "http://favstar.fm/users/{0}";
         public const string TwilogUserUrl = "http://twilog.org/{0}";

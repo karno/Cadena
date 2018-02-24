@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -104,52 +105,74 @@ namespace Cadena.Engine
 
         private void EngineCore()
         {
-            var token = _tokenSource.Token;
-            while (!token.IsCancellationRequested)
+            try
             {
-                var span = Timeout.InfiniteTimeSpan;
-                // stage 1: calculate wait time
-                lock (_receivers)
+                var token = _tokenSource.Token;
+                while (!token.IsCancellationRequested)
                 {
-                    if (_receivers.Count > 0)
+                    var stamp = DateTime.Now;
+                    var span = Timeout.InfiniteTimeSpan;
+                    // stage 1: calculate wait time
+                    lock (_receivers)
                     {
-                        var time = _receivers.Keys[0];
-                        if (time < DateTime.MaxValue)
+                        if (_receivers.Count > 0)
                         {
-                            var now = DateTime.Now;
-                            span = time <= now ? TimeSpan.Zero : _receivers.Keys[0] - now;
+                            var time = _receivers.Keys[0];
+                            if (time < DateTime.MaxValue)
+                            {
+                                span = time <= stamp ? TimeSpan.Zero : time - stamp;
+                                Debug.WriteLine("calculated span: " + span + ", total " + span.TotalSeconds +
+                                                " sec");
+                            }
+                        }
+                        var rcn = 0;
+                        foreach (var receiver in _receivers)
+                        {
+                            rcn += receiver.Value.Count;
+                        }
+                        Debug.WriteLine("total receivers: " + rcn + " registered.");
+                    }
+                    // stage 2: wait
+                    if (span == Timeout.InfiniteTimeSpan || span > TimeSpan.Zero)
+                    {
+                        Debug.WriteLine("Receiver waiting: " + span + ", total " + span.TotalSeconds +
+                                        " secs...");
+                        _re.WaitOne(span);
+                        stamp = DateTime.Now;
+                    }
+                    // stage 3: check time and dequeue item
+                    List<Tuple<IReceiver, RequestPriority>> recvlist = null;
+                    lock (_receivers)
+                    {
+                        if (_receivers.Count > 0)
+                        {
+                            var time = _receivers.Keys[0];
+                            if (time <= stamp)
+                            {
+                                // execute tasks
+                                recvlist = _receivers[time];
+                                _receivers.RemoveAt(0);
+                            }
+                        }
+                        _re.Reset();
+                    }
+                    // stage 4: execute receive task
+                    if (recvlist != null)
+                    {
+                        foreach (var tuple in recvlist)
+                        {
+                            Receive(tuple.Item1, tuple.Item2);
                         }
                     }
                 }
-                // stage 2: wait
-                if (span == Timeout.InfiniteTimeSpan || span > TimeSpan.Zero)
-                {
-                    _re.WaitOne(span);
-                }
-                // stage 3: check time and dequeue item
-                List<Tuple<IReceiver, RequestPriority>> list = null;
-                lock (_receivers)
-                {
-                    if (_receivers.Count > 0)
-                    {
-                        var time = _receivers.Keys[0];
-                        if (time <= DateTime.Now)
-                        {
-                            // execute tasks
-                            list = _receivers.Values[0];
-                            _receivers.RemoveAt(0);
-                        }
-                    }
-                    _re.Reset();
-                }
-                // stage 4: execute receive task
-                if (list != null)
-                {
-                    foreach (var tuple in list)
-                    {
-                        Receive(tuple.Item1, tuple.Item2);
-                    }
-                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("*** ENGINE BLOW-UP! ***" + Environment.NewLine + ex);
+            }
+            finally
+            {
+                Debug.WriteLine("Receive engine has stopped running...");
             }
         }
 
