@@ -168,6 +168,8 @@ namespace Cadena.Api.Rest
             if (media == null) throw new ArgumentNullException(nameof(media));
             if (mimeType == null) throw new ArgumentNullException(nameof(mimeType));
 
+            var mediaType = MediaFileUtility.GetMediaType(media);
+
             // maximum video size is 15MB (maximum image is 5MB)
             if (media.Length > 15 * 1024 * 1024)
             {
@@ -176,7 +178,7 @@ namespace Cadena.Api.Rest
 
             // check the bit array could be chunked
             var csize = chunkSize ?? 5 * 1024 * 1024;
-            if (media.Length <= csize)
+            if (!mediaType.IsMovie() && media.Length <= csize)
             {
                 // this item is not needed to split it into pieces
                 return await accessor.UploadMediaAsync(media, additionalOwners, cancellationToken)
@@ -234,8 +236,8 @@ namespace Cadena.Api.Rest
             // send FINALIZE
             var finalContent = new MultipartFormDataContent
             {
-                {new StringContent("FINALIZE"), "command"},
-                {new StringContent(mediaId.ToString()), "media_id"},
+                { new StringContent("FINALIZE"), "command" },
+                { new StringContent(mediaId.ToString()), "media_id" },
             };
             return await UploadMediaCoreAsync(accessor, finalContent, cancellationToken).ConfigureAwait(false);
         }
@@ -251,6 +253,16 @@ namespace Cadena.Api.Rest
                     var json = await resp.ReadAsStringAsync().ConfigureAwait(false);
                     return new TwitterUploadedMedia(MeteorJson.Parse(json));
                 }, cancellationToken).ConfigureAwait(false);
+        }
+
+        private static async Task<IApiResult<string>> UploadCoreAsync(
+            [NotNull] this IApiAccessor accessor, [NotNull] HttpContent content,
+            CancellationToken cancellationToken)
+        {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+            return await accessor.PostAsync("media/upload.json", content,
+                async resp => await resp.ReadAsStringAsync().ConfigureAwait(false),
+                cancellationToken).ConfigureAwait(false);
         }
 
         #endregion media/upload

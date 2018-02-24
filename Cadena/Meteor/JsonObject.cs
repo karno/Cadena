@@ -90,10 +90,10 @@ namespace Cadena.Meteor
             var builder = new StringBuilder();
             foreach (var values in _dictionary)
             {
-                builder.Append(", ");
-                builder.AppendLine(new JsonString(values.Key) + ": " + values.Value);
+                builder.AppendLine(new JsonString(values.Key) + ": " + values.Value + ", ");
             }
-            return "{" + Environment.NewLine + builder.ToString().Substring(2) + "}" + Environment.NewLine;
+            return "{" + Environment.NewLine + builder.ToString(0, Math.Max(builder.Length - 2, 0)) + "}" +
+                   Environment.NewLine;
         }
     }
 }

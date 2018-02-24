@@ -102,7 +102,7 @@ namespace Cadena.Util
             return true;
         }
 
-        public static string GetMime(SupportedMediaTypes type)
+        public static string GetMime(this SupportedMediaTypes type)
         {
             switch (type)
             {
@@ -128,6 +128,18 @@ namespace Cadena.Util
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+        }
+
+        public static bool IsMovie(this SupportedMediaTypes type)
+        {
+            switch (type)
+            {
+                case SupportedMediaTypes.AnimatedGif:
+                case SupportedMediaTypes.Mp4:
+                case SupportedMediaTypes.Unknown:
+                    return true;
+            }
+            return false;
         }
 
         private sealed class ByteEnumerationReader

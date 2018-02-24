@@ -8,12 +8,12 @@ namespace Cadena.Data.Entities
     {
         public TwitterHashtagEntity(JsonValue json) : base(json)
         {
-            Text = json["text"].AsStringOrNull();
+            Text = json["text"].AsStringOrNull()?.Replace("#", "");
         }
 
         public TwitterHashtagEntity(Tuple<int, int> indices, string text) : base(indices)
         {
-            Text = text;
+            Text = text?.Replace("#", "");
         }
 
         /// <summary>

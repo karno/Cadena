@@ -38,8 +38,8 @@ namespace Cadena.Data
             if (exjson.ContainsKey("extended_entities"))
             {
                 // get correctly typed entities array
-                var orgEntities = TwitterEntity.ParseEntities(json["entities"]).ToArray();
-                var extEntities = TwitterEntity.ParseEntities(json["extended_entities"]).ToArray();
+                var orgEntities = TwitterEntity.ParseEntities(exjson["entities"]).ToArray();
+                var extEntities = TwitterEntity.ParseEntities(exjson["extended_entities"]).ToArray();
 
                 // merge entities
                 Entities = orgEntities.Where(e => !(e is TwitterMediaEntity))
@@ -97,7 +97,7 @@ namespace Cadena.Data
             long id, [NotNull] TwitterUser user, [NotNull] string text,
             [CanBeNull] Tuple<int, int> displayTextRange, DateTime createdAt, [NotNull] TwitterEntity[] entities,
             [CanBeNull] string source, long? inReplyToStatusId, long? inReplyToUserId,
-            long? favoritedCount, long? retweetedCount,
+            long[] favs, long[] rts,
             [CanBeNull] string inReplyToScreenName, [CanBeNull] Tuple<double, double> coordinates,
             [CanBeNull] TwitterStatus retweetedStatus, [CanBeNull] TwitterStatus quotedStatus)
             : this(id, StatusType.Tweet, user, text, displayTextRange, createdAt, entities)
@@ -106,8 +106,10 @@ namespace Cadena.Data
             InReplyToStatusId = inReplyToStatusId;
             InReplyToScreenName = inReplyToScreenName;
             InReplyToUserId = inReplyToUserId;
-            FavoriteCount = favoritedCount;
-            RetweetCount = retweetedCount;
+            FavoritedUsers = favs;
+            FavoriteCount = favs.Length;
+            RetweetedUsers = rts;
+            RetweetCount = rts.Length;
             Coordinates = coordinates;
             RetweetedStatus = retweetedStatus;
             QuotedStatus = quotedStatus;

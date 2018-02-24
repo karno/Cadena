@@ -9,7 +9,7 @@ namespace Cadena.Data.Entities
         public TwitterUserMentionEntity(JsonValue json) : base(json)
         {
             Id = json["id"].AsLong();
-            ScreenName = json["screen_name"].AsStringOrNull();
+            ScreenName = json["screen_name"].AsStringOrNull()?.Replace("@", "");
             Name = json["name"].AsStringOrNull();
         }
 
@@ -18,7 +18,7 @@ namespace Cadena.Data.Entities
             : base(indices)
         {
             Id = id;
-            ScreenName = screenName;
+            ScreenName = screenName?.Replace("@", "");
             Name = name;
         }
 
