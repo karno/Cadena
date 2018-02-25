@@ -82,7 +82,7 @@ namespace Cadena.Api.Rest
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             var param = new Dictionary<string, object>
             {
-                { "id", id },
+                { "id", id }
             }.SetExtended();
             return await accessor.GetAsync("statuses/show.json", param,
                 ResultHandlers.ReadAsStatusAsync, cancellationToken).ConfigureAwait(false);
@@ -202,7 +202,7 @@ namespace Cadena.Api.Rest
             {
                 { new StringContent("INIT"), "command" },
                 { new StringContent(media.Length.ToString()), "total_bytes" },
-                { new StringContent(mimeType), "media_type" },
+                { new StringContent(mimeType), "media_type" }
             };
             if (additionalOwners != null)
             {
@@ -227,7 +227,7 @@ namespace Cadena.Api.Rest
                     { new StringContent("APPEND"), "command" },
                     { new StringContent(mediaId.ToString()), "media_id" },
                     { new ByteArrayContent(part), "media", fileName },
-                    { new StringContent(index.ToString()), "segment_index" },
+                    { new StringContent(index.ToString()), "segment_index" }
                 };
                 await UploadCoreAsync(accessor, content, cancellationToken).ConfigureAwait(false);
                 sentSize += part.Length;
@@ -239,7 +239,7 @@ namespace Cadena.Api.Rest
             var finalContent = new MultipartFormDataContent
             {
                 { new StringContent("FINALIZE"), "command" },
-                { new StringContent(mediaId.ToString()), "media_id" },
+                { new StringContent(mediaId.ToString()), "media_id" }
             };
             return await UploadMediaCoreAsync(accessor, finalContent, cancellationToken).ConfigureAwait(false);
         }
