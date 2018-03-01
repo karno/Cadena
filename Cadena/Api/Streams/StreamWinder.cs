@@ -71,9 +71,16 @@ namespace Cadena.Api.Streams
             const TaskCreationOptions option = TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning;
             Task.Factory.StartNew(() =>
             {
-                foreach (var item in collection.GetConsumingEnumerable(token))
+                try
                 {
-                    parser(item);
+                    foreach (var item in collection.GetConsumingEnumerable(token))
+                    {
+                        parser(item);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // ignored
                 }
                 // all registered items have been consumed.
                 collection.Dispose();

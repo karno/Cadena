@@ -27,12 +27,29 @@ namespace AsyncOAuth
         /// <summary>Escape RFC3986 String</summary>
         public static string UrlEncode(this string stringToEscape)
         {
-            return Uri.EscapeDataString(stringToEscape)
+            return Uri.EscapeDataString(EnsurePercentEncodingUpperCase(stringToEscape))
                       .Replace("!", "%21")
                       .Replace("*", "%2A")
                       .Replace("'", "%27")
                       .Replace("(", "%28")
                       .Replace(")", "%29");
+        }
+
+        private static string EnsurePercentEncodingUpperCase(string escaped)
+        {
+            var ca = escaped.ToCharArray();
+            for (var i = 0; i < ca.Length; i++)
+            {
+                if (ca[i] != '%') continue;
+                for (var j = 1; j < 3; j++)
+                {
+                    if ('a' <= ca[i + j] && ca[i + j] <= 'f')
+                    {
+                        ca[i + j] -= (char)32;
+                    }
+                }
+            }
+            return new String(ca);
         }
 
         public static string UrlDecode(this string stringToUnescape)
