@@ -13,6 +13,10 @@ namespace Cadena.Data
         {
             Id = json["id_str"].AsString().ParseLong();
             ScreenName = ParsingExtension.ResolveEntity(json["screen_name"].AsString());
+            if (ScreenName.StartsWith("@") || ScreenName.StartsWith("＠"))
+            {
+                throw new ArgumentException("Invalid screen name!");
+            }
             Name = ParsingExtension.ResolveEntity(json["name"].AsString());
             Description = ParsingExtension.ResolveEntity(json["description"].AsString());
             Location = ParsingExtension.ResolveEntity(json["location"].AsString());

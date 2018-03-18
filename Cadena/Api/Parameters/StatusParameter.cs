@@ -27,13 +27,16 @@ namespace Cadena.Api.Parameters
         public long[] MediaIds { get; }
 
         public StatusParameter([NotNull] string status, long? inReplyToStatusId = null,
+            bool autoPopulateReplyMetadata = false,
             bool? possiblySensitive = null, [CanBeNull] Tuple<double, double> geoLatLong = null,
             [CanBeNull] string placeId = null, bool? displayCoordinates = null,
             [CanBeNull] long[] mediaIds = null, [CanBeNull] string attachmentUrl = null)
         {
             Status = status ?? throw new ArgumentNullException(nameof(status));
             InReplyToStatusId = inReplyToStatusId;
-            AutoPopulateReplyMetadata = inReplyToStatusId != null;
+            // note: auto_populate_reply_metadata is only available when 
+            // in_reply_to_status_id parameter is specified.
+            AutoPopulateReplyMetadata = autoPopulateReplyMetadata;
             PossiblySensitive = possiblySensitive;
             GeoLatLong = geoLatLong;
             PlaceId = placeId;

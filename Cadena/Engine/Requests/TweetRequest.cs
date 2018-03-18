@@ -20,6 +20,8 @@ namespace Cadena.Engine.Requests
 
         public long? InReplyToStatusId { get; }
 
+        public bool AutoPopulateReplyMetadata { get; }
+
         [CanBeNull]
         public Tuple<double, double> GeoLatLong { get; }
 
@@ -29,12 +31,14 @@ namespace Cadena.Engine.Requests
         public bool? DisplayCoordinates { get; }
 
         public TweetRequest([NotNull] IApiAccessor accessor, [NotNull] string text,
-            long? inReplyToStatusId = null, [CanBeNull] Tuple<double, double> geoLatLong = null,
+            long? inReplyToStatusId = null, bool autoPopulateReplyMetadata = false,
+            [CanBeNull] Tuple<double, double> geoLatLong = null,
             [CanBeNull] string placeId = null, bool? displayCoordinates = null)
         {
             Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
             Text = text ?? throw new ArgumentNullException(nameof(text));
             InReplyToStatusId = inReplyToStatusId;
+            AutoPopulateReplyMetadata = autoPopulateReplyMetadata;
             GeoLatLong = geoLatLong;
             PlaceId = placeId;
             DisplayCoordinates = displayCoordinates;
@@ -42,7 +46,8 @@ namespace Cadena.Engine.Requests
 
         public override Task<IApiResult<TwitterStatus>> Send(CancellationToken token)
         {
-            var param = new StatusParameter(Text, InReplyToStatusId, null, GeoLatLong, PlaceId, DisplayCoordinates);
+            var param = new StatusParameter(Text, InReplyToStatusId, AutoPopulateReplyMetadata, null,
+                GeoLatLong, PlaceId, DisplayCoordinates);
             return Accessor.UpdateAsync(param, token);
         }
     }
@@ -56,9 +61,10 @@ namespace Cadena.Engine.Requests
 
         public TweetWithMediaRequest([NotNull] IApiAccessor accessor, [NotNull] string text,
             IEnumerable<long> mediaIds, bool possiblySensitive, long? inReplyToStatusId = null,
-            [CanBeNull] Tuple<double, double> geoLatLong = null, [CanBeNull] string placeId = null,
-            bool? displayCoordinates = null)
-            : base(accessor, text, inReplyToStatusId, geoLatLong, placeId, displayCoordinates)
+            bool autoPopulateReplyMetadata = false, [CanBeNull] Tuple<double, double> geoLatLong = null,
+            [CanBeNull] string placeId = null, bool? displayCoordinates = null)
+            : base(accessor, text, inReplyToStatusId, autoPopulateReplyMetadata, geoLatLong, placeId,
+                displayCoordinates)
         {
             if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             MediaIds = mediaIds.ToArray();
@@ -67,8 +73,8 @@ namespace Cadena.Engine.Requests
 
         public override Task<IApiResult<TwitterStatus>> Send(CancellationToken token)
         {
-            var param = new StatusParameter(Text, InReplyToStatusId, PossiblySensitive,
-                GeoLatLong, PlaceId, DisplayCoordinates, MediaIds);
+            var param = new StatusParameter(Text, InReplyToStatusId, AutoPopulateReplyMetadata,
+                PossiblySensitive, GeoLatLong, PlaceId, DisplayCoordinates, MediaIds);
             return Accessor.UpdateAsync(param, token);
         }
     }
