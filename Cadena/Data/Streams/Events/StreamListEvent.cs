@@ -12,6 +12,14 @@ namespace Cadena.Data.Streams.Events
     /// </remarks>
     public sealed class StreamListEvent : StreamEvent<TwitterList, ListEvents>
     {
+        internal const string ListCreatedEventKey = "list_created";
+        internal const string ListDestroyedEventKey = "list_destroyed";
+        internal const string ListUpdatedEventKey = "list_updated";
+        internal const string ListMemberAddedEventKey = "list_member_added";
+        internal const string ListMemberRemovedEventKey = "list_member_removed";
+        internal const string ListUserSubscribedEventKey = "list_user_subscribed";
+        internal const string ListUserUnsubscribedEventKey = "list_user_unsubscribed";
+
         public StreamListEvent(TwitterUser source, TwitterUser target,
             TwitterList targetObject, string rawEvent, DateTime createdAt)
             : base(source, target, targetObject, ToEnumEvent(rawEvent), rawEvent, createdAt)
@@ -22,25 +30,25 @@ namespace Cadena.Data.Streams.Events
         {
             switch (eventStr)
             {
-                case "list_created":
+                case ListCreatedEventKey:
                     return ListEvents.ListCreated;
 
-                case "list_destroyed":
+                case ListDestroyedEventKey:
                     return ListEvents.ListDestroyed;
 
-                case "list_updated":
+                case ListUpdatedEventKey:
                     return ListEvents.ListUpdated;
 
-                case "list_member_added":
+                case ListMemberAddedEventKey:
                     return ListEvents.ListMemberAdded;
 
-                case "list_member_removed":
+                case ListMemberRemovedEventKey:
                     return ListEvents.ListMemberRemoved;
 
-                case "list_user_subscribed":
+                case ListUserSubscribedEventKey:
                     return ListEvents.ListUserSubscribed;
 
-                case "list_user_unsubscribed":
+                case ListUserUnsubscribedEventKey:
                     return ListEvents.ListUserUnsubscribed;
 
                 default:

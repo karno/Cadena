@@ -13,6 +13,16 @@ namespace Cadena.Data.Streams.Events
     /// </remarks>
     public sealed class StreamUserEvent : StreamEvent<TwitterUser, UserEvents>
     {
+        internal const string BlockEventKey = "block";
+        internal const string UnblockEventKey = "unblock";
+        internal const string FollowEventKey = "follow";
+        internal const string UnfollowEventKey = "unfollow";
+        internal const string UserUpdateEventKey = "user_update";
+        internal const string UserDeleteEventKey = "user_delete";
+        internal const string UserSuspendEventKey = "user_suspend";
+        internal const string UserMuteEventKey = "mute";
+        internal const string UserUnmuteEventKey = "unmute";
+
         public StreamUserEvent(TwitterUser source, TwitterUser target,
             string rawEvent, DateTime createdAt)
             : base(source, target, target, ToEnumEvent(rawEvent), rawEvent, createdAt)
@@ -23,31 +33,31 @@ namespace Cadena.Data.Streams.Events
         {
             switch (eventStr.ToLower())
             {
-                case "block":
+                case BlockEventKey:
                     return UserEvents.Block;
 
-                case "unblock":
+                case UnblockEventKey:
                     return UserEvents.Unblock;
 
-                case "follow":
+                case FollowEventKey:
                     return UserEvents.Follow;
 
-                case "unfollow":
+                case UnfollowEventKey:
                     return UserEvents.Unfollow;
 
-                case "user_update":
+                case UserUpdateEventKey:
                     return UserEvents.UserUpdate;
 
-                case "user_delete":
+                case UserDeleteEventKey:
                     return UserEvents.UserDelete;
 
-                case "user_suspend":
+                case UserSuspendEventKey:
                     return UserEvents.UserSuspend;
 
-                case "mute":
+                case UserMuteEventKey:
                     return UserEvents.Mute;
 
-                case "unmute":
+                case UserUnmuteEventKey:
                     return UserEvents.UnMute;
 
                 default:

@@ -98,7 +98,7 @@ namespace Cadena.Engine.StreamReceivers
             _logHandler?.Invoke("[" + DateTime.Now.ToString("yy/MM/dd hh:mm:ss tt [zz]") + "]" + log);
         }
 
-        public StreamHandler AddHandler<T>(Action<T> handler) where T : StreamMessage
+        public StreamHandler RegisterHandler<T>(Action<T> handler) where T : StreamMessage
         {
             lock (_notificationHandlers)
             {

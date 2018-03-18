@@ -156,7 +156,7 @@ namespace Cadena.Engine._Internals.Parsers
                 if (graph.TryGetValue("event", out var @event))
                 {
                     var ev = @event.AsString().ToLower();
-                    if (ev == "user_update")
+                    if (ev == StreamUserEvent.UserUpdateEventKey)
                     {
                         // parse user_update only in generic streams.
                         handler.OnMessage(new StreamUserEvent(

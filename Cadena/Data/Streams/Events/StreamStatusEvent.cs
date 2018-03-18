@@ -12,6 +12,12 @@ namespace Cadena.Data.Streams.Events
     /// </remarks>
     public sealed class StreamStatusEvent : StreamEvent<TwitterStatus, StatusEvents>
     {
+        internal const string FavoriteEventKey = "favorite";
+        internal const string UnfavoriteEventKey = "unfavorite";
+        internal const string QuotedTweetEventKey = "quoted_tweet";
+        internal const string FavoritedRetweetEventKey = "favorited_retweet";
+        internal const string RetweetedRetweetEventKey = "retweeted_retweet";
+
         public StreamStatusEvent(TwitterUser source, TwitterUser target,
             TwitterStatus targetObject, string rawEvent, DateTime createdAt)
             : base(source, target, targetObject, ToEnumEvent(rawEvent), rawEvent, createdAt)
@@ -22,19 +28,19 @@ namespace Cadena.Data.Streams.Events
         {
             switch (eventStr.ToLower())
             {
-                case "favorite":
+                case FavoriteEventKey:
                     return StatusEvents.Favorite;
 
-                case "unfavorite":
+                case UnfavoriteEventKey:
                     return StatusEvents.Unfavorite;
 
-                case "quoted_tweet":
+                case QuotedTweetEventKey:
                     return StatusEvents.Quote;
 
-                case "favorited_retweet":
+                case FavoritedRetweetEventKey:
                     return StatusEvents.FavoriteRetweet;
 
-                case "retweeted_retweet":
+                case RetweetedRetweetEventKey:
                     return StatusEvents.RetweetRetweet;
 
                 default:

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Cadena.Data;
 using Cadena.Data.Streams;
@@ -139,43 +140,46 @@ namespace Cadena.Engine._Internals.Parsers
                 var timestamp = graph[EventCreatedAtKey].AsString().ParseTwitterDateTime();
                 switch (ev)
                 {
-                    case "favorite":
-                    case "unfavorite":
-                    case "quoted_tweet":
-                    case "favorited_retweet":
-                    case "retweeted_retweet":
+                    case StreamStatusEvent.FavoriteEventKey:
+                    case StreamStatusEvent.UnfavoriteEventKey:
+                    case StreamStatusEvent.QuotedTweetEventKey:
+                    case StreamStatusEvent.FavoritedRetweetEventKey:
+                    case StreamStatusEvent.RetweetedRetweetEventKey:
                         handler.OnMessage(new StreamStatusEvent(source, target,
                             new TwitterStatus(graph[EventTargetObjectKey]), ev, timestamp));
                         break;
 
-                    case "block":
-                    case "unblock":
-                    case "follow":
-                    case "unfollow":
-                    case "mute":
-                    case "unmute":
-                    case "user_update":
-                    case "user_delete":
-                    case "user_suspend":
+                    case StreamUserEvent.BlockEventKey:
+                    case StreamUserEvent.UnblockEventKey:
+                    case StreamUserEvent.FollowEventKey:
+                    case StreamUserEvent.UnfollowEventKey:
+                    case StreamUserEvent.UserMuteEventKey:
+                    case StreamUserEvent.UserUnmuteEventKey:
+                    case StreamUserEvent.UserUpdateEventKey:
+                    case StreamUserEvent.UserDeleteEventKey:
+                    case StreamUserEvent.UserSuspendEventKey:
                         handler.OnMessage(new StreamUserEvent(source, target,
                             ev, timestamp));
                         break;
 
-                    case "list_created":
-                    case "list_destroyed":
-                    case "list_updated":
-                    case "list_member_added":
-                    case "list_member_removed":
-                    case "list_user_subscribed":
-                    case "list_user_unsubscribed":
+                    case StreamListEvent.ListCreatedEventKey:
+                    case StreamListEvent.ListDestroyedEventKey:
+                    case StreamListEvent.ListUpdatedEventKey:
+                    case StreamListEvent.ListMemberAddedEventKey:
+                    case StreamListEvent.ListMemberRemovedEventKey:
+                    case StreamListEvent.ListUserSubscribedEventKey:
+                    case StreamListEvent.ListUserUnsubscribedEventKey:
                         handler.OnMessage(new StreamListEvent(source, target,
                             new TwitterList(graph[EventTargetObjectKey]), ev, timestamp));
                         break;
 
-                    case "access_revoked":
-                    case "access_unrevoked":
+                    case StreamAccessInformationEvent.AccessRevokedEventKey:
+                    case StreamAccessInformationEvent.AccessUnrevokedEventKey:
                         handler.OnMessage(new StreamAccessInformationEvent(source, target,
                             new AccessInformation(graph[EventTargetObjectKey]), ev, timestamp));
+                        break;
+                    default:
+                        Debug.WriteLine("unknown event: " + ev);
                         break;
                 }
             }

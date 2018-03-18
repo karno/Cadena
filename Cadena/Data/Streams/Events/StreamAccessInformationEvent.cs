@@ -6,6 +6,9 @@ namespace Cadena.Data.Streams.Events
 {
     public class StreamAccessInformationEvent : StreamEvent<AccessInformation, AccessInformationEvents>
     {
+        internal const string AccessRevokedEventKey = "access_revoked";
+        internal const string AccessUnrevokedEventKey = "access_unrevoked";
+
         public StreamAccessInformationEvent(TwitterUser source, TwitterUser target,
             AccessInformation targetObject, string rawEvent, DateTime createdAt)
             : base(source, target, targetObject, ToEnumEvent(rawEvent), rawEvent, createdAt)
@@ -16,10 +19,10 @@ namespace Cadena.Data.Streams.Events
         {
             switch (eventStr)
             {
-                case "access_revoked":
+                case AccessRevokedEventKey:
                     return AccessInformationEvents.AccessRevoked;
 
-                case "access_unrevoked":
+                case AccessUnrevokedEventKey:
                     return AccessInformationEvents.AccessUnrevoked;
 
                 default:
