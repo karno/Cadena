@@ -141,7 +141,8 @@ namespace Cadena.Util
 
         public static Uri ChangeImageSize(this Uri imageUri, ImageSize size)
         {
-            if (imageUri == null || !imageUri.Host.EndsWith(HostDomain))
+            if (imageUri == null || String.IsNullOrEmpty(imageUri.OriginalString) ||
+                !imageUri.Host.EndsWith(HostDomain))
             {
                 return imageUri;
             }
