@@ -25,12 +25,12 @@ namespace Cadena.Util
         {
             var table = new Dictionary<SupportedMediaTypes, byte[]>
             {
-                {SupportedMediaTypes.Bmp, Encoding.ASCII.GetBytes("BM")},
-                {SupportedMediaTypes.Gif, Encoding.ASCII.GetBytes("GIF")},
-                {SupportedMediaTypes.Jpeg, new byte[] {255, 216, 255, 224}},
-                {SupportedMediaTypes.Png, new byte[] {137, 80, 78, 71}},
-                {SupportedMediaTypes.WebP, Encoding.ASCII.GetBytes("RIFF\0\0\0\0WEBP")},
-                {SupportedMediaTypes.Mp4, Encoding.ASCII.GetBytes("\0\0\0\0ftyp")} // optimistic determination
+                { SupportedMediaTypes.Bmp, Encoding.ASCII.GetBytes("BM") },
+                { SupportedMediaTypes.Gif, Encoding.ASCII.GetBytes("GIF") },
+                { SupportedMediaTypes.Jpeg, new byte[] { 0xFF, 0xD8 } },
+                { SupportedMediaTypes.Png, new byte[] { 0x89, 0x50, 0x4E, 0x47 } },
+                { SupportedMediaTypes.WebP, Encoding.ASCII.GetBytes("RIFF\0\0\0\0WEBP") },
+                { SupportedMediaTypes.Mp4, Encoding.ASCII.GetBytes("\0\0\0\0ftyp") } // optimistic determination
             };
             MediaHeaderTable = new ReadOnlyDictionary<SupportedMediaTypes, byte[]>(table);
             MediaHeaderLength = MediaHeaderTable.Select(kvp => kvp.Value.Length).Max();
