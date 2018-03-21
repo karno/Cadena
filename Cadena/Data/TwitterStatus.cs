@@ -319,6 +319,6 @@ namespace Cadena.Data
     public enum EntityDisplayMode
     {
         DisplayText,
-        LinkUri,
+        FullText
     }
 }

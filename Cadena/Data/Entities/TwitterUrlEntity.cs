@@ -22,7 +22,7 @@ namespace Cadena.Data.Entities
             ExpandedUrl = expandUrl;
         }
 
-        public override string DisplayText => DisplayUrl ?? String.Empty;
+        public override string DisplayText => DisplayUrl ?? Url ?? String.Empty;
 
         public override string FullText => ExpandedUrl ?? DisplayText;
 
